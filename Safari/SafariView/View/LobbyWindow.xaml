@@ -1,0 +1,35 @@
+﻿<Window x:Class="SafariView.View.LobbyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SafariView.View"
+        mc:Ignorable="d"
+        Title="LobbyWindow" Height="450" Width="800">
+    <Grid Background="CornflowerBlue">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" MinHeight="45.293" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*" />
+            <ColumnDefinition/>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Grid.Column="2" BorderThickness="10" BorderBrush="Olive" Margin="10,45,10,252" Grid.RowSpan="2">
+            <TextBlock FontSize="60px" Background="ForestGreen" TextAlignment="Center" FontFamily="Leelawadee" VerticalAlignment="Top">SAFARI</TextBlock>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" BorderBrush="DimGray" BorderThickness="10,0,10,0" Margin="30,137,30,195"/>
+        <Border Grid.Row="2" Grid.Column="2" BorderBrush="DimGray" BorderThickness="10,0,10,0" Margin="10,0,10,45">
+            <TextBlock Margin="0,-194,0,31" Background="RosyBrown" TextWrapping="Wrap" FontStretch="Condensed">
+                <Button Height="28" Width="140" Background="RosyBrown" Foreground="#FF00FF22" Margin="45,10,40,0" FontSize="20" BorderThickness="0,0,0,0" IsDefault="True">New Game</Button>
+                <Button Height="28" Width="140" Background="RosyBrown" Foreground="#FF00FF22" Margin="44,10,40,0" FontSize="20" BorderThickness="0,0,0,0" IsDefault="True">Load Game</Button>
+                <Button Height="28" Width="140" Background="RosyBrown" Foreground="#FF00FF22" Margin="44,10,40,0" FontSize="20" BorderThickness="0,0,0,0" IsDefault="True">Credits</Button>
+                <Button Height="28" Width="140" Background="RosyBrown" Foreground="#FF00FF22" Margin="44,10,40,0" FontSize="20" BorderThickness="0,0,0,0" IsDefault="True">Exit to Desktop</Button>
+            </TextBlock>
+        </Border>
+    </Grid>
+</Window>
