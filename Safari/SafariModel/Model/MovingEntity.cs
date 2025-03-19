@@ -9,14 +9,14 @@ namespace SafariModel.Model
 {
     public class MovingEntity : Entity
     {
-        private int speed;
-        private int range;
-        private bool isMoving;
+        protected int speed;
+        protected int range;
+        protected bool isMoving;
 
         public int Speed { get { return speed; } }
         public int Range { get { return range; } } 
         public bool IsMoving { get { return isMoving; } }
-        public MovingEntity(int x, int y) : base(x, y)
+        protected MovingEntity(int x, int y) : base(x, y)
         {
 
         }
