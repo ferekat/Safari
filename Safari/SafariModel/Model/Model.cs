@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SafariModel.Persistence;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,11 @@ namespace SafariModel.Model
         private const int MAPSIZE = 30;
         private Tile[,] tileMap;
 
+        #region Events
+        public event EventHandler<GameData>? TickPassed;
+        public event EventHandler<bool>? GameOver;
+        #endregion
+
         public Model()
         {
             tileMap = new Tile[MAPSIZE,MAPSIZE];
@@ -25,6 +31,23 @@ namespace SafariModel.Model
                 }
             }
         }
+
+        #region Event methods
+        private void InvokeTickPassed()
+        {
+            GameData data = new GameData();
+            //Copy game state to data
+            //...
+            TickPassed?.Invoke(this, data);
+        }
+
+        private void InvokeGameOver()
+        {
+            bool win = false;
+            //Decide if the player won or not
+            GameOver?.Invoke(this, win);
+        }
+        #endregion
 
     }
 }
