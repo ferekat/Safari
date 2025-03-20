@@ -32,6 +32,7 @@ namespace SafariView.ViewModel
             if (!CanExecute(parameter)) throw new InvalidOperationException("Unable to execute");
             execute(parameter);
         }
+
         public void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);

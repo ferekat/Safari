@@ -42,9 +42,14 @@ namespace SafariView.ViewModel
         #region Commands
         public DelegateCommand SaveGameCommand;
         public DelegateCommand LoadGameCommand;
+        public DelegateCommand ExitGameCommand { get; private set; }
         public DelegateCommand ClickedCanvas;
         public DelegateCommand ClickedShopIcon;
         public DelegateCommand ChangedGameSpeed;
+        #endregion
+
+        #region EventHandlers
+        public event EventHandler? ExitGame;
         #endregion
 
         #region Constructor
@@ -61,6 +66,7 @@ namespace SafariView.ViewModel
             ClickedCanvas = new DelegateCommand((param) => ClickPlayArea());
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
+            ExitGameCommand = new DelegateCommand((param) => OnGameExit());
 
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
@@ -92,6 +98,11 @@ namespace SafariView.ViewModel
         private void ChangeGameSpeed(object? speedValue)
         {
             throw new NotImplementedException();
+        }
+
+        private void OnGameExit()
+        {
+            ExitGame?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 

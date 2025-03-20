@@ -68,7 +68,7 @@ namespace SafariModel.Model
 
         protected void Wander()
         {
-            throw new NotImplementedException;
+            throw new NotImplementedException();
         }
 
         #endregion
