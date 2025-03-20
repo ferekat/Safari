@@ -4,18 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace SafariView.ViewModel
 {
-    public class TileRender : ViewModelBase
+    public class EntityRender : ViewModelBase
     {
-        private int i;
-        private int j;
+        private int x;
+        private int y;
         private Brush col;
 
-        public int I { get { return i; } private set { i = value; OnPropertyChanged(); } }
-        public int J { get { return j; } private set { j = value; OnPropertyChanged(); } }
+        public int I { get { return x; } private set { x = value; OnPropertyChanged(); } }
+        public int J { get { return y; } private set { y = value; OnPropertyChanged(); } }
         public Brush Col { get { return col; } private set { col = value; OnPropertyChanged(); } }
     }
 }
