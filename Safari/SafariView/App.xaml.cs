@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using SafariModel.Model;
+using SafariView.View;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 
@@ -11,8 +13,9 @@ namespace SafariView
     {
 
         #region Private fields
-        private MainWindow window;
-        private ViewModel.ViewModel viewModel;
+        private LobbyWindow? window;
+        private ViewModel.ViewModel? viewModel;
+        private Model? model;
         #endregion
 
         #region Constructor
@@ -25,12 +28,20 @@ namespace SafariView
         #region Startup method
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
-            viewModel = new ViewModel.ViewModel();
+            model = new Model();
 
-            window = new MainWindow();
+            viewModel = new ViewModel.ViewModel(model);
+            viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
+
+            window = new LobbyWindow();
             window.DataContext = viewModel;
 
             window.Show();
+        }
+
+        private void ViewModel_GameExit(object? sender, System.EventArgs e)
+        {
+            Shutdown();
         }
         #endregion
     }
