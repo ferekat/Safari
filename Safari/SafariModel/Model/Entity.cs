@@ -9,13 +9,13 @@ namespace SafariModel.Model
 {
     public class Entity
     {
-        private int x;
-        private int y;
+        protected int x;
+        protected int y;
 
         public int X { get { return x; } }
         public int Y { get { return y; } }
 
-        public Entity(int x, int y) 
+        protected Entity(int x, int y) 
         {
             this.x = x;
             this.y = y;

@@ -9,33 +9,32 @@ namespace SafariView.ViewModel
 {
     public class DelegateCommand : ICommand
     {
-        private readonly Action<Object?> _execute;
-        private readonly Predicate<Object?>? _canExecute;
+        private Action<object?> execute;
+        private Predicate<object?>? canExecute;
 
-        public event EventHandler? CanExecuteChanged
+        public DelegateCommand(Action<object>? action, Predicate<object>? predicate = null)
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-        public DelegateCommand(Action<Object?> execute) : this(null, execute) { }
-        public DelegateCommand(Predicate<Object?>? canExecute, Action<Object?> execute)
-        {
-            if (execute == null)
-            {
-                throw new ArgumentNullException(nameof(execute));
-            }
+            if (action == null) throw new ArgumentNullException("Action cannot be null");
 
-            _execute = execute;
-            _canExecute = canExecute;
-        }
-        public Boolean CanExecute(Object? parameter)
-        {
-            return _canExecute == null ? true : _canExecute(parameter);
-        }
-        public void Execute(Object? parameter)
-        {
-            _execute(parameter);
+            execute = action!;
+            canExecute = predicate!;
         }
 
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter)
+        {
+            return canExecute == null ? true : canExecute(parameter);
+        }
+
+        public void Execute(object? parameter)
+        {
+            if (!CanExecute(parameter)) throw new InvalidOperationException("Unable to execute");
+            execute(parameter);
+        }
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

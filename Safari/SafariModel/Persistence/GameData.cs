@@ -1,0 +1,30 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SafariModel.Model;
+
+namespace SafariModel.Persistence
+{
+    public class GameData
+    {
+        public List<Entity> entities;
+        public Tile[,] tileMap;
+        public int money;
+        public int touristAtGate;
+        public double happiness;
+        public int hour;
+        public int day;
+        public int week;
+        public int month;
+        public int gameTime;
+        public int winningMonths;
+
+        public GameData()
+        {
+            //TODO: Finish constructor
+            throw new NotImplementedException();
+        }
+    }
+}
