@@ -3,6 +3,7 @@ using SafariModel.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,14 @@ namespace SafariView.ViewModel
         }
         #endregion
 
+        #region Window bindings
+        public string IndexPage { get; private set; }
+        public string NewGamePage { get; private set; }
+        public string CreditsPage { get; private set; }
+        public string LoadGamePage { get; private set; }
+        public string OptionName { get; private set; }
+        #endregion
+
         #region Properties
         public int Money { get { return money; } set {  money = value; OnPropertyChanged(); } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
@@ -43,6 +52,10 @@ namespace SafariView.ViewModel
         public DelegateCommand SaveGameCommand;
         public DelegateCommand LoadGameCommand;
         public DelegateCommand ExitGameCommand { get; private set; }
+        public DelegateCommand NewGamePageCommand { get; private set; }
+        public DelegateCommand LoadGamePageCommand { get; private set; }
+        public DelegateCommand BackCommand { get; private set; }
+        public DelegateCommand CreditsCommand { get; private set; }
         public DelegateCommand ClickedCanvas;
         public DelegateCommand ClickedShopIcon;
         public DelegateCommand ChangedGameSpeed;
@@ -67,10 +80,21 @@ namespace SafariView.ViewModel
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
+            NewGamePageCommand = new DelegateCommand((param) => OnNewGame());
+            LoadGamePageCommand = new DelegateCommand((param) => OnLoadPageClicked());
+            BackCommand = new DelegateCommand((param) => OnBackClicked());
+            CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
 
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
             model.GameOver += new EventHandler<bool>(Model_GameOver);
+
+            //Set window bindings
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            LoadGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            OptionName = "SAFARI";
         }
         #endregion
 
@@ -103,6 +127,47 @@ namespace SafariView.ViewModel
         private void OnGameExit()
         {
             ExitGame?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnNewGame()
+        {
+            IndexPage = "Hidden";
+            NewGamePage = "Visible";
+            OptionName = "New Game";
+            OnPropertyChanged(nameof(IndexPage));
+            OnPropertyChanged(nameof(NewGamePage));
+            OnPropertyChanged(nameof(OptionName));
+        }
+        private void OnBackClicked()
+        {
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            LoadGamePage = "Hidden";
+            OptionName = "SAFARI";
+            OnPropertyChanged(nameof(IndexPage));
+            OnPropertyChanged(nameof(NewGamePage));
+            OnPropertyChanged(nameof(CreditsPage));
+            OnPropertyChanged(nameof(OptionName));
+            OnPropertyChanged(nameof(LoadGamePage));
+        }
+        private void OnCreditsClicked()
+        {
+            IndexPage = "Hidden";
+            CreditsPage = "Visible";
+            OptionName = "Credits";
+            OnPropertyChanged(nameof(IndexPage));
+            OnPropertyChanged(nameof(CreditsPage));
+            OnPropertyChanged(nameof(OptionName));
+        }
+        private void OnLoadPageClicked()
+        {
+            IndexPage = "Hidden";
+            LoadGamePage = "Visible";
+            OptionName = "Load Game";
+            OnPropertyChanged(nameof(IndexPage));
+            OnPropertyChanged(nameof(LoadGamePage));
+            OnPropertyChanged(nameof(OptionName));
         }
         #endregion
 
