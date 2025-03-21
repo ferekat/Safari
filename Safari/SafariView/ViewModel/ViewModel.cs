@@ -22,6 +22,11 @@ namespace SafariView.ViewModel
         private int cameraX;
         private int cameraY;
         private DispatcherTimer tickTimer;
+        private string? indexPage;
+        private string? newGamePage;
+        private string? creditsPage;
+        private string? loadGamePage;
+        private string? optionName;
 
         private Model model;
         #endregion
@@ -36,11 +41,11 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Window bindings
-        public string IndexPage { get; private set; }
-        public string NewGamePage { get; private set; }
-        public string CreditsPage { get; private set; }
-        public string LoadGamePage { get; private set; }
-        public string OptionName { get; private set; }
+        public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
+        public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
+        public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
+        public string LoadGamePage { get { return loadGamePage!; } private set { loadGamePage = value; OnPropertyChanged(); } }
+        public string OptionName { get { return optionName!; } private set { optionName = value; OnPropertyChanged(); } }
         #endregion
 
         #region Properties
@@ -80,7 +85,7 @@ namespace SafariView.ViewModel
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
-            NewGamePageCommand = new DelegateCommand((param) => OnNewGame());
+            NewGamePageCommand = new DelegateCommand((param) => OnNewGamePageClicked());
             LoadGamePageCommand = new DelegateCommand((param) => OnLoadPageClicked());
             BackCommand = new DelegateCommand((param) => OnBackClicked());
             CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
@@ -129,14 +134,11 @@ namespace SafariView.ViewModel
             ExitGame?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnNewGame()
+        private void OnNewGamePageClicked()
         {
             IndexPage = "Hidden";
             NewGamePage = "Visible";
             OptionName = "New Game";
-            OnPropertyChanged(nameof(IndexPage));
-            OnPropertyChanged(nameof(NewGamePage));
-            OnPropertyChanged(nameof(OptionName));
         }
         private void OnBackClicked()
         {
@@ -145,29 +147,18 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
-            OnPropertyChanged(nameof(IndexPage));
-            OnPropertyChanged(nameof(NewGamePage));
-            OnPropertyChanged(nameof(CreditsPage));
-            OnPropertyChanged(nameof(OptionName));
-            OnPropertyChanged(nameof(LoadGamePage));
         }
         private void OnCreditsClicked()
         {
             IndexPage = "Hidden";
             CreditsPage = "Visible";
             OptionName = "Credits";
-            OnPropertyChanged(nameof(IndexPage));
-            OnPropertyChanged(nameof(CreditsPage));
-            OnPropertyChanged(nameof(OptionName));
         }
         private void OnLoadPageClicked()
         {
             IndexPage = "Hidden";
             LoadGamePage = "Visible";
             OptionName = "Load Game";
-            OnPropertyChanged(nameof(IndexPage));
-            OnPropertyChanged(nameof(LoadGamePage));
-            OnPropertyChanged(nameof(OptionName));
         }
         #endregion
 
