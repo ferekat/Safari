@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.AbstractEntity
 {
     public class Gunman : MovingEntity
     {
@@ -14,8 +14,8 @@ namespace SafariModel.Model
 
         public int Health { get { return health; } }
         public int Damage { get { return damage; } }
-        public MovingEntity Target { get { return target!; } } 
-        
+        public MovingEntity Target { get { return target!; } }
+
         public Gunman(int x, int y, int health, int damage) : base(x, y)
         {
             this.health = health;

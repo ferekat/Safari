@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.AbstractEntity
 {
     public class Plant : Entity
     {
@@ -17,7 +17,7 @@ namespace SafariModel.Model
         public Plant(int x, int y, int regrowthTime) : base(x, y)
         {
             this.regrowthTime = regrowthTime;
-            this.canBeEaten = true;
+            canBeEaten = true;
         }
     }
 }

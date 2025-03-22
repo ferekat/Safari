@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.Tiles
 {
     public class Tile
     {
@@ -38,11 +38,11 @@ namespace SafariModel.Model
         }
         public void Occupy()
         {
-            this.isOccupied = true;
+            isOccupied = true;
         }
         public void Release()
         {
-            this.isOccupied = false;
+            isOccupied = false;
         }
 
 

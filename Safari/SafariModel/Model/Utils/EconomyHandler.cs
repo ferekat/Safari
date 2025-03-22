@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SafariModel.Model.Tiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,25 +12,34 @@ namespace SafariModel.Model.Utils
         private int money;
         public int Money { get; private set; }
 
-        private Dictionary<Type, int> costTable = new();
-
+        private Dictionary<Type, int> entityCostTable = new();
+        private Dictionary<bool,int> conditionTileCosts = new();
+        private Dictionary<TileType,int> tileTypeCosts = new();
         public EconomyHandler(int startingMoney)
         {
             money = startingMoney;
+
+        }
+        public int GetEnityCost(Type item)
+        {
+            return entityCostTable[item];    
         }
 
-        public int GetCost(Type item)
+        public void BuyEntity(Type item)
         {
-            return costTable[item];    
+            money -= entityCostTable[item];
+        }
+        public void SellEntity(Type item)
+        {
+            money += entityCostTable[item];
+        }
+        public void BuyTile(TileType tileType)
+        {
+            money *= tileTypeCosts[tileType];
         }
 
-        public void Buy(Type item)
-        {
-            money -= costTable[item];
-        }
-        public void Sell(Type item)
-        {
-            money += costTable[item];
-        }
+
+
+
     }
 }
