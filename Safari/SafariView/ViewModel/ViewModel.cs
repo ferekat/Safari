@@ -3,6 +3,7 @@ using SafariModel.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,11 @@ namespace SafariView.ViewModel
         private int cameraX;
         private int cameraY;
         private DispatcherTimer tickTimer;
+        private string? indexPage;
+        private string? newGamePage;
+        private string? creditsPage;
+        private string? loadGamePage;
+        private string? optionName;
 
         private Model model;
         #endregion
@@ -34,6 +40,14 @@ namespace SafariView.ViewModel
         }
         #endregion
 
+        #region Window bindings
+        public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
+        public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
+        public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
+        public string LoadGamePage { get { return loadGamePage!; } private set { loadGamePage = value; OnPropertyChanged(); } }
+        public string OptionName { get { return optionName!; } private set { optionName = value; OnPropertyChanged(); } }
+        #endregion
+
         #region Properties
         public int Money { get { return money; } set {  money = value; OnPropertyChanged(); } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
@@ -43,6 +57,10 @@ namespace SafariView.ViewModel
         public DelegateCommand SaveGameCommand;
         public DelegateCommand LoadGameCommand;
         public DelegateCommand ExitGameCommand { get; private set; }
+        public DelegateCommand NewGamePageCommand { get; private set; }
+        public DelegateCommand LoadGamePageCommand { get; private set; }
+        public DelegateCommand BackCommand { get; private set; }
+        public DelegateCommand CreditsCommand { get; private set; }
         public DelegateCommand ClickedCanvas;
         public DelegateCommand ClickedShopIcon;
         public DelegateCommand ChangedGameSpeed;
@@ -67,10 +85,21 @@ namespace SafariView.ViewModel
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
+            NewGamePageCommand = new DelegateCommand((param) => OnNewGamePageClicked());
+            LoadGamePageCommand = new DelegateCommand((param) => OnLoadPageClicked());
+            BackCommand = new DelegateCommand((param) => OnBackClicked());
+            CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
 
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
             model.GameOver += new EventHandler<bool>(Model_GameOver);
+
+            //Set window bindings
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            LoadGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            OptionName = "SAFARI";
         }
         #endregion
 
@@ -103,6 +132,33 @@ namespace SafariView.ViewModel
         private void OnGameExit()
         {
             ExitGame?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnNewGamePageClicked()
+        {
+            IndexPage = "Hidden";
+            NewGamePage = "Visible";
+            OptionName = "New Game";
+        }
+        private void OnBackClicked()
+        {
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            LoadGamePage = "Hidden";
+            OptionName = "SAFARI";
+        }
+        private void OnCreditsClicked()
+        {
+            IndexPage = "Hidden";
+            CreditsPage = "Visible";
+            OptionName = "Credits";
+        }
+        private void OnLoadPageClicked()
+        {
+            IndexPage = "Hidden";
+            LoadGamePage = "Visible";
+            OptionName = "Load Game";
         }
         #endregion
 
