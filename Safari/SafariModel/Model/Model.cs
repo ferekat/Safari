@@ -1,4 +1,5 @@
-﻿using SafariModel.Persistence;
+﻿using SafariModel.Model.Tiles;
+using SafariModel.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;

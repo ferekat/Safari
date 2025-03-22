@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.AbstractEntity
 {
     public class Animal : MovingEntity
     {
@@ -37,10 +37,10 @@ namespace SafariModel.Model
         #region Constructor
         protected Animal(int x, int y, int age, int health, int hunger, int thrist) : base(x, y)
         {
-            this.Age = age;
-            this.Hunger = hunger;
-            this.Thirst = thrist;
-            this.Health = health;
+            Age = age;
+            Hunger = hunger;
+            Thirst = thrist;
+            Health = health;
             Action = AnimalActions.Resting;
 
             exploredFoodPlaces = new List<Point>();
@@ -50,7 +50,7 @@ namespace SafariModel.Model
         #endregion
 
         #region Methods
-        
+
 
         protected void SearchForFood()
         {

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.AbstractEntity
 {
     public class Entity
     {
@@ -15,7 +15,7 @@ namespace SafariModel.Model
         public int X { get { return x; } }
         public int Y { get { return y; } }
 
-        protected Entity(int x, int y) 
+        protected Entity(int x, int y)
         {
             this.x = x;
             this.y = y;

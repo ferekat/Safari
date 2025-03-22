@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.AbstractEntity
 {
     public class MovingEntity : Entity
     {
@@ -14,7 +14,7 @@ namespace SafariModel.Model
         protected bool isMoving;
 
         public int Speed { get { return speed; } }
-        public int Range { get { return range; } } 
+        public int Range { get { return range; } }
         public bool IsMoving { get { return isMoving; } }
         protected MovingEntity(int x, int y) : base(x, y)
         {

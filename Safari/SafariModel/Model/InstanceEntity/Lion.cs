@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.InstanceEntity
 {
-    public class Leopard : Carnivore
+    public class Lion : Carnivore
     {
         #region Constructor
-        public Leopard(int x, int y) : base(x, y, 0, 200, 250, 200)
+        public Lion(int x, int y) : base(x, y, 0, 300, 200, 150)
         {
 
         }

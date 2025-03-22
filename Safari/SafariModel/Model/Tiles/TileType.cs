@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.Tiles
 {
     public enum TileType
     {
-        EMPTY,HILL,WATER,ENTRANCE,EXIT,FENCE,GRASS,BARREN
+        EMPTY, HILL, WATER, ENTRANCE, EXIT, FENCE, GRASS, BARREN
     }
 }

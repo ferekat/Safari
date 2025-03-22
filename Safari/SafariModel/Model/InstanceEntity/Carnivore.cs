@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SafariModel.Model.AbstractEntity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SafariModel.Model
+namespace SafariModel.Model.InstanceEntity
 {
     public class Carnivore : Animal
     {
