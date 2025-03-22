@@ -12,39 +12,32 @@ namespace SafariModel.Model.Tiles
         private int i;
         private int j;
         private TileType tileType;
-        private bool isRoad;
-        private bool isOccupied;
+        private TileCondition tileCondition;
+       
 
         public Tile(int i, int j)
         {
             this.i = i;
             this.j = j;
             tileType = TileType.EMPTY;
-            isRoad = false;
-            isOccupied = false;
+            tileCondition = TileCondition.EMPTY;
         }
 
         public void SetType(TileType tileType)
         {
             this.tileType = tileType;
         }
-        public void BuildRoad()
+        public void SetCondition(TileCondition tileCondition)
         {
-            isRoad = true;
+            this.tileCondition = tileCondition;
         }
-        public void BuildLake()
-        {
-            SetType(TileType.WATER);
-        }
-        public void Occupy()
-        {
-            isOccupied = true;
-        }
-        public void Release()
-        {
-            isOccupied = false;
-        }
-
-
+        //public void BuildRoad()
+        //{
+        //    tileCondition = TileCondition.IS_ROAD;
+        //}
+        //public void BuildLake()
+        //{
+        //    SetType(TileType.WATER);
+        //}
     }
 }
