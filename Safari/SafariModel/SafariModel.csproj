@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Model\AbstractEntity\" />
     <Folder Include="Model\InstanceEntity\" />
-    <Folder Include="Model\Tiles\" />
   </ItemGroup>
 
 </Project>

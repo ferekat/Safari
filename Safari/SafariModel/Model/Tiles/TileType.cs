@@ -8,6 +8,6 @@ namespace SafariModel.Model.Tiles
 {
     public enum TileType
     {
-        EMPTY, HILL, WATER, ENTRANCE, EXIT, FENCE, GRASS, BARREN
+        EMPTY,  GROUND ,WATER, ENTRANCE, EXIT, FENCE, GRASS_GROUND
     }
 }
