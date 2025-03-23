@@ -8,16 +8,20 @@ namespace SafariModel.Model.AbstractEntity
 {
     public class Plant : Entity
     {
+        #region Private Fields
         private int regrowthTime;
         private bool canBeEaten;
+        #endregion
 
+        #region Properties
         public int RegrowthTime { get { return regrowthTime; } }
-        public bool CanBeEaten { get { return canBeEaten; } }
-
+        public bool CanBeEaten { get { return canBeEaten; } protected set { canBeEaten = value; } }
+        #endregion
+        #region Constructor
         public Plant(int x, int y, int regrowthTime) : base(x, y)
         {
-            this.regrowthTime = regrowthTime;
-            canBeEaten = true;
+            CanBeEaten = true;
         }
+        #endregion
     }
 }
