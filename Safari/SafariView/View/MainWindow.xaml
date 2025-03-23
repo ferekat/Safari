@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
         Title="Safari" 
         FontFamily="Rockwell">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.08*" />
@@ -123,4 +123,5 @@
             </Border>
         </Grid>
     </Grid>
+    </ScrollViewer>
 </Window>
