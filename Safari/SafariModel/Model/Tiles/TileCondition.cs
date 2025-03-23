@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.Tiles
 {
-    public enum TileType
+    public enum TileCondition
     {
-        EMPTY, HILL, GROUND ,WATER, ENTRANCE, EXIT, FENCE, GRASS_GROUND
+        EMPTY,IS_ROAD,IS_SMALL_BRIDGE,IS_LARGE_BRIDGE
     }
 }
