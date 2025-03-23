@@ -13,7 +13,8 @@ namespace SafariView
     {
 
         #region Private fields
-        private LobbyWindow? window;
+        private LobbyWindow? lobbyWindow;
+        private MainWindow? mainWindow;
         private ViewModel.ViewModel? viewModel;
         private Model? model;
         #endregion
@@ -32,16 +33,23 @@ namespace SafariView
 
             viewModel = new ViewModel.ViewModel(model);
             viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
+            viewModel.StartGame += new EventHandler(ViewModel_GameStart);
 
-            window = new LobbyWindow();
-            window.DataContext = viewModel;
+            lobbyWindow = new LobbyWindow();
+            mainWindow = new MainWindow();
+            mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
 
-            window.Show();
+            lobbyWindow.Show();
         }
 
         private void ViewModel_GameExit(object? sender, System.EventArgs e)
         {
             Shutdown();
+        }
+        private void ViewModel_GameStart(object? sender, System.EventArgs e)
+        {
+            lobbyWindow!.Close();
+            mainWindow!.Show();
         }
         #endregion
     }
