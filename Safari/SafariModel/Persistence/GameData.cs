@@ -25,7 +25,7 @@ namespace SafariModel.Persistence
         public GameData()
         {
             //TODO: Finish constructor
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

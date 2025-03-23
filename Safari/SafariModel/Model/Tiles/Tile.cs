@@ -8,18 +8,28 @@ namespace SafariModel.Model.Tiles
 {
     public class Tile
     {
-        private static int TILESIZE = 50;
+        public static readonly int TILESIZE = 50;
         private int i;
         private int j;
         private TileType tileType;
         private TileCondition tileCondition;
-       
+
+        public int I { get { return i; } }
+        public int J { get { return j; } }
+
+        public TileType Type { get { return tileType; } }
+
 
         public Tile(int i, int j)
         {
             this.i = i;
             this.j = j;
-            tileType = TileType.EMPTY;
+            tileType = TileType.GROUND;
+            //Csak tesztelésre!!!
+            Random r = new Random();
+            tileType = r.Next(2) == 0 ? TileType.GROUND : TileType.HILL;
+            //
+
             tileCondition = TileCondition.EMPTY;
         }
 

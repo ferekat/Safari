@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SafariView"
+        xmlns:vm="clr-namespace:SafariView.ViewModel"
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
@@ -11,6 +12,34 @@
         Title="Safari" 
         FontFamily="Rockwell">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!--> Tileok megjelentítése</!-->
+        <vm:TileCanvas x:Name="tileCanvas" Panel.ZIndex="0"/>
+
+        <!--> Entityk megjelenítése</!-->
+        <ItemsControl Panel.ZIndex="1" ItemsSource="{Binding RenderedEntities}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Background="Transparent">
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Rectangle Width="30" Height="30" Fill="{Binding Col}" Margin="{Binding Margin}">
+                    </Rectangle>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--> UI elemek</!-->
+        <Grid Panel.ZIndex="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="0.08*" />
             <RowDefinition Height="0.77*" />
@@ -122,5 +151,6 @@
                 </Grid>
             </Border>
         </Grid>
+    </Grid>
     </Grid>
 </Window>
