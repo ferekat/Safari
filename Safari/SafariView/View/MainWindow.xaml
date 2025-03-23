@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
         Title="Safari" 
         FontFamily="Rockwell">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.08*" />
@@ -27,10 +27,10 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" Background="#FFC3DBAD" Margin="8">
                     <StackPanel Orientation="Vertical" Margin="5,0,20,0">
-                        <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">D</TextBlock>
-                        <TextBlock HorizontalAlignment="Left" FontSize="20px">▶</TextBlock>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="20,0,20,0">
+                            <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">D</TextBlock>
+                            <TextBlock HorizontalAlignment="Left" FontSize="20px">▶</TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Margin="20,0,20,0">
                         <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">W</TextBlock>
                         <TextBlock HorizontalAlignment="Center" FontSize="20px">▶▶</TextBlock>
                     </StackPanel>
@@ -43,84 +43,85 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2" Background="#FF6C5200" HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.17*" />
-                <ColumnDefinition Width="0.66*"/>
-                <ColumnDefinition Width="0.17*"/>
-            </Grid.ColumnDefinitions>
-            <!--To be replaced by the actual minimap -->
-            <Border Grid.Column="0" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,10,10" HorizontalAlignment="Left">
-                <TextBlock Background="Green" Padding="80,0">Minimap</TextBlock>
-            </Border>
-            <!--To be replaced by the actual minimap -->
-            <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.9*" />
-                    <ColumnDefinition Width="0.1*"/>
+                    <ColumnDefinition Width="0.17*" />
+                    <ColumnDefinition Width="0.66*"/>
+                    <ColumnDefinition Width="0.17*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Road</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lake</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Bridge</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Gazelle</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Giraffe</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lion</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Leopard</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Cactus</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Greasewood</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Palm tree</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Jeep</Button>
-                    <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Guard</Button>
-                </StackPanel>
-                <Button HorizontalAlignment="Right" Height="60" Width="60" Background="#FFFFD243" Grid.Column="1" FontSize="20px" FontWeight="Bold">Sell</Button>
-            </Grid>
-            <Border Grid.Column="2" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,0,0" HorizontalAlignment="Right">
-                <Grid Background="#FFC3DBAD">
-                    <Grid.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="FontSize" Value="15"/>
-                            <Setter Property="Margin" Value="5,2,10,0"/>
-                        </Style>
-                    </Grid.Resources>
-
+                <!--To be replaced by the actual minimap -->
+                <Border Grid.Column="0" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,10,10" HorizontalAlignment="Left">
+                    <TextBlock Background="Green" Padding="80,0">Minimap</TextBlock>
+                </Border>
+                <!--To be replaced by the actual minimap -->
+                <Grid Grid.Column="1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="0.9*" />
+                        <ColumnDefinition Width="0.1*"/>
                     </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Visitors" Grid.Row="0" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="0" Grid.Column="1"/>
-
-                    <TextBlock Text="Gazelle" Grid.Row="1" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="1" Grid.Column="1"/>
-
-                    <TextBlock Text="Giraffe" Grid.Row="2" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="2" Grid.Column="1"/>
-
-                    <TextBlock Text="Lion" Grid.Row="3" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="3" Grid.Column="1"/>
-
-                    <TextBlock Text="Leopard" Grid.Row="4" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="4" Grid.Column="1"/>
-
-                    <TextBlock Text="Jeep" Grid.Row="5" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="5" Grid.Column="1"/>
-
-                    <TextBlock Text="Guard" Grid.Row="6" Grid.Column="0"/>
-                    <TextBlock Text="0" Grid.Row="6" Grid.Column="1"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Road</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lake</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Bridge</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Gazelle</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Giraffe</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lion</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Leopard</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Cactus</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Greasewood</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Palm tree</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Jeep</Button>
+                        <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Guard</Button>
+                    </StackPanel>
+                    <Button HorizontalAlignment="Right" Height="60" Width="60" Background="#FFFFD243" Grid.Column="1" FontSize="20px" FontWeight="Bold">Sell</Button>
                 </Grid>
-            </Border>
+                <Border Grid.Column="2" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,0,0" HorizontalAlignment="Right">
+                    <Grid Background="#FFC3DBAD">
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="15"/>
+                                <Setter Property="Margin" Value="5,2,10,0"/>
+                            </Style>
+                        </Grid.Resources>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Visitors" Grid.Row="0" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="0" Grid.Column="1"/>
+
+                        <TextBlock Text="Gazelle" Grid.Row="1" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="1" Grid.Column="1"/>
+
+                        <TextBlock Text="Giraffe" Grid.Row="2" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="2" Grid.Column="1"/>
+
+                        <TextBlock Text="Lion" Grid.Row="3" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="3" Grid.Column="1"/>
+
+                        <TextBlock Text="Leopard" Grid.Row="4" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="4" Grid.Column="1"/>
+
+                        <TextBlock Text="Jeep" Grid.Row="5" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="5" Grid.Column="1"/>
+
+                        <TextBlock Text="Guard" Grid.Row="6" Grid.Column="0"/>
+                        <TextBlock Text="0" Grid.Row="6" Grid.Column="1"/>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </Window>
