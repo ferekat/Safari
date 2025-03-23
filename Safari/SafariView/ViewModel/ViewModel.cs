@@ -96,6 +96,7 @@ namespace SafariView.ViewModel
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
             model.GameOver += new EventHandler<bool>(Model_GameOver);
+            model.NewGameStarted += new EventHandler(Model_NewGameStarted);
 
             //Set window bindings
             IndexPage = "Visible";
@@ -103,6 +104,11 @@ namespace SafariView.ViewModel
             LoadGamePage = "Hidden";
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
+        }
+
+        private void Model_NewGameStarted(object? sender, EventArgs e)
+        {
+            //update renderers
         }
         #endregion
 
@@ -158,6 +164,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
+            model.NewGame();
             StartGame?.Invoke(this, EventArgs.Empty);
 
         }
