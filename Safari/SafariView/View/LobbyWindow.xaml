@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SafariView.View"
         mc:Ignorable="d"
-        Title="Lobby" Height="450" Width="800">
+        Title="Lobby" Height="450" Width="800"
+        FontFamily="Rockwell">
     <Grid Background="#FFA6CAEC">
         <Grid.RowDefinitions>
             <RowDefinition Height="0.04*" />
@@ -23,7 +24,7 @@
         </Grid.ColumnDefinitions>
         <Border Grid.Row="1" Grid.Column="1" BorderThickness="10" BorderBrush="#FF13501B" Grid.RowSpan="1" Background="#FFC3DBAD" CornerRadius="5">
             <Viewbox>
-                <TextBlock FontSize="60px" TextAlignment="Center" FontFamily="Leelawadee" VerticalAlignment="Center" Foreground="#FF926F00" Text="{Binding OptionName}"></TextBlock>
+                <TextBlock FontSize="60px" TextAlignment="Center" VerticalAlignment="Center" Foreground="#FF926F00" Text="{Binding OptionName}"></TextBlock>
             </Viewbox>
         </Border>
         <Border Grid.Row="2" Grid.Column="1" BorderBrush="DimGray" BorderThickness="10,0,10,0" Margin="50,0,50,0" />
@@ -89,7 +90,7 @@
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button FontSize="30px" Background="#FF6C5200" Foreground="White" BorderThickness="8" BorderBrush="#FF262626" Margin="95,0,0,0">Start
+                    <Button FontSize="30px" Background="#FF6C5200" Foreground="White" BorderThickness="8" BorderBrush="#FF262626" Margin="95,0,0,0" Command="{Binding StartCommand}">Start
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="5" />

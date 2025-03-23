@@ -60,6 +60,7 @@ namespace SafariView.ViewModel
         public DelegateCommand NewGamePageCommand { get; private set; }
         public DelegateCommand LoadGamePageCommand { get; private set; }
         public DelegateCommand BackCommand { get; private set; }
+        public DelegateCommand StartCommand { get; private set; }
         public DelegateCommand CreditsCommand { get; private set; }
         public DelegateCommand ClickedCanvas;
         public DelegateCommand ClickedShopIcon;
@@ -68,6 +69,7 @@ namespace SafariView.ViewModel
 
         #region EventHandlers
         public event EventHandler? ExitGame;
+        public event EventHandler? StartGame;
         #endregion
 
         #region Constructor
@@ -88,6 +90,7 @@ namespace SafariView.ViewModel
             NewGamePageCommand = new DelegateCommand((param) => OnNewGamePageClicked());
             LoadGamePageCommand = new DelegateCommand((param) => OnLoadPageClicked());
             BackCommand = new DelegateCommand((param) => OnBackClicked());
+            StartCommand = new DelegateCommand((param) => OnStartClicked());
             CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
 
             //Subscribe to model's events
@@ -147,6 +150,16 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
+        }
+        private void OnStartClicked()
+        {
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            LoadGamePage = "Hidden";
+            OptionName = "SAFARI";
+            StartGame?.Invoke(this, EventArgs.Empty);
+
         }
         private void OnCreditsClicked()
         {
