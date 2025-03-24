@@ -1,6 +1,7 @@
 ﻿using SafariModel.Model.Tiles;
 using SafariModel.Model.Utils;
 using SafariModel.Persistence;
+using SafariModel.Model.InstanceEntity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,11 @@ namespace SafariModel.Model
 {
     public class Model
     {
-        private static readonly int MAP_SIZE = 100;
-        private static readonly int STARTING_MONEY = 10000;
+        
+        public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
-        private EconomyHandler economyHandler = new(STARTING_MONEY);
-        private EntityHandler entityHandler = new();
 
-
+        private EntityHandler entityHandler;
 
         #region Events
         public event EventHandler NewGameStarted;
@@ -28,15 +27,34 @@ namespace SafariModel.Model
 
         public Model()
         {
-            tileMap = new Tile[MAP_SIZE,MAP_SIZE];
-        }
-        #region Event methods
-        public void NewGame()
-        {
-            //tilemap feltöltése
+            entityHandler = new EntityHandler();
 
-            OnNewGameStarted();
+            tileMap = new Tile[MAPSIZE,MAPSIZE];
+            for (int i = 0; i < MAPSIZE; i++)
+            {
+                for (int j = 0; j < MAPSIZE; j++)
+                {
+                    tileMap[i, j] = new Tile(i, j);
+                }
+            }
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Lion(100, 200));
+            entityHandler.LoadEntity(new Leopard(300, 234));
+
+            entityHandler.LoadEntity(new Gazelle(1200, 500));
+            entityHandler.LoadEntity(new Giraffe(1500, 1000));
         }
+
+        #region Tick update
+        public void UpdatePerTick()
+        {
+            //Ide jön gamelogic
+            entityHandler.TickEntities();
+
+            InvokeTickPassed();
+        }
+        #endregion
 
         private void OnNewGameStarted()
         {
@@ -45,8 +63,9 @@ namespace SafariModel.Model
         private void InvokeTickPassed()
         {
             GameData data = new GameData();
-            //Copy game state to data
-            //...
+            //Itt lehet esetleg klónozni jobb lenne az adatokat?
+            data.tileMap = tileMap;
+            data.entities = entityHandler.GetEntities();
             TickPassed?.Invoke(this, data);
         }
 

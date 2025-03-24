@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using SafariView.ViewModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +17,15 @@ namespace SafariView
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(List<TileRender> renderedTiles)
         {
             InitializeComponent();
+            tileCanvas.tiles = renderedTiles;
+        }
+
+        public void ShowRender()
+        {
+            tileCanvas.InvalidateVisual();
         }
     }
 }

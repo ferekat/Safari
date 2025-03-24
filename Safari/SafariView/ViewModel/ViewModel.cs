@@ -1,4 +1,6 @@
 ﻿using SafariModel.Model;
+using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.Tiles;
 using SafariModel.Persistence;
 using System;
 using System.Collections.Generic;
@@ -7,20 +9,31 @@ using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.CodeDom;
+using SafariModel.Model.InstanceEntity;
 
 namespace SafariView.ViewModel
 {
     public class ViewModel : ViewModelBase
     {
         #region Private fields
-        private ObservableCollection<TileRender> renderedTiles;
-        private ObservableCollection<EntityRender> renderedEntities;
+        private List<TileRender> RenderedTiles;
+        public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
         private int money;
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
+        //Mennyi tile lesz látható a képernyőn
+        private readonly int HORIZONTALTILECOUNT = 39;
+        private readonly int VERTICALTILECOUNT = 18;
+
+        private readonly int HORIZONTALCAMERACHANGERANGE = 150;
+        private readonly int VERTICALCAMERACHANGERANGE = 200;
+
         private DispatcherTimer tickTimer;
         private string? indexPage;
         private string? newGamePage;
@@ -29,6 +42,27 @@ namespace SafariView.ViewModel
         private string? optionName;
 
         private Model model;
+        #endregion
+
+        #region Tile brushes
+        private static SolidColorBrush WaterBrush = new SolidColorBrush(Color.FromRgb(55, 55, 255));
+        private static SolidColorBrush GroundBrush = new SolidColorBrush(Color.FromRgb(153, 76, 0));
+        private static SolidColorBrush EmptyBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+        private static SolidColorBrush FenceBrush = new SolidColorBrush(Color.FromRgb(128, 128, 128));
+        private static SolidColorBrush HillBrush = new SolidColorBrush(Color.FromRgb(0, 102, 0));
+        private static SolidColorBrush EntranceBrush = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+        private static SolidColorBrush ExitBrush = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+        #endregion
+
+        #region Entity brushes
+        private static Dictionary<Type, Brush> entityBrushes = new Dictionary<Type, Brush>() 
+        {
+            {typeof(Lion),new SolidColorBrush(Color.FromRgb(204,204,0)) },
+            {typeof(Leopard),new SolidColorBrush(Color.FromRgb(212,170,33)) },
+            {typeof(Gazelle),new SolidColorBrush(Color.FromRgb(189,168,98)) },
+            { typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))}
+        };
+
         #endregion
 
         #region GameSpeed enum
@@ -70,15 +104,19 @@ namespace SafariView.ViewModel
         #region EventHandlers
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
+        public event EventHandler? FinishedRendering;
         #endregion
 
         #region Constructor
-        public ViewModel(Model model)
+        public ViewModel(Model model, List<TileRender> renderedTiles)
         {
             this.model = model;
-            renderedEntities = new ObservableCollection<EntityRender>();
-            renderedTiles = new ObservableCollection<TileRender>();
+            RenderedEntities = new ObservableCollection<EntityRender>();
+            this.RenderedTiles = renderedTiles;
             tickTimer = new DispatcherTimer();
+            tickTimer.Tick += new EventHandler(OnGameTimerTick);
+            tickTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
+            tickTimer.Start();
 
             //Initialize commands
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
@@ -185,12 +223,101 @@ namespace SafariView.ViewModel
         #region Model event handlers
         private void Model_TickPassed(object? sender, GameData data)
         {
-            throw new NotImplementedException();
+            Point mouse = Mouse.GetPosition(Application.Current.MainWindow);
+            if (mouse.X > 0 && mouse.X < HORIZONTALCAMERACHANGERANGE) cameraX -= 10;
+            if (mouse.X > HORIZONTALTILECOUNT * Tile.TILESIZE - HORIZONTALCAMERACHANGERANGE && mouse.X < HORIZONTALTILECOUNT * Tile.TILESIZE) cameraX += 10;
+            if (mouse.Y > 0 && mouse.Y < VERTICALCAMERACHANGERANGE) cameraY -= 10;
+            if (mouse.Y > VERTICALTILECOUNT * Tile.TILESIZE - VERTICALCAMERACHANGERANGE && mouse.Y < VERTICALTILECOUNT * Tile.TILESIZE) cameraY += 10;
+
+            RenderGameArea(data.tileMap, data.entities);
         }
 
         private void Model_GameOver(object? sender, bool playerWin)
         {
             throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Private methods
+        private void RenderGameArea(Tile[,] tileMap,List<Entity> entities)
+        {
+
+            //render tiles
+
+            if (cameraX < 0) cameraX = 0;
+            if (cameraY < 0) cameraY = 0;
+
+            if (cameraX > (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE) cameraX = (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE;
+            if (cameraY > (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE) cameraY = (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE;
+
+
+            int cameraXLeft = cameraX - Tile.TILESIZE;
+            int cameraYUp = cameraY - Tile.TILESIZE;
+
+            int tileMapLeft = cameraXLeft / Tile.TILESIZE;
+            int tileMapTop = cameraYUp / Tile.TILESIZE;
+
+
+            if (tileMapLeft < 0) tileMapLeft = 0;
+            if (tileMapTop < 0) tileMapTop = 0;
+
+            RenderedTiles.Clear();
+
+            for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 2, Model.MAPSIZE); j++)
+            {
+                for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, Model.MAPSIZE); i++)
+                {
+                    Tile t = tileMap[i, j];
+
+                    int tileScaledX = t.I * Tile.TILESIZE;
+                    int tileScaledY = t.J * Tile.TILESIZE;
+
+                    //Convert to real coordinates and add to render list
+                    int realX = tileScaledX - cameraXLeft - Tile.TILESIZE;
+                    int realY = tileScaledY - cameraYUp - Tile.TILESIZE;
+
+                    Brush? b = null;
+
+                    //Get type of tile
+                    switch (t.Type)
+                    {
+                        case TileType.EMPTY: b = EmptyBrush; break;
+                        case TileType.GROUND: b = GroundBrush; break;
+                        case TileType.WATER: b = WaterBrush; break;
+                        case TileType.HILL: b = HillBrush; break;
+                        case TileType.ENTRANCE: b = EntranceBrush; break;
+                        case TileType.EXIT: b = ExitBrush; break;
+                    }
+
+                    TileRender tile = new TileRender(realX, realY,b!);
+
+                    RenderedTiles.Add(tile);
+                }
+            }
+
+            //render entities
+
+            RenderedEntities.Clear();
+
+            foreach (Entity e in entities)
+            {
+                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 1) * Tile.TILESIZE))
+                {   
+                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()]));
+                }
+            }
+
+            FinishedRender();
+        }
+
+        private void OnGameTimerTick(object? sender, EventArgs e)
+        {
+            model.UpdatePerTick();
+        }
+
+        private void FinishedRender()
+        {
+            FinishedRendering?.Invoke(this,EventArgs.Empty);
         }
         #endregion
     }
