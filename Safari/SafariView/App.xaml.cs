@@ -1,8 +1,10 @@
 ﻿using SafariModel.Model;
 using SafariView.View;
+using SafariView.ViewModel;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Windows.Input;
 
 namespace SafariView
 {
@@ -30,16 +32,24 @@ namespace SafariView
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
             model = new Model();
+            List<TileRender> renderedTiles = new List<TileRender>();
 
-            viewModel = new ViewModel.ViewModel(model);
+            viewModel = new ViewModel.ViewModel(model,renderedTiles);
             viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
             viewModel.StartGame += new EventHandler(ViewModel_GameStart);
+            viewModel.FinishedRendering += new EventHandler(ViewModel_FinishedRendering);
 
             lobbyWindow = new LobbyWindow();
-            mainWindow = new MainWindow();
+            
+            mainWindow = new MainWindow(renderedTiles);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
 
             lobbyWindow.Show();
+        }
+
+        private void ViewModel_FinishedRendering(object? sender, EventArgs e)
+        {
+            mainWindow!.ShowRender();
         }
 
         private void ViewModel_GameExit(object? sender, System.EventArgs e)

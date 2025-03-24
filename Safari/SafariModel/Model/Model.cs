@@ -1,5 +1,7 @@
 ﻿using SafariModel.Model.Tiles;
+using SafariModel.Model.Utils;
 using SafariModel.Persistence;
+using SafariModel.Model.InstanceEntity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +12,11 @@ namespace SafariModel.Model
 {
     public class Model
     {
-
-
-
-        private const int MAPSIZE = 30;
+        
+        public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
+
+        private EntityHandler entityHandler;
 
         #region Events
         public event EventHandler<GameData>? TickPassed;
@@ -23,6 +25,8 @@ namespace SafariModel.Model
 
         public Model()
         {
+            entityHandler = new EntityHandler();
+
             tileMap = new Tile[MAPSIZE,MAPSIZE];
             for (int i = 0; i < MAPSIZE; i++)
             {
@@ -31,14 +35,32 @@ namespace SafariModel.Model
                     tileMap[i, j] = new Tile(i, j);
                 }
             }
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Lion(100, 200));
+            entityHandler.LoadEntity(new Leopard(300, 234));
+
+            entityHandler.LoadEntity(new Gazelle(1200, 500));
+            entityHandler.LoadEntity(new Giraffe(1500, 1000));
         }
+
+        #region Tick update
+        public void UpdatePerTick()
+        {
+            //Ide jön gamelogic
+            entityHandler.TickEntities();
+
+            InvokeTickPassed();
+        }
+        #endregion
 
         #region Event methods
         private void InvokeTickPassed()
         {
             GameData data = new GameData();
-            //Copy game state to data
-            //...
+            //Itt lehet esetleg klónozni jobb lenne az adatokat?
+            data.tileMap = tileMap;
+            data.entities = entityHandler.GetEntities();
             TickPassed?.Invoke(this, data);
         }
 

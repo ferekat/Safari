@@ -20,7 +20,12 @@ namespace SafariModel.Model.Utils
 
         public void LoadEntity(Entity entity)
         {
+            entities.Add(entity);
 
+            if (entity is Carnivore c) carnivores.Add(c);
+            if (entity is Herbivore h) herbivores.Add(h);
+            if (entity is Hunter hu) hunters.Add(hu);
+            if(entity is Guard g) guards.Add(g);
         }
         public void RemoveEntity(Entity entity)
         {
