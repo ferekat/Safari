@@ -75,7 +75,7 @@ namespace SafariModel.Model
             //Decide if the player won or not
             GameOver?.Invoke(this, win);
         }
-        #endregion
+       
 
     }
 }

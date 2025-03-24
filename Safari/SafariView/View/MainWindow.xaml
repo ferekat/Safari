@@ -20,30 +20,49 @@
             </Grid.RowDefinitions>
 
             <!--> Tileok megjelentítése</!-->
-            <vm:TileCanvas x:Name="tileCanvas" Panel.ZIndex="0"/>
+            <Grid Panel.ZIndex="0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding TopRowHeightString}"  />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="{Binding BottomRowHeightString}"/>
+                </Grid.RowDefinitions>
+
+                <vm:TileCanvas Background="{Binding BackgroundBrush,Mode=OneTime}" Grid.Row="1" x:Name="tileCanvas"/>
+
+            </Grid>
 
             <!--> Entityk megjelenítése</!-->
-            <ItemsControl Panel.ZIndex="1" ItemsSource="{Binding RenderedEntities}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas Background="Transparent">
-                        </Canvas>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Rectangle Width="30" Height="30" Fill="{Binding Col}" Margin="{Binding Margin}">
-                        </Rectangle>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <Grid Panel.ZIndex="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding TopRowHeightString}"  />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="{Binding BottomRowHeightString}"/>
+                </Grid.RowDefinitions>
+
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Background="Transparent">
+                            </Canvas>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Rectangle Width="30" Height="30" Fill="{Binding Col}" Margin="{Binding Margin}">
+                            </Rectangle>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
 
             <!--> UI elemek</!-->
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.08*" />
-                    <RowDefinition Height="0.77*" />
-                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="{Binding TopRowHeightString}"  />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
                 <Grid Background="#FF6C5200" Grid.Row="0">
                     <Grid.ColumnDefinitions>
