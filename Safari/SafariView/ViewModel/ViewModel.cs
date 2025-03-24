@@ -202,7 +202,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
-            model.NewGame();
+         
             StartGame?.Invoke(this, EventArgs.Empty);
 
         }
