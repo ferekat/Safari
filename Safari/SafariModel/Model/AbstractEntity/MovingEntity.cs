@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -21,10 +22,13 @@ namespace SafariModel.Model.AbstractEntity
         protected int range;
         protected bool isMoving;
 
-        public float Speed { get { return speed; } }
+        public float Speed { get { return speed; } protected set { speed = value; CalculateMovementVector(); } }
         public int Range { get { return range; } }
         public bool IsMoving { get { return isMoving; } }
+
+        private Point CurrentTarget { get { return currentTarget; }  set { currentTarget = value; CalculateMovementVector(); } }
         protected MovingEntity(int x, int y) : base(x, y)
+
         {
             targetPoints = new Queue<Point>();
             movementVector = new Vector2();
@@ -37,11 +41,9 @@ namespace SafariModel.Model.AbstractEntity
         {
             targetPoints.Clear();
             //Calculate route with pathfinding algorithm and put resulting points into targetPoints
-            currentTarget = p;
+            CurrentTarget = p;
 
             isMoving = true;
-
-            CalculateMovementVector();
         }
 
         private void CalculateMovementVector()
@@ -73,8 +75,7 @@ namespace SafariModel.Model.AbstractEntity
 
                 if (targetPoints.Count > 0)
                 {
-                    currentTarget = targetPoints.Dequeue();
-                    CalculateMovementVector();
+                    CurrentTarget = targetPoints.Dequeue();
                 }
                 else //reached initial target
                 {
