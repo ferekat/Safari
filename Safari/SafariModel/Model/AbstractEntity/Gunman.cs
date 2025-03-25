@@ -34,5 +34,10 @@ namespace SafariModel.Model.AbstractEntity
         {
 
         }
+
+        protected override void EntityLogic()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

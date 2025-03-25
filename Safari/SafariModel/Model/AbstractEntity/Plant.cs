@@ -23,5 +23,12 @@ namespace SafariModel.Model.AbstractEntity
             CanBeEaten = true;
         }
         #endregion
+        #region Methods
+        public override void EntityTick()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

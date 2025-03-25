@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.InstanceEntity
 {
-    public class Carnivore : Animal
+    public abstract class Carnivore : Animal
     {
         #region Constructor
         protected Carnivore(int x, int y, int age, int health, int hunger, int thrist) : base(x, y, age, health, hunger, thrist)

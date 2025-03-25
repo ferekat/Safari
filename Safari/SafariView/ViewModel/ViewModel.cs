@@ -116,7 +116,6 @@ namespace SafariView.ViewModel
             tickTimer = new DispatcherTimer();
             tickTimer.Tick += new EventHandler(OnGameTimerTick);
             tickTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
-            tickTimer.Start();
 
             //Initialize commands
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
@@ -204,6 +203,7 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
          
             StartGame?.Invoke(this, EventArgs.Empty);
+            tickTimer.Start();
 
         }
         private void OnCreditsClicked()
@@ -301,6 +301,7 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
+                
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 1) * Tile.TILESIZE))
                 {   
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()]));

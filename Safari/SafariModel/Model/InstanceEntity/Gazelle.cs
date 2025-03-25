@@ -14,5 +14,12 @@ namespace SafariModel.Model.InstanceEntity
 
         }
         #endregion
+
+        #region Methods
+        protected override void AnimalLogic()
+        {
+            //állat specifikus logika
+        }
+        #endregion
     }
 }

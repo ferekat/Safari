@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.AbstractEntity
 {
-    public class MovingEntity : Entity
+    public abstract class MovingEntity : Entity
     {
         private Queue<Point> targetPoints;
         public Point currentTarget;
@@ -90,7 +90,9 @@ namespace SafariModel.Model.AbstractEntity
         public override void EntityTick()
         {
             if(isMoving) MoveTowardsTarget();
-            
+            EntityLogic();
         }
+
+        protected abstract void EntityLogic();
     }
 }

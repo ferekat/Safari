@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.AbstractEntity
 {
-    public class Entity
+    public abstract class Entity
     {
         protected int x;
         protected int y;
@@ -20,9 +21,6 @@ namespace SafariModel.Model.AbstractEntity
             this.x = x;
             this.y = y;
         }
-        public void EntityTick()
-        {
-
-        }
+        public abstract void EntityTick();
     }
 }
