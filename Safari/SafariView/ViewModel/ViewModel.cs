@@ -224,6 +224,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
+         
             StartGame?.Invoke(this, EventArgs.Empty);
 
         }
