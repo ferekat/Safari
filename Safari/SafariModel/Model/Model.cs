@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using SafariModel.Model.AbstractEntity;
+using System.Drawing;
 
 namespace SafariModel.Model
 {
@@ -20,7 +22,7 @@ namespace SafariModel.Model
         private EntityHandler entityHandler;
 
         #region Events
-        public event EventHandler NewGameStarted;
+        public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
         public event EventHandler<bool>? GameOver;
         #endregion
@@ -40,10 +42,10 @@ namespace SafariModel.Model
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Lion(100, 200));
-            entityHandler.LoadEntity(new Leopard(300, 234));
-
             entityHandler.LoadEntity(new Gazelle(1200, 500));
             entityHandler.LoadEntity(new Giraffe(1500, 1000));
+            entityHandler.LoadEntity(new Leopard(400, 384));
+
         }
 
         #region Tick update
