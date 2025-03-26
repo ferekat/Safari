@@ -28,8 +28,8 @@ namespace SafariView.ViewModel
         private int cameraX;
         private int cameraY;
         //Mennyi tile lesz látható a képernyőn
-        private readonly int HORIZONTALTILECOUNT = 39;
-        private readonly int VERTICALTILECOUNT = 18;
+        private readonly int HORIZONTALTILECOUNT = 38;
+        private readonly int VERTICALTILECOUNT = 16;
 
         private readonly int HORIZONTALCAMERACHANGERANGE = 150;
         private readonly int VERTICALCAMERACHANGERANGE = 200;
@@ -41,17 +41,26 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? optionName;
 
+        private string topRowHeightString;
+        private string bottomRowHeightString;
+        private float topRowHeightRelative;
+        private float bottomRowHeightRelative;
+
+
         private Model model;
         #endregion
 
         #region Tile brushes
-        private static SolidColorBrush WaterBrush = new SolidColorBrush(Color.FromRgb(55, 55, 255));
-        private static SolidColorBrush GroundBrush = new SolidColorBrush(Color.FromRgb(153, 76, 0));
-        private static SolidColorBrush EmptyBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-        private static SolidColorBrush FenceBrush = new SolidColorBrush(Color.FromRgb(128, 128, 128));
-        private static SolidColorBrush HillBrush = new SolidColorBrush(Color.FromRgb(0, 102, 0));
-        private static SolidColorBrush EntranceBrush = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-        private static SolidColorBrush ExitBrush = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+        private static Dictionary<TileType, Brush> tileBrushes = new Dictionary<TileType, Brush>()
+        {
+            {TileType.WATER, new SolidColorBrush(Color.FromRgb(55, 55, 255))},
+            { TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
+            { TileType.EMPTY,new SolidColorBrush(Color.FromRgb(0, 0, 0))},
+            { TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
+            { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
+            { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
+            { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
+        };
         #endregion
 
         #region Entity brushes
@@ -80,11 +89,18 @@ namespace SafariView.ViewModel
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
         public string LoadGamePage { get { return loadGamePage!; } private set { loadGamePage = value; OnPropertyChanged(); } }
         public string OptionName { get { return optionName!; } private set { optionName = value; OnPropertyChanged(); } }
+
+        public Brush BackgroundBrush { get { return tileBrushes[TileType.GROUND]; } }
+        public string TopRowHeightString { get { return topRowHeightString; } private set { topRowHeightString = value; OnPropertyChanged(); } }
+        public string BottomRowHeightString { get { return bottomRowHeightString; } private set { bottomRowHeightString = value; OnPropertyChanged(); } }
+
         #endregion
 
         #region Properties
         public int Money { get { return money; } set {  money = value; OnPropertyChanged(); } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
+        private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString() + "*"; } }
+        private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString() + "*"; } }
         #endregion
 
         #region Commands
@@ -142,11 +158,17 @@ namespace SafariView.ViewModel
             LoadGamePage = "Hidden";
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
+
+            TopRowHeightRelative = 0.08F;
+            BottomRowHeightRelative = 0.15F;
         }
 
         private void Model_NewGameStarted(object? sender, EventArgs e)
         {
-            //update renderers
+            CreditsPage = "Hidden";
+            LoadGamePage = "Hidden";
+            OptionName = "SAFARI";
+            StartGame?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 
@@ -263,7 +285,7 @@ namespace SafariView.ViewModel
 
             RenderedTiles.Clear();
 
-            for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 2, Model.MAPSIZE); j++)
+            for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, Model.MAPSIZE); j++)
             {
                 for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, Model.MAPSIZE); i++)
                 {
@@ -279,15 +301,7 @@ namespace SafariView.ViewModel
                     Brush? b = null;
 
                     //Get type of tile
-                    switch (t.Type)
-                    {
-                        case TileType.EMPTY: b = EmptyBrush; break;
-                        case TileType.GROUND: b = GroundBrush; break;
-                        case TileType.WATER: b = WaterBrush; break;
-                        case TileType.HILL: b = HillBrush; break;
-                        case TileType.ENTRANCE: b = EntranceBrush; break;
-                        case TileType.EXIT: b = ExitBrush; break;
-                    }
+                    b = tileBrushes[t.Type];
 
                     TileRender tile = new TileRender(realX, realY,b!);
 

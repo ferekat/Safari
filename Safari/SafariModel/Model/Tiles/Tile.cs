@@ -28,6 +28,7 @@ namespace SafariModel.Model.Tiles
             //Csak tesztelésre!!!
             Random r = new Random();
             tileType = r.Next(2) == 0 ? TileType.GROUND : TileType.HILL;
+            if (i == 0 || i == Model.MAPSIZE - 1 || j == 0 || j == Model.MAPSIZE - 1) tileType = TileType.FENCE;
             //
 
             tileCondition = TileCondition.EMPTY;
