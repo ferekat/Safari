@@ -12,11 +12,14 @@ namespace SafariModel.Model.Utils
     public class EconomyHandler
     {
         private int money;
-        public int Money { get; private set; }
+        public int Money { get { return money; } private set { money = value; } }
 
         private Dictionary<Type, int> entityCostTable = new Dictionary<Type, int>
         {
-            //entities and their costs
+            { typeof(Lion),200},
+            { typeof(Leopard),300},
+            { typeof(Gazelle),150},
+            { typeof(Giraffe),300}
         };
         private Dictionary<TileCondition, int> conditionTileCosts = new Dictionary<TileCondition, int>
         {
@@ -47,9 +50,12 @@ namespace SafariModel.Model.Utils
         {
             return entityCostTable[item];    
         }
-        public void BuyEntity(Type item)
+        public bool BuyEntity(Type item)
         {
-            money -= entityCostTable[item];
+            int cost = entityCostTable[item];
+            if (money < cost) return false;
+            money -= cost;
+            return true;
         }
         public void SellEntity(Type item)
         {

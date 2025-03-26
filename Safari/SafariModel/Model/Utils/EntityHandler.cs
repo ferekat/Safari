@@ -34,9 +34,22 @@ namespace SafariModel.Model.Utils
         }
         public void RemoveEntity(Entity entity)
         {
-
+            entities.Remove(entity);
+            if (entity is Herbivore h) herbivores.Remove(h);
+            if (entity is Carnivore c) carnivores.Remove(c);
+            if (entity is Hunter hu) hunters.Remove(hu);
+            if (entity is Guard g) guards.Remove(g);
         }
 
+        public Entity? GetEntityByID(int id)
+        {
+            Entity? e = null;
+            foreach (Entity entity in entities)
+            {
+                if(entity.ID == id) e = entity;
+            }
+            return e;
+        }
         public int GetEntityIDFromCoords(int x, int y)
         {
             foreach(Entity entity in entities) 

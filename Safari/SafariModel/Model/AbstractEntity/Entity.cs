@@ -17,6 +17,8 @@ namespace SafariModel.Model.AbstractEntity
 
         private static int CurrentID = 0;
 
+        private static Dictionary<string, Type> TypeNames = new Dictionary<string, Type>();
+
         public int X { get { return x; } }
         public int Y { get { return y; } }
 
