@@ -14,5 +14,12 @@ namespace SafariModel.Model.InstanceEntity
             entitySize = 50;
         }
         #endregion
+
+        #region Methods
+        protected override void AnimalLogic()
+        {
+            //állat specifikus logika
+        }
+        #endregion
     }
 }

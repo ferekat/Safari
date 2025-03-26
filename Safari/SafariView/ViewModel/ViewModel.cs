@@ -135,7 +135,6 @@ namespace SafariView.ViewModel
             tickTimer = new DispatcherTimer();
             tickTimer.Tick += new EventHandler(OnGameTimerTick);
             tickTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
-            tickTimer.Start();
 
             //Initialize commands
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
@@ -225,6 +224,7 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
          
             StartGame?.Invoke(this, EventArgs.Empty);
+            tickTimer.Start();
 
         }
         private void OnCreditsClicked()

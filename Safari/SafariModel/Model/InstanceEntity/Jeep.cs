@@ -18,6 +18,11 @@ namespace SafariModel.Model
             touristCount = 0;
         }
 
+        protected override void EntityLogic()
+        {
+            throw new NotImplementedException();
+        }
+
         private void PathToExit()
         {
 

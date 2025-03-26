@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.AbstractEntity
 {
-    public class Animal : MovingEntity
+    public abstract class Animal : MovingEntity
     {
         #region AnimalActions Enum
         public enum AnimalActions
@@ -23,6 +23,8 @@ namespace SafariModel.Model.AbstractEntity
         private List<Point> exploredFoodPlaces;
         private List<Point> exploredWaterPlaces;
         private List<Animal> members;
+        private int wanderTimer;
+        private Random random;
         #endregion
 
         #region Properties
@@ -46,6 +48,10 @@ namespace SafariModel.Model.AbstractEntity
             exploredFoodPlaces = new List<Point>();
             exploredWaterPlaces = new List<Point>();
             members = new List<Animal>();
+
+            //random járkálás
+            random = new Random();
+            wanderTimer = random.Next(600);
         }
         #endregion
 
@@ -66,10 +72,22 @@ namespace SafariModel.Model.AbstractEntity
             throw new NotImplementedException();
         }
 
-        protected void Wander()
+        protected void RandomWander()
         {
-            throw new NotImplementedException();
+            wanderTimer = random.Next(600);
+            int newX = random.Next(-300, 300);
+            int newY = random.Next(-300, 300);
+            this.SetTarget(new Point(this.x + newX,this.y+newY));
         }
+
+        protected override void EntityLogic()
+        {
+            wanderTimer--;
+            if (wanderTimer <= 0) RandomWander();
+            AnimalLogic();
+        }
+
+        protected abstract void AnimalLogic();
 
         #endregion
     }
