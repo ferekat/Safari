@@ -27,9 +27,8 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
-
+                
                 <vm:TileCanvas Background="{Binding BackgroundBrush,Mode=OneTime}" Grid.Row="1" x:Name="tileCanvas"/>
-
 
             </Grid>
             <!--> Entityk megjelenítése</!-->
@@ -44,13 +43,13 @@
                 <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas Background="Transparent">
+                            <Canvas Background="Transparent" MouseDown="Canvas_MouseDown">
                             </Canvas>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="30" Height="30" Fill="{Binding Col}" Margin="{Binding Margin}">
+                            <Rectangle Width="{Binding Size}" Height="{Binding Size}" Fill="{Binding Col}" Margin="{Binding Margin}" MouseDown="Canvas_MouseDown">
                             </Rectangle>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

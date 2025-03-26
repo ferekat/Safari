@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.CodeDom;
 using SafariModel.Model.InstanceEntity;
+using System.Diagnostics.Eventing.Reader;
 
 namespace SafariView.ViewModel
 {
@@ -27,6 +28,9 @@ namespace SafariView.ViewModel
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
+
+        private (int, int) selectedTile;
+        private int selectedEntityID;
         //Mennyi tile lesz látható a képernyőn
         private readonly int HORIZONTALTILECOUNT = 38;
         private readonly int VERTICALTILECOUNT = 16;
@@ -112,7 +116,6 @@ namespace SafariView.ViewModel
         public DelegateCommand BackCommand { get; private set; }
         public DelegateCommand StartCommand { get; private set; }
         public DelegateCommand CreditsCommand { get; private set; }
-        public DelegateCommand ClickedCanvas;
         public DelegateCommand ClickedShopIcon;
         public DelegateCommand ChangedGameSpeed;
         #endregion
@@ -137,7 +140,6 @@ namespace SafariView.ViewModel
             //Initialize commands
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
             LoadGameCommand = new DelegateCommand((param) => LoadGame());
-            ClickedCanvas = new DelegateCommand((param) => ClickPlayArea());
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
@@ -161,6 +163,8 @@ namespace SafariView.ViewModel
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
+            selectedTile = (-1, -1);
+            selectedEntityID = -1;
         }
 
         private void Model_NewGameStarted(object? sender, EventArgs e)
@@ -179,11 +183,6 @@ namespace SafariView.ViewModel
         }
 
         private void LoadGame()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ClickPlayArea()
         {
             throw new NotImplementedException();
         }
@@ -260,6 +259,23 @@ namespace SafariView.ViewModel
         }
         #endregion
 
+        #region Game area click handler
+        public void ClickPlayArea(object? sender, Point p)
+        {
+            if (cameraX < 0) cameraX = 0;
+            if (cameraY < 0) cameraY = 0;
+
+            if (cameraX > (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE) cameraX = (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE;
+            if (cameraY > (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE) cameraY = (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE;
+
+            int gameX = cameraX + (int)p.X;
+            int gameY = cameraY + (int)p.Y;
+
+            selectedTile = model.GetTileFromCoords(gameX, gameY);
+            selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
+        }
+        #endregion
+
         #region Private methods
         private void RenderGameArea(Tile[,] tileMap,List<Entity> entities)
         {
@@ -303,6 +319,10 @@ namespace SafariView.ViewModel
                     //Get type of tile
                     b = tileBrushes[t.Type];
 
+                    /* Set currently selected tile's color to yellow
+                    if((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));
+                    */
+
                     TileRender tile = new TileRender(realX, realY,b!);
 
                     RenderedTiles.Add(tile);
@@ -315,9 +335,14 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
-                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 1) * Tile.TILESIZE))
-                {   
-                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()]));
+                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 2) * Tile.TILESIZE))
+                {
+                    /* Set currently selected entity's color to blue
+                    if(e.ID == selectedEntityID) RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, new SolidColorBrush(Color.FromRgb(30,30,255)), e.EntitySize));
+                    else RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
+                    */
+
+                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
                 }
             }
 

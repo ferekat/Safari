@@ -46,6 +46,17 @@ namespace SafariModel.Model
             entityHandler.LoadEntity(new Giraffe(1500, 1000));
         }
 
+        #region Get tile and entity based on coordinates
+        public (int,int) GetTileFromCoords(int x,int y)
+        {
+            return (x / Tile.TILESIZE, y / Tile.TILESIZE);
+        }
+        public int GetEntityIDFromCoords(int x, int y)
+        {
+            return entityHandler.GetEntityIDFromCoords(x, y);
+        }
+        #endregion
+
         #region Tick update
         public void UpdatePerTick()
         {

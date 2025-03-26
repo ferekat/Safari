@@ -16,7 +16,12 @@ namespace SafariModel.Model.Utils
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
 
-        public EntityHandler() { }
+        private int CurrentID;
+
+        public EntityHandler() 
+        {
+            CurrentID = 0;
+        }
 
         public void LoadEntity(Entity entity)
         {
@@ -30,6 +35,15 @@ namespace SafariModel.Model.Utils
         public void RemoveEntity(Entity entity)
         {
 
+        }
+
+        public int GetEntityIDFromCoords(int x, int y)
+        {
+            foreach(Entity entity in entities) 
+            {
+                if (x >= entity.X && x <= (entity.X + entity.EntitySize) && y >= entity.Y && y <= (entity.Y + entity.EntitySize)) return entity.ID;
+            }
+            return -1;
         }
 
         public void TickEntities()

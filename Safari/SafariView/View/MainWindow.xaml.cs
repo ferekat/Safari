@@ -17,6 +17,9 @@ namespace SafariView
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        public event EventHandler<Point>? CanvasClick;
+
         public MainWindow(List<TileRender> renderedTiles)
         {
             InitializeComponent();
@@ -26,6 +29,12 @@ namespace SafariView
         public void ShowRender()
         {
             tileCanvas.InvalidateVisual();
+        }
+
+        private void Canvas_MouseDown(object? sender, MouseEventArgs e)
+        {
+            Point p = Mouse.GetPosition(tileCanvas);
+            CanvasClick?.Invoke(this,p);
         }
     }
 }

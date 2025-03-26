@@ -43,6 +43,7 @@ namespace SafariView
             
             mainWindow = new MainWindow(renderedTiles);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
+            mainWindow.CanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
 
             lobbyWindow.Show();
         }

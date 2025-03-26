@@ -11,7 +11,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Giraffe(int x, int y) : base(x, y, 0, 350, 150, 200)
         {
-
+            entitySize = 50;
         }
         #endregion
     }
