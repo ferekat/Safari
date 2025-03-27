@@ -103,6 +103,9 @@ namespace SafariModel.Model
                 case "Leopard": type = typeof(Leopard); entity = new Leopard(x, y); break;
                 case "Gazelle": type = typeof(Gazelle); entity = new Gazelle(x, y); break;
                 case "Giraffe": type = typeof(Giraffe); entity = new Giraffe(x, y); break;
+                case "Cactus": type = typeof(Cactus); entity = new Cactus(x, y); break;
+                case "Greasewood": type = typeof(Greasewood); entity = new Greasewood(x, y); break;
+                case "PalmTree": type = typeof(PalmTree); entity = new PalmTree(x, y); break;
             }
             if (type == null) return;
 
