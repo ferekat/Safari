@@ -20,6 +20,7 @@ namespace SafariModel.Model
         private Tile[,] tileMap;
 
         private EntityHandler entityHandler;
+        private EconomyHandler economyHandler;
 
         #region Events
         public event EventHandler? NewGameStarted;
@@ -46,7 +47,20 @@ namespace SafariModel.Model
             entityHandler.LoadEntity(new Giraffe(1500, 1000));
             entityHandler.LoadEntity(new Leopard(400, 384));
 
+            economyHandler = new EconomyHandler(9999);
+
         }
+
+        #region Get tile and entity based on coordinates
+        public (int,int) GetTileFromCoords(int x,int y)
+        {
+            return (x / Tile.TILESIZE, y / Tile.TILESIZE);
+        }
+        public int GetEntityIDFromCoords(int x, int y)
+        {
+            return entityHandler.GetEntityIDFromCoords(x, y);
+        }
+        #endregion
 
         #region Tick update
         public void UpdatePerTick()
@@ -68,6 +82,7 @@ namespace SafariModel.Model
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
             data.tileMap = tileMap;
             data.entities = entityHandler.GetEntities();
+            data.money = economyHandler.Money;
             TickPassed?.Invoke(this, data);
         }
 
@@ -78,6 +93,32 @@ namespace SafariModel.Model
             GameOver?.Invoke(this, win);
         }
        
+        public void BuyEntity(string name, int x, int y)
+        {
+            Type? type = null;
+            Entity? entity = null;
+            switch(name)
+            {
+                case "Lion": type = typeof(Lion); entity = new Lion(x,y); break;
+                case "Leopard": type = typeof(Leopard); entity = new Leopard(x, y); break;
+                case "Gazelle": type = typeof(Gazelle); entity = new Gazelle(x, y); break;
+                case "Giraffe": type = typeof(Giraffe); entity = new Giraffe(x, y); break;
+            }
+            if (type == null) return;
 
+            if (!economyHandler.BuyEntity(type!)) return;
+
+            if (entity == null) return;
+            entityHandler.LoadEntity(entity!);
+
+        }
+        public void SellEntity(int id)
+        {
+            Entity? e = entityHandler.GetEntityByID(id);
+            if (e == null) return;
+
+            economyHandler.SellEntity(e.GetType());
+            entityHandler.RemoveEntity(e);
+        }
     }
 }

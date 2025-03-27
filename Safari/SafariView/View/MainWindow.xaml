@@ -27,9 +27,8 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
-
+                
                 <vm:TileCanvas Background="{Binding BackgroundBrush,Mode=OneTime}" Grid.Row="1" x:Name="tileCanvas"/>
-
 
             </Grid>
             <!--> Entityk megjelenítése</!-->
@@ -44,13 +43,13 @@
                 <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas Background="Transparent">
+                            <Canvas Background="Transparent" MouseDown="Canvas_MouseDown">
                             </Canvas>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="30" Height="30" Fill="{Binding Col}" Margin="{Binding Margin}">
+                            <Rectangle Width="{Binding Size}" Height="{Binding Size}" Fill="{Binding Col}" Margin="{Binding Margin}" MouseDown="Canvas_MouseDown">
                             </Rectangle>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -87,7 +86,7 @@
                                 <TextBlock HorizontalAlignment="Right" FontSize="20px">▶▶▶</TextBlock>
                             </StackPanel>
                         </StackPanel>
-                        <TextBlock FontSize="30px" Margin="10" Padding="10" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFC3DBAD" Foreground="#FFAAA556">Credit: $000000</TextBlock>
+                        <TextBlock FontSize="30px" Margin="10" Padding="10" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFC3DBAD" Foreground="#FFAAA556" Text="{Binding MoneyString}"></TextBlock>
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Row="2" Background="#FF6C5200" HorizontalAlignment="Stretch">
@@ -110,17 +109,82 @@
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Road</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lake</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Bridge</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Gazelle</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Giraffe</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lion</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Leopard</Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Gazelle" Margin="0,0,10,0" Content="Gazelle">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Gazelle">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Giraffe" Margin="0,0,10,0" Content="Giraffe">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Giraffe">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Lion" Margin="0,0,10,0" Content="Lion">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Lion">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Leopard" Margin="0,0,10,0" Content="Leopard">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Leopard">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Cactus</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Greasewood</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Palm tree</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Jeep</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Guard</Button>
                         </StackPanel>
-                        <Button HorizontalAlignment="Right" Height="60" Width="60" Background="#FFFFD243" Grid.Column="1" FontSize="20px" FontWeight="Bold">Sell</Button>
+                        <StackPanel Orientation="Vertical" Grid.Column="1">
+                            <Button Command="{Binding ClickedShopIcon}" CommandParameter="Sell" HorizontalAlignment="Right" Height="60" Width="60" FontSize="20px" FontWeight="Bold" Content="Sell">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.NOTHING}">
+                                                <Setter Property="Background" Value="#FFFFD243"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.BUY}">
+                                                <Setter Property="Background" Value="#FFFFD243"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.SELL}">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                     <Border Grid.Column="2" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,0,0" HorizontalAlignment="Right">
                         <Grid Background="#FFC3DBAD">

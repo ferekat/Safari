@@ -12,14 +12,25 @@ namespace SafariModel.Model.AbstractEntity
     {
         protected int x;
         protected int y;
+        protected int entitySize;
+        private int id;
+
+        private static int CurrentID = 0;
+
+        private static Dictionary<string, Type> TypeNames = new Dictionary<string, Type>();
 
         public int X { get { return x; } }
         public int Y { get { return y; } }
+
+        public int EntitySize { get { return entitySize; } }
+
+        public int ID { get { return id; } }
 
         protected Entity(int x, int y)
         {
             this.x = x;
             this.y = y;
+            this.id = CurrentID++;
         }
         public abstract void EntityTick();
     }

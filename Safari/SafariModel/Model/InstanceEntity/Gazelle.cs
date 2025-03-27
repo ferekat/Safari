@@ -11,7 +11,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Gazelle(int x, int y) : base(x, y, 0, 200, 200, 250)
         {
-
+            entitySize = 30;
         }
         #endregion
 

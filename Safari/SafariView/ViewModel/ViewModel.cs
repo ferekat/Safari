@@ -15,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.CodeDom;
 using SafariModel.Model.InstanceEntity;
+using System.Diagnostics.Eventing.Reader;
+using System.Data.SqlTypes;
 
 namespace SafariView.ViewModel
 {
@@ -27,6 +29,11 @@ namespace SafariView.ViewModel
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
+
+        private (int, int) selectedTile;
+        private int selectedEntityID;
+        private ClickAction cAction;
+        private string selectedShopName;
         //Mennyi tile lesz látható a képernyőn
         private readonly int HORIZONTALTILECOUNT = 38;
         private readonly int VERTICALTILECOUNT = 16;
@@ -41,6 +48,7 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? optionName;
 
+        private string moneyString;
         private string topRowHeightString;
         private string bottomRowHeightString;
         private float topRowHeightRelative;
@@ -64,7 +72,7 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Entity brushes
-        private static Dictionary<Type, Brush> entityBrushes = new Dictionary<Type, Brush>() 
+        private static Dictionary<Type, Brush> entityBrushes = new Dictionary<Type, Brush>()
         {
             {typeof(Lion),new SolidColorBrush(Color.FromRgb(204,204,0)) },
             {typeof(Leopard),new SolidColorBrush(Color.FromRgb(212,170,33)) },
@@ -72,6 +80,16 @@ namespace SafariView.ViewModel
             { typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))}
         };
 
+        #endregion
+
+        #region ClickAction enum
+        public enum ClickAction
+        {
+            NOTHING,
+            BUY,
+            SELL,
+            SELECT
+        }
         #endregion
 
         #region GameSpeed enum
@@ -94,10 +112,16 @@ namespace SafariView.ViewModel
         public string TopRowHeightString { get { return topRowHeightString; } private set { topRowHeightString = value; OnPropertyChanged(); } }
         public string BottomRowHeightString { get { return bottomRowHeightString; } private set { bottomRowHeightString = value; OnPropertyChanged(); } }
 
+        public ClickAction CAction { get { return cAction; } private set { cAction = value; OnPropertyChanged(); } }
+
+        public string MoneyString { get { return moneyString; } private set { moneyString = value; OnPropertyChanged(); } }
+
+        public string SelectedShopName { get { return selectedShopName; } private set { selectedShopName = value; OnPropertyChanged(); } }
+
         #endregion
 
         #region Properties
-        public int Money { get { return money; } set {  money = value; OnPropertyChanged(); } }
+        public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
         private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString() + "*"; } }
         private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString() + "*"; } }
@@ -112,8 +136,7 @@ namespace SafariView.ViewModel
         public DelegateCommand BackCommand { get; private set; }
         public DelegateCommand StartCommand { get; private set; }
         public DelegateCommand CreditsCommand { get; private set; }
-        public DelegateCommand ClickedCanvas;
-        public DelegateCommand ClickedShopIcon;
+        public DelegateCommand ClickedShopIcon { get; private set; }
         public DelegateCommand ChangedGameSpeed;
         #endregion
 
@@ -136,7 +159,6 @@ namespace SafariView.ViewModel
             //Initialize commands
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
             LoadGameCommand = new DelegateCommand((param) => LoadGame());
-            ClickedCanvas = new DelegateCommand((param) => ClickPlayArea());
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
@@ -157,9 +179,12 @@ namespace SafariView.ViewModel
             LoadGamePage = "Hidden";
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
+            CAction = ClickAction.NOTHING;
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
+            selectedTile = (-1, -1);
+            selectedEntityID = -1;
         }
 
         private void Model_NewGameStarted(object? sender, EventArgs e)
@@ -182,14 +207,33 @@ namespace SafariView.ViewModel
             throw new NotImplementedException();
         }
 
-        private void ClickPlayArea()
+        private void ClickShop(object? clickParam)
         {
-            throw new NotImplementedException();
-        }
 
-        private void ClickShop(object? clickedObject) 
-        {
-            throw new NotImplementedException();
+            if (clickParam is string shopString)
+            {
+
+                if (shopString == "Sell")
+                {
+                    CAction = CAction == ClickAction.SELL ? ClickAction.NOTHING : ClickAction.SELL;
+                    SelectedShopName = "";
+                    return;
+                }
+                if (CAction != ClickAction.BUY)
+                {
+                    CAction = ClickAction.BUY;
+                    SelectedShopName = shopString;
+                }
+                else if(selectedShopName.Equals(shopString))
+                {
+                    CAction = ClickAction.NOTHING;
+                    SelectedShopName = "";
+                }
+                else
+                {
+                    SelectedShopName = shopString;
+                }
+            }
         }
 
         private void ChangeGameSpeed(object? speedValue)
@@ -223,7 +267,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
-         
+
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();
 
@@ -252,6 +296,8 @@ namespace SafariView.ViewModel
             if (mouse.Y > VERTICALTILECOUNT * Tile.TILESIZE - VERTICALCAMERACHANGERANGE && mouse.Y < VERTICALTILECOUNT * Tile.TILESIZE) cameraY += 10;
 
             RenderGameArea(data.tileMap, data.entities);
+
+            Money = data.money;
         }
 
         private void Model_GameOver(object? sender, bool playerWin)
@@ -260,8 +306,35 @@ namespace SafariView.ViewModel
         }
         #endregion
 
+        #region Game area click handler
+        public void ClickPlayArea(object? sender, Point p)
+        {
+            int gameX = cameraX + (int)p.X;
+            int gameY = cameraY + (int)p.Y;
+
+            if (CAction == ClickAction.SELECT)
+            {
+                selectedTile = model.GetTileFromCoords(gameX, gameY);
+                selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
+            }
+            if(CAction == ClickAction.BUY)
+            {
+                model.BuyEntity(SelectedShopName, gameX, gameY);
+            }
+
+            if (CAction == ClickAction.SELL)
+            {
+                selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
+                if(selectedEntityID != -1)
+                {
+                    model.SellEntity(selectedEntityID);
+                }
+            }
+        }
+        #endregion
+
         #region Private methods
-        private void RenderGameArea(Tile[,] tileMap,List<Entity> entities)
+        private void RenderGameArea(Tile[,] tileMap, List<Entity> entities)
         {
 
             //render tiles
@@ -303,7 +376,11 @@ namespace SafariView.ViewModel
                     //Get type of tile
                     b = tileBrushes[t.Type];
 
-                    TileRender tile = new TileRender(realX, realY,b!);
+                    /* Set currently selected tile's color to yellow
+                    if((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));
+                    */
+
+                    TileRender tile = new TileRender(realX, realY, b!);
 
                     RenderedTiles.Add(tile);
                 }
@@ -315,10 +392,14 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
-                
-                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 1) * Tile.TILESIZE))
-                {   
-                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()]));
+                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 2) * Tile.TILESIZE))
+                {
+                    /* Set currently selected entity's color to blue
+                    if(e.ID == selectedEntityID) RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, new SolidColorBrush(Color.FromRgb(30,30,255)), e.EntitySize));
+                    else RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
+                    */
+
+                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
                 }
             }
 
@@ -332,7 +413,7 @@ namespace SafariView.ViewModel
 
         private void FinishedRender()
         {
-            FinishedRendering?.Invoke(this,EventArgs.Empty);
+            FinishedRendering?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }
