@@ -19,6 +19,7 @@ namespace SafariView
     {
 
         public event EventHandler<Point>? CanvasClick;
+        public event EventHandler<(int, int)>? CameraChange;
 
         public MainWindow(List<TileRender> renderedTiles)
         {
@@ -29,6 +30,27 @@ namespace SafariView
         public void ShowRender()
         {
             tileCanvas.InvalidateVisual();
+        }
+
+        public void ViewModel_CameraChangeRequest(object? sender, (int,int,int,int) changerange)
+        {
+
+
+            int x = 0;
+            int y = 0;
+            Point p = Mouse.GetPosition(tileCanvas);
+            if (p.X >= 0 && p.X < changerange.Item1) x = -1;
+            if (p.Y >= 0 && p.Y < changerange.Item2) y = -1;
+            if (p.X >= changerange.Item3 && p.X < tileCanvas.ActualWidth) x = 1;
+            if (p.Y >= changerange.Item4 && p.Y < tileCanvas.ActualHeight) y = 1;
+
+            OnCameraChange(x, y);
+
+        }
+
+        private void OnCameraChange(int x, int y)
+        {
+            CameraChange?.Invoke(this, (x, y));
         }
 
         private void Canvas_MouseDown(object? sender, MouseEventArgs e)
