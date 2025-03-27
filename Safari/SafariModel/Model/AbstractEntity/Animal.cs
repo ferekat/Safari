@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SafariModel.Model.Tiles;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -84,6 +85,7 @@ namespace SafariModel.Model.AbstractEntity
         {
             wanderTimer--;
             if (wanderTimer <= 0) RandomWander();
+
             AnimalLogic();
         }
 

@@ -68,21 +68,42 @@ namespace SafariModel.Model.AbstractEntity
             this.x += wholeX;
             this.y += wholeY;
 
+            //entity is outside map
+            if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
+            {
+                this.x += 1;
+                this.y += 1;
+                NextTargetPoint();
+            }
+            if (this.X > Model.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > Model.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
+            {
+                this.x -= 1;
+                this.y -= 1;
+                NextTargetPoint();
+            }
+                
+
             if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) < movementVector.Length()) //In range of target point
             {
                 this.x = currentTarget.X;
                 this.y = currentTarget.Y;
 
-                if (targetPoints.Count > 0)
-                {
-                    CurrentTarget = targetPoints.Dequeue();
-                }
-                else //reached initial target
-                {
-                    isMoving = false;
-                }
+                NextTargetPoint();
             }
         }
+
+        private void NextTargetPoint()
+        {
+            if (targetPoints.Count > 0)
+            {
+                CurrentTarget = targetPoints.Dequeue();
+            }
+            else //reached initial target
+            {
+                isMoving = false;
+            }
+        }
+
         private bool CalculateRoute()
         {
             return false;
