@@ -26,7 +26,7 @@ namespace SafariModel.Model.AbstractEntity
         #region Methods
         public override void EntityTick()
         {
-            throw new NotImplementedException();
+            
         }
 
         #endregion
