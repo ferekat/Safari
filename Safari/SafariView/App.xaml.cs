@@ -46,7 +46,7 @@ namespace SafariView
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
             mainWindow.CanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
 
-            viewModel.RequestCameraChange += new EventHandler<(int, int, int, int)>(mainWindow.ViewModel_CameraChangeRequest);
+            viewModel.RequestCameraChange += new EventHandler<(int, int)>(mainWindow.ViewModel_CameraChangeRequest);
             mainWindow.CameraChange += new EventHandler<(int, int)>(viewModel.MainWindow_CameraMovement);
             
 

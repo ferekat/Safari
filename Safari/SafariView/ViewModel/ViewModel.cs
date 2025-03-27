@@ -39,8 +39,8 @@ namespace SafariView.ViewModel
         private readonly int HORIZONTALTILECOUNT = 38;
         private readonly int VERTICALTILECOUNT = 16;
 
-        private readonly int HORIZONTALCAMERACHANGERANGE = 250;
-        private readonly int VERTICALCAMERACHANGERANGE = 250;
+        private readonly int HORIZONTALCAMERACHANGERANGE = 150;
+        private readonly int VERTICALCAMERACHANGERANGE = 150;
 
         private DispatcherTimer tickTimer;
         private string? indexPage;
@@ -145,7 +145,7 @@ namespace SafariView.ViewModel
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
         public event EventHandler? FinishedRendering;
-        public event EventHandler<(int, int, int, int)>? RequestCameraChange;
+        public event EventHandler<(int, int)>? RequestCameraChange;
         #endregion
 
         #region Constructor
@@ -415,7 +415,7 @@ namespace SafariView.ViewModel
 
         private void OnCameraChangeRequest()
         {
-            RequestCameraChange?.Invoke(this,(HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE, HORIZONTALTILECOUNT * Tile.TILESIZE - Tile.TILESIZE, VERTICALTILECOUNT * Tile.TILESIZE - Tile.TILESIZE));
+            RequestCameraChange?.Invoke(this,(HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)

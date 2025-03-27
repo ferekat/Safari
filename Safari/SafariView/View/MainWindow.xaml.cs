@@ -32,20 +32,17 @@ namespace SafariView
             tileCanvas.InvalidateVisual();
         }
 
-        public void ViewModel_CameraChangeRequest(object? sender, (int,int,int,int) changerange)
+        public void ViewModel_CameraChangeRequest(object? sender, (int,int) changerange)
         {
-
-
             int x = 0;
             int y = 0;
             Point p = Mouse.GetPosition(tileCanvas);
             if (p.X >= 0 && p.X < changerange.Item1) x = -1;
             if (p.Y >= 0 && p.Y < changerange.Item2) y = -1;
-            if (p.X >= changerange.Item3 && p.X < tileCanvas.ActualWidth) x = 1;
-            if (p.Y >= changerange.Item4 && p.Y < tileCanvas.ActualHeight) y = 1;
+            if (p.X >= tileCanvas.ActualWidth - changerange.Item1 && p.X < tileCanvas.ActualWidth) x = 1;
+            if (p.Y >= tileCanvas.ActualHeight - changerange.Item2 && p.Y < tileCanvas.ActualHeight) y = 1;
 
             OnCameraChange(x, y);
-
         }
 
         private void OnCameraChange(int x, int y)
