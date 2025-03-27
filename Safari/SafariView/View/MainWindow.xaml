@@ -23,7 +23,7 @@
             <Grid Panel.ZIndex="0">
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="{Binding TopRowHeightString}"  />
+                    <RowDefinition Height="{Binding TopRowHeightString}"/>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>

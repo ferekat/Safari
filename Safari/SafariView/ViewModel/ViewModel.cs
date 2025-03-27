@@ -17,6 +17,7 @@ using System.CodeDom;
 using SafariModel.Model.InstanceEntity;
 using System.Diagnostics.Eventing.Reader;
 using System.Data.SqlTypes;
+using System.Globalization;
 
 namespace SafariView.ViewModel
 {
@@ -38,8 +39,8 @@ namespace SafariView.ViewModel
         private readonly int HORIZONTALTILECOUNT = 38;
         private readonly int VERTICALTILECOUNT = 16;
 
-        private readonly int HORIZONTALCAMERACHANGERANGE = 150;
-        private readonly int VERTICALCAMERACHANGERANGE = 200;
+        private readonly int HORIZONTALCAMERACHANGERANGE = 250;
+        private readonly int VERTICALCAMERACHANGERANGE = 250;
 
         private DispatcherTimer tickTimer;
         private string? indexPage;
@@ -123,8 +124,8 @@ namespace SafariView.ViewModel
         #region Properties
         public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
-        private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString() + "*"; } }
-        private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString() + "*"; } }
+        private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
+        private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
         #endregion
 
         #region Commands
@@ -144,6 +145,7 @@ namespace SafariView.ViewModel
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
         public event EventHandler? FinishedRendering;
+        public event EventHandler<(int, int, int, int)>? RequestCameraChange;
         #endregion
 
         #region Constructor
@@ -224,7 +226,7 @@ namespace SafariView.ViewModel
                     CAction = ClickAction.BUY;
                     SelectedShopName = shopString;
                 }
-                else if(selectedShopName.Equals(shopString))
+                else if (selectedShopName.Equals(shopString))
                 {
                     CAction = ClickAction.NOTHING;
                     SelectedShopName = "";
@@ -289,11 +291,8 @@ namespace SafariView.ViewModel
         #region Model event handlers
         private void Model_TickPassed(object? sender, GameData data)
         {
-            Point mouse = Mouse.GetPosition(Application.Current.MainWindow);
-            if (mouse.X > 0 && mouse.X < HORIZONTALCAMERACHANGERANGE) cameraX -= 10;
-            if (mouse.X > HORIZONTALTILECOUNT * Tile.TILESIZE - HORIZONTALCAMERACHANGERANGE && mouse.X < HORIZONTALTILECOUNT * Tile.TILESIZE) cameraX += 10;
-            if (mouse.Y > 0 && mouse.Y < VERTICALCAMERACHANGERANGE) cameraY -= 10;
-            if (mouse.Y > VERTICALTILECOUNT * Tile.TILESIZE - VERTICALCAMERACHANGERANGE && mouse.Y < VERTICALTILECOUNT * Tile.TILESIZE) cameraY += 10;
+
+            OnCameraChangeRequest();
 
             RenderGameArea(data.tileMap, data.entities);
 
@@ -317,7 +316,7 @@ namespace SafariView.ViewModel
                 selectedTile = model.GetTileFromCoords(gameX, gameY);
                 selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
             }
-            if(CAction == ClickAction.BUY)
+            if (CAction == ClickAction.BUY)
             {
                 model.BuyEntity(SelectedShopName, gameX, gameY);
             }
@@ -325,11 +324,19 @@ namespace SafariView.ViewModel
             if (CAction == ClickAction.SELL)
             {
                 selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
-                if(selectedEntityID != -1)
+                if (selectedEntityID != -1)
                 {
                     model.SellEntity(selectedEntityID);
                 }
             }
+        }
+        #endregion
+
+        #region Camera movement
+        public void MainWindow_CameraMovement(object? sender, (int,int) change)
+        {
+            cameraX += 10 * change.Item1;
+            cameraY += 10 * change.Item2;
         }
         #endregion
 
@@ -404,6 +411,11 @@ namespace SafariView.ViewModel
             }
 
             FinishedRender();
+        }
+
+        private void OnCameraChangeRequest()
+        {
+            RequestCameraChange?.Invoke(this,(HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE, HORIZONTALTILECOUNT * Tile.TILESIZE - Tile.TILESIZE, VERTICALTILECOUNT * Tile.TILESIZE - Tile.TILESIZE));
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)
