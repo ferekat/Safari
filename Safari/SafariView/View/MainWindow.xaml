@@ -156,9 +156,42 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Cactus</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Greasewood</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Palm tree</Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Cactus" Margin="0,0,10,0" Content="Cactus">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Cactus">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Greasewood" Margin="0,0,10,0" Content="Greasewood">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Greasewood">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="PalmTree" Margin="0,0,10,0" Content="Palm tree">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="PalmTree">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Jeep</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Guard</Button>
                         </StackPanel>
