@@ -10,7 +10,10 @@ namespace SafariModel.Model.InstanceEntity
     public class Cactus : Plant
     {
         #region Constructor
-        public Cactus(int x, int y) : base(x, y, 50) { }
+        public Cactus(int x, int y) : base(x, y, 50) 
+        {
+            entitySize = 10;
+        }
         #endregion
     }
 }

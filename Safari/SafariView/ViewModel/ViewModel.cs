@@ -78,7 +78,10 @@ namespace SafariView.ViewModel
             {typeof(Lion),new SolidColorBrush(Color.FromRgb(204,204,0)) },
             {typeof(Leopard),new SolidColorBrush(Color.FromRgb(212,170,33)) },
             {typeof(Gazelle),new SolidColorBrush(Color.FromRgb(189,168,98)) },
-            { typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))}
+            { typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))},
+            {typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
+            {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
+            {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) }
         };
 
         #endregion

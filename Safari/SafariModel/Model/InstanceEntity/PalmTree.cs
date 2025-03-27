@@ -10,7 +10,10 @@ namespace SafariModel.Model.InstanceEntity
     public class PalmTree : Plant
     {
         #region Constructor
-        public PalmTree(int x, int y) : base(x, y, 40) { }
+        public PalmTree(int x, int y) : base(x, y, 40) 
+        {
+            entitySize = 30;
+        }
         #endregion
     }
 }
