@@ -17,6 +17,7 @@ using System.CodeDom;
 using SafariModel.Model.InstanceEntity;
 using System.Diagnostics.Eventing.Reader;
 using System.Data.SqlTypes;
+using System.Globalization;
 
 namespace SafariView.ViewModel
 {
@@ -123,8 +124,8 @@ namespace SafariView.ViewModel
         #region Properties
         public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
-        private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString() + "*"; } }
-        private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString() + "*"; } }
+        private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
+        private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
         #endregion
 
         #region Commands
