@@ -19,7 +19,10 @@ namespace SafariModel.Model.Utils
             { typeof(Lion),200},
             { typeof(Leopard),300},
             { typeof(Gazelle),150},
-            { typeof(Giraffe),300}
+            { typeof(Giraffe),300},
+            { typeof(Cactus),80 },
+            { typeof(Greasewood),50 },
+            { typeof(PalmTree),100 }
         };
         private Dictionary<TileCondition, int> conditionTileCosts = new Dictionary<TileCondition, int>
         {

@@ -38,12 +38,17 @@ namespace SafariView
             viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
             viewModel.StartGame += new EventHandler(ViewModel_GameStart);
             viewModel.FinishedRendering += new EventHandler(ViewModel_FinishedRendering);
+            
 
             lobbyWindow = new LobbyWindow();
             
             mainWindow = new MainWindow(renderedTiles);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
             mainWindow.CanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
+
+            viewModel.RequestCameraChange += new EventHandler<(int, int)>(mainWindow.ViewModel_CameraChangeRequest);
+            mainWindow.CameraChange += new EventHandler<(int, int)>(viewModel.MainWindow_CameraMovement);
+            
 
             lobbyWindow.Show();
         }
