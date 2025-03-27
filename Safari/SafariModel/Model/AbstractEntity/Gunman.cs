@@ -12,14 +12,14 @@ namespace SafariModel.Model.AbstractEntity
         private int damage;
         private MovingEntity? target;
 
-        public int Health { get { return health; } }
-        public int Damage { get { return damage; } }
+        public int Health { get; protected set; }
+        public int Damage { get; protected set; }
         public MovingEntity Target { get { return target!; } }
 
         public Gunman(int x, int y, int health, int damage) : base(x, y)
         {
-            this.health = health;
-            this.damage = damage;
+            Health = health;
+            Damage = damage;
         }
 
         public void SetTarget()
@@ -37,7 +37,7 @@ namespace SafariModel.Model.AbstractEntity
 
         protected override void EntityLogic()
         {
-            throw new NotImplementedException();
+
         }
     }
 }
