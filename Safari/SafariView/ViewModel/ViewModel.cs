@@ -53,7 +53,7 @@ namespace SafariView.ViewModel
         private string bottomRowHeightString;
         private float topRowHeightRelative;
         private float bottomRowHeightRelative;
-
+        private float mid;
 
         private Model model;
         #endregion
@@ -121,6 +121,7 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Properties
+        public float Mid { get { return mid; } set { mid = value; OnPropertyChanged(); } }
         public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
         private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString() + "*"; } }
@@ -183,6 +184,7 @@ namespace SafariView.ViewModel
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
+            Mid = 1 - TopRowHeightRelative - BottomRowHeightRelative;
             selectedTile = (-1, -1);
             selectedEntityID = -1;
         }
