@@ -9,27 +9,36 @@ namespace SafariModel.Model.InstanceEntity
 {
     public class Guard : Gunman
     {
+        #region Private Fields
         private int salary;
         private int level;
-        public Guard(int x, int y, int health, int damage) : base(x, y, health, damage)
+        #endregion
+        public int Salary { get { return salary; } }
+        #region Constructor
+        public Guard(int x, int y) : base(x, y, 100, 0)
         {
             level = 1;
             salary = SetSalary();
+            entitySize = 12;
         }
+        #endregion
+        #region Public methods
         public void CollectSalary()
         {
 
         }
-
+        #endregion
+        #region Private methods
         private int SetSalary()
         {
             Random r = new Random();
-            return r.Next(500);
+            return r.Next(50)+50;
         }
 
         private void IncreaseLevel()
         {
 
         }
+        #endregion
     }
 }
