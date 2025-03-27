@@ -109,10 +109,54 @@
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Road</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lake</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Bridge</Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Gazelle" Margin="0,0,10,0" Background="#FFFFD243">Gazelle</Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Giraffe" Margin="0,0,10,0" Background="#FFFFD243">Giraffe</Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Lion" Margin="0,0,10,0" Background="#FFFFD243">Lion</Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Leopard" Margin="0,0,10,0" Background="#FFFFD243">Leopard</Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Gazelle" Margin="0,0,10,0" Content="Gazelle">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Gazelle">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Giraffe" Margin="0,0,10,0" Content="Giraffe">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Giraffe">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Lion" Margin="0,0,10,0" Content="Lion">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Lion">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Leopard" Margin="0,0,10,0" Content="Leopard">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Leopard">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Cactus</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Greasewood</Button>
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Palm tree</Button>
@@ -120,48 +164,26 @@
                             <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Guard</Button>
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Grid.Column="1">
-                            <Button Command="{Binding ClickedShopIcon}" CommandParameter="Sell" HorizontalAlignment="Right" Height="60" Width="60" Background="#FFFFD243" Grid.Column="1" FontSize="20px" FontWeight="Bold">Sell</Button>
-                            <TextBlock>
-                                <Run>
-                                    <Run.Style>
-                                        <Style TargetType="Run">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.NOTHING}">
-                                                    <Setter Property="Text" Value=""/>
-                                                </DataTrigger>
-                                                
-                                                <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.BUY}">
-                                                    <Setter Property="Text" Value="Vásárlás: "/>
-                                                </DataTrigger>
-                                                
-                                                <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.SELL}">
-                                                    <Setter Property="Text" Value="Eladás"/>
-                                                </DataTrigger>
-                                                
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Run.Style>
-                                </Run>
-                                <Run Text="{Binding SelectedShopName, Mode=OneWay}">
-                                    <Run.Style>
-                                        <Style TargetType="Run">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.NOTHING}">
-                                                    <Setter Property="Text" Value=""/>
-                                                </DataTrigger>
-            
-                                                <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.BUY}">
-                                                    <Setter Property="Text" Value=""/>
-                                                </DataTrigger>
-            
-                                                 <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.SELL}">
-                                                    <Setter Property="Text" Value="Kattints egy állatra/növényre az eladáshoz!"/>
-                                                 </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                     </Run.Style>
-                                </Run>
-                            </TextBlock>
+                            <Button Command="{Binding ClickedShopIcon}" CommandParameter="Sell" HorizontalAlignment="Right" Height="60" Width="60" FontSize="20px" FontWeight="Bold" Content="Sell">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.NOTHING}">
+                                                <Setter Property="Background" Value="#FFFFD243"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.BUY}">
+                                                <Setter Property="Background" Value="#FFFFD243"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.SELL}">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Grid>
                     <Border Grid.Column="2" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,0,0" HorizontalAlignment="Right">
