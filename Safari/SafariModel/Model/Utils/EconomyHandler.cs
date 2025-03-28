@@ -22,7 +22,8 @@ namespace SafariModel.Model.Utils
             { typeof(Giraffe),300},
             { typeof(Cactus),80 },
             { typeof(Greasewood),50 },
-            { typeof(PalmTree),100 }
+            { typeof(PalmTree),100 },
+            { typeof(Guard),0 }
         };
         private Dictionary<TileCondition, int> conditionTileCosts = new Dictionary<TileCondition, int>
         {
@@ -58,6 +59,12 @@ namespace SafariModel.Model.Utils
             int cost = entityCostTable[item];
             if (money < cost) return false;
             money -= cost;
+            return true;
+        }
+        public bool PaySalary(Guard guard)
+        {
+            if(money < guard.Salary) return false;
+            money -= guard.Salary;
             return true;
         }
         public void SellEntity(Type item)

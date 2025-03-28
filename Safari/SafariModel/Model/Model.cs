@@ -126,8 +126,16 @@ namespace SafariModel.Model
                 case "Cactus": type = typeof(Cactus); entity = new Cactus(x, y); break;
                 case "Greasewood": type = typeof(Greasewood); entity = new Greasewood(x, y); break;
                 case "PalmTree": type = typeof(PalmTree); entity = new PalmTree(x, y); break;
-                
-               
+                case "Guard": 
+                    { 
+                        type = typeof(Guard); 
+                        entity = new Guard(x, y);
+                        if (entity is Guard guardEntity)
+                        {
+                            if (!economyHandler.PaySalary(guardEntity)) return;
+                        }
+                        break; 
+                    }
             }
 
 
