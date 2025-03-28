@@ -35,7 +35,11 @@
             <!--> Entityk megjelenítése</!-->
             <Grid Panel.ZIndex="1">
 
-              
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{Binding TopRowHeightString}"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="{Binding BottomRowHeightString}"/>
+                </Grid.RowDefinitions> 
 
                 <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}">
                     <ItemsControl.ItemsPanel>
