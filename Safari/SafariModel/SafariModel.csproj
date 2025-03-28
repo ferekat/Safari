@@ -8,8 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Model\AbstractEntity\" />
-	<Folder Include="Model\InstanceEntity"/>
-    <Folder Include="Model\Tiles\" />
+	<Folder Include="Model\InstanceEntity" />
   </ItemGroup>
 
 </Project>

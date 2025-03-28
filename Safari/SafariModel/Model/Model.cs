@@ -37,7 +37,7 @@ namespace SafariModel.Model
             {
                 for (int j = 0; j < MAPSIZE; j++)
                 {
-                    tileMap[i, j] = new Tile(i, j);
+                    tileMap[i, j] = new Tile(i, j,null);
                 }
             }
 
@@ -93,10 +93,30 @@ namespace SafariModel.Model
             GameOver?.Invoke(this, win);
         }
        
-        public void BuyEntity(string name, int x, int y)
+        
+        
+        public void BuyItem(string name, int x, int y)
         {
+            int tileX = GetTileFromCoords(x, y).Item1;
+            int tileY = GetTileFromCoords(x, y).Item2;
+            if (Tile.tileTypeMap.ContainsKey(name) && Tile.tileTypeMap[name] is TileType tiletype)
+            {
+                if (economyHandler.BuyTile(tiletype))
+                {
+                    tileMap[tileX,tileY].SetType(tiletype);
+                }
+            }
+            if ( Tile.tileConditionMap.ContainsKey(name) && Tile.tileConditionMap[name] is TileCondition cond )
+            {
+                if (economyHandler.BuyTileCondition(cond))
+                {
+                    tileMap[tileX,tileY].SetCondition(cond);
+                }
+            }
+
             Type? type = null;
             Entity? entity = null;
+            
             switch(name)
             {
                 case "Lion": type = typeof(Lion); entity = new Lion(x,y); break;
@@ -106,10 +126,16 @@ namespace SafariModel.Model
                 case "Cactus": type = typeof(Cactus); entity = new Cactus(x, y); break;
                 case "Greasewood": type = typeof(Greasewood); entity = new Greasewood(x, y); break;
                 case "PalmTree": type = typeof(PalmTree); entity = new PalmTree(x, y); break;
+                
+               
             }
+
+
             if (type == null) return;
 
             if (!economyHandler.BuyEntity(type!)) return;
+
+          
 
             if (entity == null) return;
             entityHandler.LoadEntity(entity!);

@@ -57,7 +57,7 @@
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding TopRowHeightString}"  />
-                    <RowDefinition Height="{Binding Mid}" />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
                 <Grid Background="#FF6C5200" Grid.Row="0">
@@ -103,9 +103,45 @@
                             <ColumnDefinition Width="0.1*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Road</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Lake</Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Bridge</Button>
+                           
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Road" Margin="0,0,10,0" Content="Road">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Road">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Lake" Margin="0,0,10,0" Content="Lake">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Lake">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Bridge" Margin="0,0,10,0" Content="Bridge">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Bridge">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+
                             <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Gazelle" Margin="0,0,10,0" Content="Gazelle">
                                 <Button.Style>
                                     <Style TargetType="Button">

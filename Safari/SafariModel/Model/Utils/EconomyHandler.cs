@@ -64,13 +64,20 @@ namespace SafariModel.Model.Utils
         {
             money += entityCostTable[item];
         }
-        public void BuyTile(TileType tileType)
+        public bool BuyTile(TileType tileType)
         {
-            money -= tileTypeCosts[tileType];
+            
+            int cost = tileTypeCosts[tileType];
+            if (money < cost) return false;
+            money -= cost;
+            return true;
         }
-        public void BuyTileCondition(TileCondition tileCondition)
+        public bool BuyTileCondition(TileCondition tileCondition)
         {
-            money -= conditionTileCosts[tileCondition];
+            int cost = conditionTileCosts[tileCondition];
+            if (money < cost) return false;
+            money -= cost;
+            return true;
         }
     }
 }

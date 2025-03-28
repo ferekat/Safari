@@ -66,9 +66,17 @@ namespace SafariView.ViewModel
             { TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
             { TileType.EMPTY,new SolidColorBrush(Color.FromRgb(0, 0, 0))},
             { TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
-            { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
+           // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
+        };
+
+        private static Dictionary<TileCondition, Brush> conditionBrushes = new Dictionary<TileCondition, Brush>()
+        {
+            {TileCondition.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            {TileCondition.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
+            {TileCondition.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
+            {TileCondition.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
         };
         #endregion
 
@@ -83,6 +91,10 @@ namespace SafariView.ViewModel
             {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
             {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) }
         };
+        private static Brush HillBrush(Tile hill)
+        {
+            return new SolidColorBrush(Color.FromRgb(0, (byte)(102 + hill.Z), 0));
+        }
 
         #endregion
 
@@ -323,7 +335,7 @@ namespace SafariView.ViewModel
             }
             if (CAction == ClickAction.BUY)
             {
-                model.BuyEntity(SelectedShopName, gameX, gameY);
+                model.BuyItem(SelectedShopName, gameX, gameY);
             }
 
             if (CAction == ClickAction.SELL)
@@ -386,7 +398,21 @@ namespace SafariView.ViewModel
                     Brush? b = null;
 
                     //Get type of tile
-                    b = tileBrushes[t.Type];
+                    if (t.HasCondition())
+                    {
+                        b = conditionBrushes[t.Condition];
+                    }
+                    else
+                    {
+                        if (t.Type == TileType.HILL)
+                        {
+                            b = HillBrush(t);
+                        }else
+                        {
+                            b = tileBrushes[t.Type];
+
+                        }
+                    }
 
                     /* Set currently selected tile's color to yellow
                     if((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));

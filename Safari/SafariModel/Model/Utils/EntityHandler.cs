@@ -10,6 +10,9 @@ namespace SafariModel.Model.Utils
 {
     public class EntityHandler
     {
+
+
+       
         private List<Entity> entities = new();
         private List<Carnivore> carnivores = new();
         private List<Herbivore> herbivores = new();
