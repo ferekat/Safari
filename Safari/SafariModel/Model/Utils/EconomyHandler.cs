@@ -25,16 +25,16 @@ namespace SafariModel.Model.Utils
             { typeof(PalmTree),100 },
             { typeof(Guard),0 }
         };
-        private Dictionary<TileCondition, int> conditionTileCosts = new Dictionary<TileCondition, int>
+        private Dictionary<TilePlaceable, int> placeableCosts = new Dictionary<TilePlaceable, int>
         {
             {
-                TileCondition.IS_ROAD,100
+                TilePlaceable.IS_ROAD,100
             },
             {
-                TileCondition.IS_SMALL_BRIDGE,500
+                TilePlaceable.IS_SMALL_BRIDGE,500
             },
             {
-                TileCondition.IS_LARGE_BRIDGE,1500
+                TilePlaceable.IS_LARGE_BRIDGE,1500
             }
         };
         private Dictionary<TileType, int> tileTypeCosts = new Dictionary<TileType, int>
@@ -71,18 +71,18 @@ namespace SafariModel.Model.Utils
         {
             money += entityCostTable[item];
         }
-        public bool BuyTile(TileType tileType)
+        public bool BuyTile(TileType clickedType,TileType tileType)
         {
             
             int cost = tileTypeCosts[tileType];
-            if (money < cost) return false;
+            if (money < cost || Tile.tileInteractionMap[tileType] != clickedType) return false;
             money -= cost;
             return true;
         }
-        public bool BuyTileCondition(TileCondition tileCondition)
+        public bool BuyPlaceable(TileType clickedType,TilePlaceable placeable)
         {
-            int cost = conditionTileCosts[tileCondition];
-            if (money < cost) return false;
+            int cost = placeableCosts[placeable];
+            if (money < cost || Tile.placeableInteractionMap[placeable] != clickedType) return false;
             money -= cost;
             return true;
         }

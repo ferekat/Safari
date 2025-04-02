@@ -14,24 +14,39 @@ namespace SafariModel.Model.Tiles
         private TileZ? z;
         private TileType tileType;
 
+        //<Amire szeretném hogy változzon,Amit tipusu mezőt lehet megváltoztatni>
+        public readonly static Dictionary<TileType, TileType> tileInteractionMap = new Dictionary<TileType, TileType>()
+        {       
+            {TileType.GRASS_GROUND,TileType.GROUND},
+            {TileType.WATER,TileType.GROUND}
+        };
+
+        //<Amit le akarok helyezni,Amilyen tipusu mezőre le lehet helyezni>
+        public readonly static Dictionary<TilePlaceable,TileType> placeableInteractionMap = new Dictionary<TilePlaceable, TileType>()
+        {
+            { TilePlaceable.IS_ROAD,TileType.GROUND},
+            { TilePlaceable.IS_SMALL_BRIDGE,TileType.WATER},
+            { TilePlaceable.IS_LARGE_BRIDGE,TileType.WATER}
+        };
         public readonly static Dictionary<string, TileType> tileTypeMap = new Dictionary<string, TileType>()
         {
-            {"Lake",TileType.WATER}
+            {"Lake",TileType.WATER},
+            {"Grass",TileType.GRASS_GROUND}
         };
-        public readonly static Dictionary<string, TileCondition> tileConditionMap = new Dictionary<string, TileCondition>()
+        public readonly static Dictionary<string, TilePlaceable> placeableMap = new Dictionary<string, TilePlaceable>()
         {
-            {"Road",TileCondition.IS_ROAD},
-            {"Bridge",TileCondition.IS_LARGE_BRIDGE}
+            {"Road",TilePlaceable.IS_ROAD},
+            {"Bridge",TilePlaceable.IS_LARGE_BRIDGE}
         };
 
 
-        private TileCondition tileCondition;
+        private TilePlaceable placeable;
 
         public int I { get { return i; } }
         public int J { get { return j; } }
 
         public int Z { get { if (z == null) return 0;else return z.Z ; } }
-        public TileCondition Condition { get { return tileCondition; } }
+        public TilePlaceable Placeable { get { return placeable; } }
         public TileType Type { get { return tileType; } }
 
 
@@ -47,27 +62,21 @@ namespace SafariModel.Model.Tiles
             if (tileType == TileType.HILL) z = new TileZ(r.Next(1,10));
             //
 
-            tileCondition = TileCondition.EMPTY;
+            placeable = TilePlaceable.EMPTY;
         }
-        public bool HasCondition()
+        
+        public bool HasPlaceable()
         {
-            return tileCondition != TileCondition.EMPTY;
+            return placeable != TilePlaceable.EMPTY;
         }
         public void SetType(TileType tileType)
         {
             this.tileType = tileType;
         }
-        public void SetCondition(TileCondition tileCondition)
+        public void SetPlaceable(TilePlaceable placeable)
         {
-            this.tileCondition = tileCondition;
+            this.placeable = placeable;
         }
-        //public void BuildRoad()
-        //{
-        //    tileCondition = TileCondition.IS_ROAD;
-        //}
-        //public void BuildLake()
-        //{
-        //    SetType(TileType.WATER);
-        //}
+        
     }
 }
