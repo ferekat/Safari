@@ -35,6 +35,7 @@ namespace SafariView.ViewModel
         private int selectedEntityID;
         private ClickAction cAction;
         private string selectedShopName;
+        private GameData? cachedGameData;
         //Mennyi tile lesz látható a képernyőn
         private readonly int HORIZONTALTILECOUNT = 38;
         private readonly int VERTICALTILECOUNT = 16;
@@ -48,6 +49,7 @@ namespace SafariView.ViewModel
         private int camchange_y = 0;
 
         private DispatcherTimer tickTimer;
+        private DispatcherTimer renderTimer;
         private string? indexPage;
         private string? newGamePage;
         private string? creditsPage;
@@ -176,9 +178,13 @@ namespace SafariView.ViewModel
             this.model = model;
             RenderedEntities = new ObservableCollection<EntityRender>();
             this.RenderedTiles = renderedTiles;
-            tickTimer = new DispatcherTimer();
+            tickTimer = new DispatcherTimer(DispatcherPriority.Normal);
             tickTimer.Tick += new EventHandler(OnGameTimerTick);
-            tickTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
+            tickTimer.Interval = TimeSpan.FromSeconds(1 / 120.0);
+
+            renderTimer = new DispatcherTimer(DispatcherPriority.Render);
+            renderTimer.Tick += new EventHandler(OnRenderTick);
+            renderTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
 
             //Initialize commands
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
@@ -300,6 +306,7 @@ namespace SafariView.ViewModel
 
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();
+            renderTimer.Start();
 
         }
         private void OnCreditsClicked()
@@ -319,11 +326,7 @@ namespace SafariView.ViewModel
         #region Model event handlers
         private void Model_TickPassed(object? sender, GameData data)
         {
-
-            OnCameraChangeRequest();
-
-            RenderGameArea(data.tileMap, data.entities);
-
+            cachedGameData = data;
             Money = data.money;
         }
 
@@ -374,8 +377,13 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Private methods
-        private void RenderGameArea(Tile[,] tileMap, List<Entity> entities)
+        private void RenderGameArea()
         {
+
+            if (cachedGameData == null) return;
+
+            Tile[,] tileMap = cachedGameData.tileMap;
+            List<Entity> entities = cachedGameData.entities;
 
             cameraX += CAMERASPEED * camchange_x;
             cameraY += CAMERASPEED * camchange_y;
@@ -471,6 +479,12 @@ namespace SafariView.ViewModel
         private void OnCameraChangeRequest()
         {
             RequestCameraChange?.Invoke(this, (HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
+        }
+
+        private void OnRenderTick(object? sender, EventArgs e)
+        {
+            OnCameraChangeRequest();
+            RenderGameArea();
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)

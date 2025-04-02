@@ -20,7 +20,7 @@
             </Grid.RowDefinitions>
 
             <!--> Tileok megjelentítése</!-->
-            <Grid Panel.ZIndex="0">
+            <Grid Panel.ZIndex="0" IsHitTestVisible="False">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding TopRowHeightString}"/>
@@ -28,8 +28,8 @@
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
 
-                
-                <vm:TileCanvas Background="{Binding BackgroundBrush,Mode=OneTime}" Grid.Row="1" x:Name="tileCanvas"/>
+
+                <vm:TileCanvas Background="{Binding BackgroundBrush,Mode=OneTime}" IsHitTestVisible="False" Grid.Row="1" x:Name="tileCanvas"/>
 
             </Grid>
             <!--> Entityk megjelenítése</!-->
@@ -41,7 +41,7 @@
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions> 
 
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}">
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Background="Transparent" MouseDown="Canvas_MouseDown">
