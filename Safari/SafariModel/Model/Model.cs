@@ -26,6 +26,7 @@ namespace SafariModel.Model
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
         public event EventHandler<bool>? GameOver;
+        public event EventHandler? TileMapUpdated;
         #endregion
 
         public Model()
@@ -76,6 +77,12 @@ namespace SafariModel.Model
         {
             NewGameStarted?.Invoke(this, EventArgs.Empty);  
         }
+
+        private void OnTileMapUpdated()
+        {
+            TileMapUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
         private void InvokeTickPassed()
         {
             GameData data = new GameData();
@@ -104,6 +111,7 @@ namespace SafariModel.Model
                 if (economyHandler.BuyTile(tiletype))
                 {
                     tileMap[tileX,tileY].SetType(tiletype);
+                    OnTileMapUpdated();
                 }
             }
             if ( Tile.tileConditionMap.ContainsKey(name) && Tile.tileConditionMap[name] is TileCondition cond )
@@ -111,6 +119,7 @@ namespace SafariModel.Model
                 if (economyHandler.BuyTileCondition(cond))
                 {
                     tileMap[tileX,tileY].SetCondition(cond);
+                    OnTileMapUpdated();
                 }
             }
 

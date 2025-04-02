@@ -41,6 +41,11 @@ namespace SafariView.ViewModel
 
         private readonly int HORIZONTALCAMERACHANGERANGE = 150;
         private readonly int VERTICALCAMERACHANGERANGE = 150;
+        private readonly int CAMERASPEED = 10;
+        private bool force_render_next_frame;
+
+        private int camchange_x = 0;
+        private int camchange_y = 0;
 
         private DispatcherTimer tickTimer;
         private string? indexPage;
@@ -191,6 +196,7 @@ namespace SafariView.ViewModel
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
             model.GameOver += new EventHandler<bool>(Model_GameOver);
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
+            model.TileMapUpdated += new EventHandler(Model_TileMapUpdated);
 
             //Set window bindings
             IndexPage = "Visible";
@@ -205,7 +211,11 @@ namespace SafariView.ViewModel
             Mid = 1 - TopRowHeightRelative - BottomRowHeightRelative;
             selectedTile = (-1, -1);
             selectedEntityID = -1;
+
+            force_render_next_frame = true;
         }
+
+        
 
         private void Model_NewGameStarted(object? sender, EventArgs e)
         {
@@ -321,6 +331,11 @@ namespace SafariView.ViewModel
         {
             throw new NotImplementedException();
         }
+
+        private void Model_TileMapUpdated(object? sender, EventArgs e)
+        {
+            force_render_next_frame = true;
+        }
         #endregion
 
         #region Game area click handler
@@ -351,10 +366,10 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Camera movement
-        public void MainWindow_CameraMovement(object? sender, (int,int) change)
+        public void MainWindow_CameraMovement(object? sender, (int, int) change)
         {
-            cameraX += 10 * change.Item1;
-            cameraY += 10 * change.Item2;
+            camchange_x = change.Item1;
+            camchange_y = change.Item2;
         }
         #endregion
 
@@ -362,7 +377,8 @@ namespace SafariView.ViewModel
         private void RenderGameArea(Tile[,] tileMap, List<Entity> entities)
         {
 
-            //render tiles
+            cameraX += CAMERASPEED * camchange_x;
+            cameraY += CAMERASPEED * camchange_y;
 
             if (cameraX < 0) cameraX = 0;
             if (cameraY < 0) cameraY = 0;
@@ -370,61 +386,68 @@ namespace SafariView.ViewModel
             if (cameraX > (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE) cameraX = (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE;
             if (cameraY > (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE) cameraY = (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE;
 
-
             int cameraXLeft = cameraX - Tile.TILESIZE;
             int cameraYUp = cameraY - Tile.TILESIZE;
 
-            int tileMapLeft = cameraXLeft / Tile.TILESIZE;
-            int tileMapTop = cameraYUp / Tile.TILESIZE;
-
-
-            if (tileMapLeft < 0) tileMapLeft = 0;
-            if (tileMapTop < 0) tileMapTop = 0;
-
-            RenderedTiles.Clear();
-
-            for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, Model.MAPSIZE); j++)
+            if (camchange_x != 0 || camchange_y != 0 || force_render_next_frame)
             {
-                for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, Model.MAPSIZE); i++)
+
+                force_render_next_frame = false;
+                //render tiles
+
+                int tileMapLeft = cameraXLeft / Tile.TILESIZE;
+                int tileMapTop = cameraYUp / Tile.TILESIZE;
+
+                if (tileMapLeft < 0) tileMapLeft = 0;
+                if (tileMapTop < 0) tileMapTop = 0;
+
+                RenderedTiles.Clear();
+
+                for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, Model.MAPSIZE); j++)
                 {
-                    Tile t = tileMap[i, j];
-
-                    int tileScaledX = t.I * Tile.TILESIZE;
-                    int tileScaledY = t.J * Tile.TILESIZE;
-
-                    //Convert to real coordinates and add to render list
-                    int realX = tileScaledX - cameraXLeft - Tile.TILESIZE;
-                    int realY = tileScaledY - cameraYUp - Tile.TILESIZE;
-
-                    Brush? b = null;
-
-                    //Get type of tile
-                    if (t.HasCondition())
+                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, Model.MAPSIZE); i++)
                     {
-                        b = conditionBrushes[t.Condition];
-                    }
-                    else
-                    {
-                        if (t.Type == TileType.HILL)
-                        {
-                            b = HillBrush(t);
-                        }else
-                        {
-                            b = tileBrushes[t.Type];
+                        Tile t = tileMap[i, j];
 
+                        int tileScaledX = t.I * Tile.TILESIZE;
+                        int tileScaledY = t.J * Tile.TILESIZE;
+
+                        //Convert to real coordinates and add to render list
+                        int realX = tileScaledX - cameraXLeft - Tile.TILESIZE;
+                        int realY = tileScaledY - cameraYUp - Tile.TILESIZE;
+
+                        Brush? b = null;
+
+                        //Get type of tile
+                        if (t.HasCondition())
+                        {
+                            b = conditionBrushes[t.Condition];
                         }
+                        else
+                        {
+                            if (t.Type == TileType.HILL)
+                            {
+                                b = HillBrush(t);
+                            }
+                            else
+                            {
+                                b = tileBrushes[t.Type];
+
+                            }
+                        }
+
+                        /* Set currently selected tile's color to yellow
+                        if ((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));
+                        */
+
+                        TileRender tile = new TileRender(realX, realY, b!);
+
+                        RenderedTiles.Add(tile);
                     }
-
-                    /* Set currently selected tile's color to yellow
-                    if ((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));
-                    */
-
-                    TileRender tile = new TileRender(realX, realY, b!);
-
-                    RenderedTiles.Add(tile);
                 }
-            }
 
+                FinishedRender();
+            }
             //render entities
 
             RenderedEntities.Clear();
@@ -442,12 +465,12 @@ namespace SafariView.ViewModel
                 }
             }
 
-            FinishedRender();
+            
         }
 
         private void OnCameraChangeRequest()
         {
-            RequestCameraChange?.Invoke(this,(HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
+            RequestCameraChange?.Invoke(this, (HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)
