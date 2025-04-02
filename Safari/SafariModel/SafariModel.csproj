@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Model\AbstractEntity\" />
 	<Folder Include="Model\InstanceEntity" />
   </ItemGroup>
 

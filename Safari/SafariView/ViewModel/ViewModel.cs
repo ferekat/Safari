@@ -216,7 +216,8 @@ namespace SafariView.ViewModel
             BottomRowHeightRelative = 0.15F;
             Mid = 1 - TopRowHeightRelative - BottomRowHeightRelative;
             selectedTile = (-1, -1);
-            selectedEntityID = -1;
+            //Debug : changed to 0 from -1
+            selectedEntityID = 0;
 
             force_render_next_frame = true;
         }
@@ -347,6 +348,15 @@ namespace SafariView.ViewModel
             int gameX = cameraX + (int)p.X;
             int gameY = cameraY + (int)p.Y;
 
+            
+            
+
+            //Debug
+            if(CAction == ClickAction.NOTHING)
+            {
+                model.PFDebug(selectedEntityID, gameX, gameY);
+            }
+
             if (CAction == ClickAction.SELECT)
             {
                 selectedTile = model.GetTileFromCoords(gameX, gameY);
@@ -462,13 +472,35 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
+
+                /* Set currently selected entity's color to blue 
+                if (e.ID == selectedEntityID)
+                {
+                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, new SolidColorBrush(Color.FromRgb(30, 30, 255)), e.EntitySize));
+                    // And show its path and passable checks
+                    if (e is MovingEntity me)
+                    {
+                        foreach (System.Drawing.Point p in me.targetList)
+                        {
+                            RenderedEntities.Add(new EntityRender(p.X - cameraX, p.Y - cameraY, new SolidColorBrush(Color.FromRgb(0, 255, 0)), 15));
+                        }
+                        foreach (System.Drawing.Point p in me.passableCheck)
+                        {
+                            RenderedEntities.Add(new EntityRender(p.X - cameraX + Tile.TILESIZE / 2, p.Y - cameraY + Tile.TILESIZE / 2, new SolidColorBrush(Color.FromRgb(255, 0, 0)), 15));
+                        }
+
+                        if (me.passableCheckUpdated)
+                        {
+                            me.passableCheckUpdated = false;
+                        }
+                        RenderedEntities.Add(new EntityRender(me.currentTarget.X - cameraX, me.currentTarget.Y - cameraY, new SolidColorBrush(Color.FromRgb(255, 255, 0)), 15));
+                    }
+                }
+                else RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
+            */
+
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 2) * Tile.TILESIZE))
                 {
-                    /* Set currently selected entity's color to blue
-                    if (e.ID == selectedEntityID) RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, new SolidColorBrush(Color.FromRgb(30,30,255)), e.EntitySize));
-                    else RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
-                    */
-
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
                 }
             }

@@ -17,7 +17,16 @@ namespace SafariModel.Model.Tiles
 
         public bool IsPassable(int x, int y)
         {
-            return tileMap[x, y].Type != TileType.WATER;
+            if (x < 0 || x >= tileMap.GetLength(0) || y < 0 || y >= tileMap.GetLength(1)) return false;
+            if(tileMap[x, y].Condition == TileCondition.IS_LARGE_BRIDGE) return true;
+            return tileMap[x, y].Type != TileType.WATER && tileMap[x, y].Type != TileType.FENCE;
+        }
+
+        public int GetTileWeight(int x, int y)
+        {
+            //mennyire "nehéz" átkelni egy adott tile-on (pl. hilleken lassabban lehet közlekedni), a pathfindinghoz
+            //Nincs még implementálva!!!
+            return 1;
         }
     }
 }
