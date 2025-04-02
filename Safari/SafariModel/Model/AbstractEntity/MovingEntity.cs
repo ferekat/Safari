@@ -18,6 +18,8 @@ namespace SafariModel.Model.AbstractEntity
         private float subX;
         private float subY;
 
+        private static TileCollision tileCollision;
+
         protected float speed;
         protected int range;
         protected bool isMoving;
@@ -37,6 +39,12 @@ namespace SafariModel.Model.AbstractEntity
             isMoving = false;
             speed = 5.5F;
         }
+
+        public static void RegisterTileCollision(TileCollision collision)
+        {
+            tileCollision = collision;
+        }
+
         public void SetTarget(Point p)
         {
             targetPoints.Clear();

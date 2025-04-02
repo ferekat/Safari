@@ -42,6 +42,9 @@ namespace SafariModel.Model
                 }
             }
 
+            TileCollision tc = new TileCollision(tileMap);
+            MovingEntity.RegisterTileCollision(tc);
+
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Lion(100, 200));
             entityHandler.LoadEntity(new Gazelle(1200, 500));
