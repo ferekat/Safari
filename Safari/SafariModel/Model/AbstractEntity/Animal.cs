@@ -1,4 +1,5 @@
-﻿using SafariModel.Model.Tiles;
+﻿using SafariModel.Model.InstanceEntity;
+using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,7 +20,7 @@ namespace SafariModel.Model.AbstractEntity
             Wandering
         }
         #endregion
-
+       
         #region Private fields
         private List<Point> exploredFoodPlaces;
         private List<Point> exploredWaterPlaces;

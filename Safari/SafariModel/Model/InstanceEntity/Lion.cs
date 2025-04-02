@@ -13,6 +13,7 @@ namespace SafariModel.Model.InstanceEntity
         {
             entitySize = 40;
         }
+       
         #endregion
 
         #region Methods
