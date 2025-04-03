@@ -78,12 +78,12 @@ namespace SafariView.ViewModel
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
         };
 
-        private static Dictionary<TileCondition, Brush> conditionBrushes = new Dictionary<TileCondition, Brush>()
+        private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
         {
-            {TileCondition.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            {TileCondition.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
-            {TileCondition.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
-            {TileCondition.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
+            {TilePlaceable.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            {TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
+            {TilePlaceable.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
+            {TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
         };
         #endregion
 
@@ -427,9 +427,9 @@ namespace SafariView.ViewModel
                         Brush? b = null;
 
                         //Get type of tile
-                        if (t.HasCondition())
+                        if (t.HasPlaceable())
                         {
-                            b = conditionBrushes[t.Condition];
+                            b = conditionBrushes[t.Placeable];
                         }
                         else
                         {

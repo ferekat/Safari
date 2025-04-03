@@ -107,20 +107,22 @@ namespace SafariModel.Model
         {
             int tileX = GetTileFromCoords(x, y).Item1;
             int tileY = GetTileFromCoords(x, y).Item2;
+            Tile clickedTile = tileMap[tileX, tileY];
+            
             if (Tile.tileTypeMap.ContainsKey(itemName) && Tile.tileTypeMap[itemName] is TileType tiletype)
             {
-                if (economyHandler.BuyTile(tiletype))
+                if (economyHandler.BuyTile(clickedTile.Type,tiletype))
                 {
-                    tileMap[tileX,tileY].SetType(tiletype);
+                    clickedTile.SetType(tiletype);
                     OnTileMapUpdated();
                 }
                 return;
             }
-            if ( Tile.tileConditionMap.ContainsKey(itemName) && Tile.tileConditionMap[itemName] is TileCondition cond )
+            if ( Tile.placeableMap.ContainsKey(itemName) && Tile.placeableMap[itemName] is TilePlaceable placeable)
             {
-                if (economyHandler.BuyTileCondition(cond))
+                if (economyHandler.BuyPlaceable(clickedTile.Type,placeable))
                 {
-                    tileMap[tileX,tileY].SetCondition(cond);
+                    clickedTile.SetPlaceable(placeable);
                     OnTileMapUpdated();
                 }
                 return;
