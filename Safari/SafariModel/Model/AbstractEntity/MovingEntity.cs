@@ -15,15 +15,10 @@ namespace SafariModel.Model.AbstractEntity
     public abstract class MovingEntity : Entity
     {
         private Queue<Point> targetPoints;
-        public Point currentTarget;
-        public Vector2 movementVector;
+        private Point currentTarget;
+        private Vector2 movementVector;
         private float subX;
         private float subY;
-
-        //Debug only
-        public List<Point> targetList;
-        public List<Point> passableCheck;
-        public bool passableCheckUpdated = false;
 
         private static TileCollision tileCollision;
         private static (int, int)[] coordSets = new (int, int)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
@@ -46,10 +41,6 @@ namespace SafariModel.Model.AbstractEntity
             subY = 0;
             isMoving = false;
             speed = 5.5F;
-            //debug
-            targetList = new List<Point>();
-            passableCheck = new List<Point>();
-            currentTarget = new Point(-1, -1);
         }
 
         public static void RegisterTileCollision(TileCollision collision)
@@ -107,16 +98,9 @@ namespace SafariModel.Model.AbstractEntity
             dx *= 2;
             dy *= 2;
 
-            //debug
-            passableCheck.Clear();
-
 
             for (; n > 0; --n)
             {
-                //debug
-                passableCheck.Add(new Point(x * Tile.TILESIZE, y * Tile.TILESIZE));
-                passableCheckUpdated = true;
-
                 if (!tileCollision.IsPassable(x, y)) return false;
 
                 if (error > 0)
@@ -238,9 +222,6 @@ namespace SafariModel.Model.AbstractEntity
             {
                 targetPoints.Enqueue(pnt);
             }
-
-            //Debug only
-            targetList = pathPoints;
 
         }
 

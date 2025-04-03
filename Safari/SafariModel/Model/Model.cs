@@ -19,8 +19,7 @@ namespace SafariModel.Model
         public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
 
-        //debug - changed from private to public
-        public EntityHandler entityHandler;
+        private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
 
         #region Events
@@ -47,7 +46,7 @@ namespace SafariModel.Model
             MovingEntity.RegisterTileCollision(tc);
 
             //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Guard(100, 200));
+            entityHandler.LoadEntity(new Lion(100, 200));
 
             economyHandler = new EconomyHandler(9999);
 
@@ -166,17 +165,6 @@ namespace SafariModel.Model
 
             economyHandler.SellEntity(e.GetType());
             entityHandler.RemoveEntity(e);
-        }
-
-        //Pathfinding debuggolására - ha már nem kell, töröld ki!
-        public void PFDebug(int entityID, int targetX, int targetY)
-        {
-            Entity? e = entityHandler.GetEntityByID(entityID);
-            if (e == null) return;
-            if(e is MovingEntity me)
-            {
-                me.SetTarget(new Point(targetX, targetY));
-            }
         }
     }
 }
