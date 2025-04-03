@@ -59,6 +59,12 @@ namespace SafariModel.Model.AbstractEntity
 
         public void SetTarget(Point p)
         {
+            //Ha a target egy nem járható tileon van, nem csinálunk semmit
+            int tileX;
+            int tileY;
+            (tileX, tileY) = GetTileCoords(p);
+            if (!tileCollision.IsPassable(tileX, tileY)) return;
+
             targetPoints.Clear();
 
             //Ha van egyenes út a két pont között, akkor elég a végpontot célnak megadni
@@ -69,9 +75,19 @@ namespace SafariModel.Model.AbstractEntity
             }
             //Egyébként kiszámítjuk az utat
             else CalculateRoute(p);
-            if(targetPoints.Count > 0) CurrentTarget = targetPoints.Dequeue();
+            if (targetPoints.Count > 0) CurrentTarget = targetPoints.Dequeue();
 
             isMoving = true;
+        }
+
+        public void SetPath(Queue<Point> points)
+        {
+            targetPoints = points;
+            if(targetPoints.Count > 0)
+            {
+                CurrentTarget = targetPoints.Dequeue();
+                isMoving = true;
+            }
         }
 
         private bool IsSpacePassableBetweenPoints(int x0, int y0, int x1, int y1)
@@ -121,6 +137,11 @@ namespace SafariModel.Model.AbstractEntity
         private static (int, int) GetTileCoords(int x, int y)
         {
             return (x / Tile.TILESIZE, y / Tile.TILESIZE);
+        }
+
+        private static (int,int) GetTileCoords(Point p)
+        {
+            return GetTileCoords(p.X, p.Y);
         }
 
         private void CalculateMovementVector()
@@ -197,9 +218,9 @@ namespace SafariModel.Model.AbstractEntity
             int finishX;
             int finishY;
             (startX, startY) = GetTileCoords(this.x, this.y);
-            (finishX, finishY) = GetTileCoords(p.X, p.Y);
+            (finishX, finishY) = GetTileCoords(p);
             Stack<Point>? pathStack = PathFindingAlgorithm(startX, startY, finishX, finishY);
-            
+
 
             //Ha nem sikerült utat találni, legyen a saját pozíciója a target
             if (pathStack == null)
@@ -207,19 +228,56 @@ namespace SafariModel.Model.AbstractEntity
                 CurrentTarget = new Point(this.X, this.Y);
                 return;
             }
+            //stack + az utolsó pont egybefűzése egy listába
             List<Point> pathPoints = [.. pathStack, p];
 
-            //Pontok listájának egyszerűsítése - még nincs kész
-
-            //
+            //Pontok listájának egyszerűsítése
+            SimplifyPoints(pathPoints);
 
             foreach (Point pnt in pathPoints)
             {
                 targetPoints.Enqueue(pnt);
             }
+
             //Debug only
             targetList = pathPoints;
 
+        }
+
+        private void SimplifyPoints(List<Point> points)
+        {
+            if (points.Count < 3) return;
+
+            int current = 1;
+            while (current + 1 < points.Count)
+            {
+                if (points[current - 1].X == points[current + 1].X ||
+                    points[current - 1].Y == points[current + 1].Y
+                    )
+                {
+                    points.RemoveAt(current);
+                    continue;
+                }
+                else current++;
+            }
+
+            if (points.Count < 3) return;
+            bool removedpoints = true;
+            while (removedpoints)
+            {
+                removedpoints = false;
+                current = 1;
+                while (current + 1 < points.Count)
+                {
+                    if (IsSpacePassableBetweenPoints(points[current - 1].X, points[current - 1].Y, points[current + 1].X, points[current + 1].Y))
+                    {
+                        points.RemoveAt(current);
+                        removedpoints = true;
+                        continue;
+                    }
+                    else current++;
+                }
+            }
         }
 
         private Stack<Point>? PathFindingAlgorithm(int startX, int startY, int finishX, int finishY)
@@ -227,8 +285,7 @@ namespace SafariModel.Model.AbstractEntity
             PriorityQueue<PathNode, int> openList = new PriorityQueue<PathNode, int>();
             HashSet<(int, int)> openListCoords = new HashSet<(int, int)>();
             HashSet<(int, int)> closedList = new HashSet<(int, int)>();
-            //Feldolgozott nodeok eltárolása, hogy a gc ne lője ki őket - nem biztos hogy kell
-            List<PathNode> evaluatedNodes = new List<PathNode>();
+            
 
             //Elindítjuk a keresést a start node megadásával
             PathNode startingNode = new PathNode(null, startX, startY, 0, HeuristicFunction(startX, startY, finishX, finishY));
@@ -268,7 +325,7 @@ namespace SafariModel.Model.AbstractEntity
 
                 //node feldolgozásának vége
                 closedList.Add((nodeX, nodeY));
-                evaluatedNodes.Add(currentNode);
+                
             }
 
             //A pont nem elérhető innen

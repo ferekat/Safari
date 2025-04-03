@@ -454,7 +454,7 @@ namespace SafariView.ViewModel
                             }
                         }
 
-                        /* Set currently selected tile's color to yellow
+                        /* Debug: Set currently selected tile's color to yellow
                         if ((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));
                         */
 
@@ -473,7 +473,7 @@ namespace SafariView.ViewModel
             foreach (Entity e in entities)
             {
 
-                /* Set currently selected entity's color to blue 
+                /* Debug: Set currently selected entity's color to blue  */
                 if (e.ID == selectedEntityID)
                 {
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, new SolidColorBrush(Color.FromRgb(30, 30, 255)), e.EntitySize));
@@ -497,7 +497,7 @@ namespace SafariView.ViewModel
                     }
                 }
                 else RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
-            */
+            
 
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 2) * Tile.TILESIZE))
                 {
