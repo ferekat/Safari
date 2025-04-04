@@ -347,6 +347,9 @@ namespace SafariView.ViewModel
             int gameX = cameraX + (int)p.X;
             int gameY = cameraY + (int)p.Y;
 
+            
+            
+
             if (CAction == ClickAction.SELECT)
             {
                 selectedTile = model.GetTileFromCoords(gameX, gameY);
@@ -444,10 +447,6 @@ namespace SafariView.ViewModel
                             }
                         }
 
-                        /* Set currently selected tile's color to yellow
-                        if ((i,j) == selectedTile) b = new SolidColorBrush(Color.FromRgb(252, 240, 3));
-                        */
-
                         TileRender tile = new TileRender(realX, realY, b!);
 
                         RenderedTiles.Add(tile);
@@ -464,11 +463,6 @@ namespace SafariView.ViewModel
             {
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 2) * Tile.TILESIZE))
                 {
-                    /* Set currently selected entity's color to blue
-                    if (e.ID == selectedEntityID) RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, new SolidColorBrush(Color.FromRgb(30,30,255)), e.EntitySize));
-                    else RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
-                    */
-
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
                 }
             }
