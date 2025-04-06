@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using SafariModel.Model.Utils;
+using SafariModel.Model.EventArgsClasses;
 
 namespace SafariModel.Model.InstanceEntity
 {
@@ -12,8 +15,14 @@ namespace SafariModel.Model.InstanceEntity
         #region Private Fields
         private int salary;
         private int level;
+        private Carnivore? targetAnimal;
+        private int targX;
+        private int targY;
         #endregion
         public int Salary { get { return salary; } }
+        public Carnivore TargetAnimal { get { return targetAnimal!; } set { targetAnimal = value; } }
+
+        public event EventHandler<KillAnimalEventArgs>? KilledAnimal;
         #region Constructor
         public Guard(int x, int y) : base(x, y, 100, 0)
         {
@@ -28,6 +37,31 @@ namespace SafariModel.Model.InstanceEntity
 
         }
         #endregion
+        protected void ChaseTarget()
+        {
+            targX = targetAnimal!.X;
+            targY = targetAnimal!.Y;
+            this.SetTarget(new Point(targX, targY));
+        }
+        protected override void EntityLogic()
+        {
+            if (targetAnimal != null)
+            {
+                if (targX != targetAnimal.X || targY != targetAnimal.Y)
+                {
+                    ChaseTarget();
+                }
+                if (targX == x && targY == y)
+                {
+                    KillAnimal();
+                    targetAnimal = null;
+                }
+            }
+        }
+        protected override void KillAnimal()
+        {
+            KilledAnimal?.Invoke(this, new KillAnimalEventArgs(TargetAnimal));
+        }
         #region Private methods
         private int SetSalary()
         {

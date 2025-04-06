@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SafariModel.Model.AbstractEntity;
 using System.Drawing;
 using System.Diagnostics;
+using SafariModel.Model.EventArgsClasses;
 
 namespace SafariModel.Model
 {
@@ -61,6 +62,10 @@ namespace SafariModel.Model
         public int GetEntityIDFromCoords(int x, int y)
         {
             return entityHandler.GetEntityIDFromCoords(x, y);
+        }
+        public Entity? GetEntityByID(int id)
+        {
+            return entityHandler.GetEntityByID(id);
         }
         #endregion
 
@@ -137,6 +142,7 @@ namespace SafariModel.Model
 
             if (entity is Guard guardEntity)
             {
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillCarnivore);
                 if (!economyHandler.PaySalary(guardEntity)) return;
             }
 
@@ -154,6 +160,10 @@ namespace SafariModel.Model
 
             economyHandler.SellEntity(e.GetType());
             entityHandler.RemoveEntity(e);
+        }
+        public void KillCarnivore(object? sender, KillAnimalEventArgs e)
+        {
+            entityHandler.RemoveEntity(e.Carnivore);
         }
     }
 }
