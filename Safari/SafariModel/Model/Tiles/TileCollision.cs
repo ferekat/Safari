@@ -18,7 +18,7 @@ namespace SafariModel.Model.Tiles
         public bool IsPassable(int x, int y)
         {
             if (x < 0 || x >= tileMap.GetLength(0) || y < 0 || y >= tileMap.GetLength(1)) return false;
-            if(tileMap[x, y].Condition == TileCondition.IS_LARGE_BRIDGE) return true;
+            if(tileMap[x, y].Placeable == TilePlaceable.IS_LARGE_BRIDGE) return true;
             return tileMap[x, y].Type != TileType.WATER && tileMap[x, y].Type != TileType.FENCE;
         }
 
