@@ -16,6 +16,8 @@ namespace SafariModel.Model.InstanceEntity
         private int salary;
         private int level;
         private Carnivore? targetAnimal;
+        private int targX;
+        private int targY;
         #endregion
         public int Salary { get { return salary; } }
         public Carnivore TargetAnimal { get { return targetAnimal!; } set { targetAnimal = value; } }
@@ -37,25 +39,23 @@ namespace SafariModel.Model.InstanceEntity
         #endregion
         protected void ChaseTarget()
         {
-            if (isMoving)
-            {
-                int targX = targetAnimal!.X;
-                int targY = targetAnimal!.Y;
-                this.SetTarget(new Point(targX, targY));
-                if (targX == x && targY == y)
-                {
-                    KillAnimal();
-                    targetAnimal = null;
-                    isMoving = false;
-                }
-            }
+            targX = targetAnimal!.X;
+            targY = targetAnimal!.Y;
+            this.SetTarget(new Point(targX, targY));
         }
         protected override void EntityLogic()
         {
             if (targetAnimal != null)
             {
-                isMoving = true;
-                ChaseTarget();
+                if (targX != targetAnimal.X || targY != targetAnimal.Y)
+                {
+                    ChaseTarget();
+                }
+                if (targX == x && targY == y)
+                {
+                    KillAnimal();
+                    targetAnimal = null;
+                }
             }
         }
         protected override void KillAnimal()
