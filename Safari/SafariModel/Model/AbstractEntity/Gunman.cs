@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.AbstractEntity
 {
-    public class Gunman : MovingEntity
+    public abstract class Gunman : MovingEntity
     {
         private int health;
         private int damage;
@@ -21,19 +21,11 @@ namespace SafariModel.Model.AbstractEntity
             Health = health;
             Damage = damage;
         }
-
-        public void SetTarget()
-        {
-
-        }
         public void Fire()
         {
 
         }
-        public void KillAnimal()
-        {
-
-        }
+        protected abstract void KillAnimal();
 
         protected override void EntityLogic()
         {

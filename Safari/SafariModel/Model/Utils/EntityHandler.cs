@@ -64,7 +64,7 @@ namespace SafariModel.Model.Utils
 
         public void TickEntities()
         {
-            foreach (Entity entity in entities)
+            foreach (Entity entity in entities.ToList())
             {
                 entity.EntityTick();
             }

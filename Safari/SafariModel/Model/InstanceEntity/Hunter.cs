@@ -23,5 +23,9 @@ namespace SafariModel.Model.InstanceEntity
         {
 
         }
+        protected override void KillAnimal()
+        {
+            //throw new NotImplementedException();
+        }
     }
 }

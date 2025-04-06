@@ -18,6 +18,7 @@ using SafariModel.Model.InstanceEntity;
 using System.Diagnostics.Eventing.Reader;
 using System.Data.SqlTypes;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace SafariView.ViewModel
 {
@@ -31,6 +32,7 @@ namespace SafariView.ViewModel
         private int cameraX;
         private int cameraY;
 
+        private Guard? selectedGuard;
         private (int, int) selectedTile;
         private int selectedEntityID;
         private ClickAction cAction;
@@ -112,7 +114,8 @@ namespace SafariView.ViewModel
             NOTHING,
             BUY,
             SELL,
-            SELECT
+            SELECT,
+            TARGET
         }
         #endregion
 
@@ -347,8 +350,18 @@ namespace SafariView.ViewModel
             int gameX = cameraX + (int)p.X;
             int gameY = cameraY + (int)p.Y;
 
-            
-            
+
+            if (CAction == ClickAction.NOTHING)
+            {
+                selectedTile = model.GetTileFromCoords(gameX, gameY);
+                selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
+                Entity? e = model.GetEntityByID(selectedEntityID);
+                if (e is Guard g)
+                {
+                    selectedGuard = g;
+                    CAction = ClickAction.TARGET;
+                }
+            }
 
             if (CAction == ClickAction.SELECT)
             {
@@ -366,6 +379,19 @@ namespace SafariView.ViewModel
                 if (selectedEntityID != -1)
                 {
                     model.SellEntity(selectedEntityID);
+                }
+            }
+            if (CAction == ClickAction.TARGET)
+            {
+                selectedEntityID = model.GetEntityIDFromCoords(gameX, gameY);
+                if (selectedEntityID != -1)
+                {
+                    if (model.GetEntityByID(selectedEntityID) is Carnivore c)
+                    {
+                        selectedGuard!.TargetAnimal = c;
+                        CAction = ClickAction.NOTHING;
+                        selectedGuard = null;
+                    }
                 }
             }
         }

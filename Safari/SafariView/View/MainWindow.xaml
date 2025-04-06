@@ -253,6 +253,10 @@
                                                 <Setter Property="Background" Value="#FFFFD243"/>
                                             </DataTrigger>
 
+                                            <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.TARGET}">
+                                                <Setter Property="Background" Value="#FFFFD243"/>
+                                            </DataTrigger>
+
                                             <DataTrigger Binding="{Binding CAction}" Value="{x:Static vm:ViewModel+ClickAction.BUY}">
                                                 <Setter Property="Background" Value="#FFFFD243"/>
                                             </DataTrigger>
