@@ -56,7 +56,7 @@ namespace SafariModel.Model.InstanceEntity
         }
         private int TimeNextHunter()
         {
-            int x = 3;// random.Next(5, 30);
+            int x = random.Next(5, 30);
             return x;
 
         }
