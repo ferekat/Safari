@@ -2,7 +2,9 @@
 using SafariModel.Model.InstanceEntity;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +20,15 @@ namespace SafariModel.Model.Utils
         private List<Herbivore> herbivores = new();
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
+        
+        private Random random;
 
         private int CurrentID;
 
         public EntityHandler() 
         {
             CurrentID = 0;
+            random = new Random();
         }
 
         public void LoadEntity(Entity entity)
@@ -69,9 +74,27 @@ namespace SafariModel.Model.Utils
                 entity.EntityTick();
             }
         }
+        public Hunter GetNextHunter()
+        {
+            return hunters.Last();
+        }
         public void SpawnHunter()
         {
-            //Spawn mechanika TileType.Fence-re
+            switch (random.Next(4))
+            {
+                case 0:
+                    LoadEntity(new Hunter(38, random.Next((Model.MAPSIZE + 1) * 49)));
+                    break;
+                case 1:
+                    LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), 38));
+                    break;
+                case 2:
+                    LoadEntity(new Hunter((Model.MAPSIZE + 1) * 49 - 1, random.Next((Model.MAPSIZE + 1) * 49)));
+                    break;
+                case 3:
+                    LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), (Model.MAPSIZE + 1) * 49 - 1));
+                    break;
+            }
         }
         public void TargetHunter(Guard guard, Hunter hunter)
         {

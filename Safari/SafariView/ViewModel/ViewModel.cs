@@ -52,6 +52,7 @@ namespace SafariView.ViewModel
 
         private DispatcherTimer tickTimer;
         private DispatcherTimer renderTimer;
+        private int tickCount;
         private string? indexPage;
         private string? newGamePage;
         private string? creditsPage;
@@ -99,7 +100,8 @@ namespace SafariView.ViewModel
             {typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
             {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
             {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
-            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) }
+            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            {typeof(Hunter),new SolidColorBrush(Color.FromRgb(150,150,150)) },
         };
         private static Brush HillBrush(Tile hill)
         {
@@ -509,7 +511,8 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
-            model.UpdatePerTick();
+            tickCount++;
+            model.UpdatePerTick(tickCount);
         }
 
         private void FinishedRender()
