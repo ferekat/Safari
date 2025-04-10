@@ -23,6 +23,8 @@ namespace SafariModel.Model
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
+        private int tickCount;
+        private int secondCounterHunter;
 
         #region Events
         public event EventHandler? NewGameStarted;
@@ -34,6 +36,7 @@ namespace SafariModel.Model
         public Model()
         {
             entityHandler = new EntityHandler();
+            secondCounterHunter = 0;
 
             tileMap = new Tile[MAPSIZE,MAPSIZE];
             for (int i = 0; i < MAPSIZE; i++)
@@ -49,8 +52,11 @@ namespace SafariModel.Model
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Lion(100, 200));
+            entityHandler.LoadEntity(new Hunter(38,38));
 
             economyHandler = new EconomyHandler(9999);
+
+            tickCount = 0;
 
         }
 
@@ -73,6 +79,21 @@ namespace SafariModel.Model
         public void UpdatePerTick()
         {
             //Ide jön gamelogic
+            tickCount++;
+            if (tickCount % 120 == 0)
+            {
+                secondCounterHunter++;
+                Hunter? hunter = entityHandler.GetNextHunter();
+                if (hunter != null)
+                {
+                    if (secondCounterHunter == hunter.EnterField)
+                    {
+                        hunter.HasEntered = true;
+                        entityHandler.SpawnHunter();
+                        secondCounterHunter = 0;
+                    }
+                }
+            }
             entityHandler.TickEntities();
 
             InvokeTickPassed();
@@ -96,6 +117,7 @@ namespace SafariModel.Model
             data.tileMap = tileMap;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
+            data.gameTime = tickCount;
             TickPassed?.Invoke(this, data);
         }
 
