@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SafariModel.Model.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace SafariModel.Model.Tiles
         private int i;
         private int j;
         private TileZ? z;
+        private VisitedRoad? visitedRoad;
         private TileType tileType;
 
         //<Amire szeretném hogy változzon,Amit tipusu mezőt lehet megváltoztatni>
@@ -76,6 +78,11 @@ namespace SafariModel.Model.Tiles
         public void SetPlaceable(TilePlaceable placeable)
         {
             this.placeable = placeable;
+            if (placeable != TilePlaceable.IS_GRASS)
+            {
+                visitedRoad = new VisitedRoad(false);
+                RoadNetworkHandler.AddRoadToNetwork(this);
+            }
         }
         
     }
