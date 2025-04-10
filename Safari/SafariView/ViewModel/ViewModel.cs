@@ -52,7 +52,6 @@ namespace SafariView.ViewModel
 
         private DispatcherTimer tickTimer;
         private DispatcherTimer renderTimer;
-        private int tickCount;
         private string? indexPage;
         private string? newGamePage;
         private string? creditsPage;
@@ -511,8 +510,7 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
-            tickCount++;
-            model.UpdatePerTick(tickCount);
+            model.UpdatePerTick();
         }
 
         private void FinishedRender()

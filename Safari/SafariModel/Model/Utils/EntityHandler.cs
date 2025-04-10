@@ -74,26 +74,30 @@ namespace SafariModel.Model.Utils
                 entity.EntityTick();
             }
         }
-        public Hunter GetNextHunter()
+        public Hunter? GetNextHunter()
         {
+            if (hunters.Count == 0) return null;
             return hunters.Last();
         }
         public void SpawnHunter()
         {
-            switch (random.Next(4))
+            if (hunters.Count < 10)
             {
-                case 0:
-                    LoadEntity(new Hunter(38, random.Next((Model.MAPSIZE + 1) * 49)));
-                    break;
-                case 1:
-                    LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), 38));
-                    break;
-                case 2:
-                    LoadEntity(new Hunter((Model.MAPSIZE + 1) * 49 - 1, random.Next((Model.MAPSIZE + 1) * 49)));
-                    break;
-                case 3:
-                    LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), (Model.MAPSIZE + 1) * 49 - 1));
-                    break;
+                switch (random.Next(4))
+                {
+                    case 0:
+                        LoadEntity(new Hunter(38, random.Next((Model.MAPSIZE + 1) * 49)));
+                        break;
+                    case 1:
+                        LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), 38));
+                        break;
+                    case 2:
+                        LoadEntity(new Hunter((Model.MAPSIZE + 1) * 49 - 1, random.Next((Model.MAPSIZE + 1) * 49)));
+                        break;
+                    case 3:
+                        LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), (Model.MAPSIZE + 1) * 49 - 1));
+                        break;
+                }
             }
         }
         public void TargetHunter(Guard guard, Hunter hunter)

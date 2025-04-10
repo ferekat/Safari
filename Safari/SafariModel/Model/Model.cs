@@ -23,7 +23,8 @@ namespace SafariModel.Model
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
-        private int secondCounter;
+        private int tickCount;
+        private int secondCounterHunter;
 
         #region Events
         public event EventHandler? NewGameStarted;
@@ -35,7 +36,7 @@ namespace SafariModel.Model
         public Model()
         {
             entityHandler = new EntityHandler();
-            secondCounter = 0;
+            secondCounterHunter = 0;
 
             tileMap = new Tile[MAPSIZE,MAPSIZE];
             for (int i = 0; i < MAPSIZE; i++)
@@ -55,6 +56,8 @@ namespace SafariModel.Model
 
             economyHandler = new EconomyHandler(9999);
 
+            tickCount = 0;
+
         }
 
         #region Get tile and entity based on coordinates
@@ -73,18 +76,22 @@ namespace SafariModel.Model
         #endregion
 
         #region Tick update
-        public void UpdatePerTick(int tickCount)
+        public void UpdatePerTick()
         {
             //Ide jön gamelogic
-            if(tickCount % 120 == 0)
+            tickCount++;
+            if (tickCount % 120 == 0)
             {
-                secondCounter++;
-                Hunter hunter = entityHandler.GetNextHunter();
-                if (secondCounter == hunter.EnterField)
+                secondCounterHunter++;
+                Hunter? hunter = entityHandler.GetNextHunter();
+                if (hunter != null)
                 {
-                    hunter.HasEntered = true;
-                    entityHandler.SpawnHunter();
-                    secondCounter = 0;
+                    if (secondCounterHunter == hunter.EnterField)
+                    {
+                        hunter.HasEntered = true;
+                        entityHandler.SpawnHunter();
+                        secondCounterHunter = 0;
+                    }
                 }
             }
             entityHandler.TickEntities();
@@ -110,6 +117,7 @@ namespace SafariModel.Model
             data.tileMap = tileMap;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
+            data.gameTime = tickCount;
             TickPassed?.Invoke(this, data);
         }
 
