@@ -8,6 +8,10 @@ namespace SafariModel.Model.Tiles
 {
     public enum TilePlaceable
     {
-        EMPTY,IS_ROAD,IS_SMALL_BRIDGE,IS_LARGE_BRIDGE
+        EMPTY,
+        IS_ROAD,
+        IS_SMALL_BRIDGE,
+        IS_LARGE_BRIDGE,
+        IS_GRASS
     }
 }
