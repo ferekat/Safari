@@ -1,6 +1,7 @@
 ﻿using SafariModel.Model.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,13 @@ namespace SafariModel.Model.Tiles
     {
         public readonly TileNode? parent;
         public readonly Tile tile;
-
+       
+       
         public TileNode(Tile tile,TileNode? parent)
         {
             this.tile = tile;
             this.parent = parent; 
+            
         }
     }
 
@@ -64,14 +67,12 @@ namespace SafariModel.Model.Tiles
 
         public int I { get { return i; } }
         public int J { get { return j; } }
-
         public int Z { get { if (z == null) return 0;else return z.Z ; } }
         public TilePlaceable Placeable { get { return placeable; } }
         public TileType Type { get { return tileType; } }
-
         public TileNode? NetworkNode { get { return networkNode;} set { networkNode = value; } }
 
-
+        public VisitedRoad? VisitedRoad { get { return visitedRoad; } set { visitedRoad = value; } }
         public Tile(int i, int j,TileZ? z)
         {
             this.i = i;
@@ -110,7 +111,8 @@ namespace SafariModel.Model.Tiles
                    placeable == TilePlaceable.IS_SMALL_BRIDGE ||
                    placeable == TilePlaceable.IS_LARGE_BRIDGE ||
                    tileType == TileType.ENTRANCE ||
-                   tileType == TileType.EXIT;
+                   tileType == TileType.EXIT ||
+                   placeable == TilePlaceable.S;
         }
         
     }

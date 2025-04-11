@@ -122,6 +122,8 @@ namespace SafariModel.Model
                     clickedTile.SetPlaceable(placeable);
                     if (clickedTile.IsInRoadNetwork())
                     {
+                        clickedTile.VisitedRoad = new VisitedRoad(false);
+                        roadNetworkHandler.AddToRoadNetwork(clickedTile);
                         roadNetworkHandler.ShortestPathAStar();
                     }
                     OnTileMapUpdated();

@@ -27,6 +27,8 @@ namespace SafariModel.Model.Tiles
             this.map = map;
             this.entrance = entrance;
             this.exit = exit;
+            entrance.VisitedRoad = new VisitedRoad(false);
+            exit.VisitedRoad = new VisitedRoad(false);
         }
 
         public static TileMap CreateMapTmp()
@@ -47,11 +49,11 @@ namespace SafariModel.Model.Tiles
                 }
             }
 
-            map[1, 5].SetType(TileType.ENTRANCE);
+            map[0, 5].SetType(TileType.ENTRANCE);
             map[5,0].SetType(TileType.EXIT);
 
 
-            return new TileMap(map, map[0, 1], map[0, 2]);
+            return new TileMap(map, map[0,5], map[5,0]);
         }
     }
 }
