@@ -105,7 +105,6 @@ namespace SafariModel.Model.InstanceEntity
                     if (TargX != TargetAnimal!.X || TargY != TargetAnimal.Y)
                     {
                         ChaseTarget();
-                        //should stop here
                     }
                     if (TargX == x && TargY == y)
                     {
@@ -121,13 +120,13 @@ namespace SafariModel.Model.InstanceEntity
         }
         private int TimeNextHunter()
         {
-            int x = 3;// random.Next(30, 120);
+            int x = random.Next(30, 120);
             return x;
 
         }
         private int SetWaitingTime()
         {
-            int x = 360;// random.Next(1200, 7200);
+            int x = random.Next(1200, 7200);
             return x;
         }
     }

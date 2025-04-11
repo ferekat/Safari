@@ -18,7 +18,6 @@ namespace SafariModel.Model.InstanceEntity
         #endregion
         public int Salary { get { return salary; } }
 
-        public event EventHandler<KillAnimalEventArgs>? KilledAnimal;
         #region Constructor
         public Guard(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
         {
