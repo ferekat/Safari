@@ -130,8 +130,8 @@ namespace SafariModel.Model.AbstractEntity
 
         private void CalculateMovementVector()
         {
-            currentTarget.X = Math.Clamp(currentTarget.X, 0, Model.MAPSIZE * Tile.TILESIZE);
-            currentTarget.Y = Math.Clamp(currentTarget.Y, 0, Model.MAPSIZE * Tile.TILESIZE);
+            currentTarget.X = Math.Clamp(currentTarget.X, 0, TileMap.MAPSIZE * Tile.TILESIZE);
+            currentTarget.Y = Math.Clamp(currentTarget.Y, 0, TileMap.MAPSIZE * Tile.TILESIZE);
 
             movementVector.X = currentTarget.X - this.X;
             movementVector.Y = currentTarget.Y - this.Y;
@@ -163,7 +163,7 @@ namespace SafariModel.Model.AbstractEntity
                 this.y += 1;
                 NextTargetPoint();
             }
-            if (this.X > Model.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > Model.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
+            if (this.X > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
             {
                 this.x -= 1;
                 this.y -= 1;

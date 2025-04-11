@@ -1,21 +1,39 @@
 ﻿using SafariModel.Model.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SafariModel.Model.Tiles
 {
+
+    public class TileNode
+    {
+        public readonly TileNode? parent;
+        public readonly Tile tile;
+
+        public TileNode(Tile tile, TileNode? parent)
+        {
+            this.parent = parent;
+            this.tile = tile;
+        }
+    }
+
     public class Tile
     {
+        
+
         public static readonly int TILESIZE = 50;
         private int i;
         private int j;
         private TileZ? z;
         private VisitedRoad? visitedRoad;
         private TileType tileType;
-
+        private TilePlaceable placeable;
+        private TileNode? networkNode;
+       
         //<Amire szeretném hogy változzon,Amit tipusu mezőt lehet megváltoztatni>
         public readonly static Dictionary<TileType, TileType> tileInteractionMap = new Dictionary<TileType, TileType>()
         {       
@@ -42,7 +60,7 @@ namespace SafariModel.Model.Tiles
         };
 
 
-        private TilePlaceable placeable;
+   
 
         public int I { get { return i; } }
         public int J { get { return j; } }
@@ -50,6 +68,8 @@ namespace SafariModel.Model.Tiles
         public int Z { get { if (z == null) return 0;else return z.Z ; } }
         public TilePlaceable Placeable { get { return placeable; } }
         public TileType Type { get { return tileType; } }
+
+        public TileNode? NetworkNode { get { return networkNode;} set { networkNode = value; } }
 
 
         public Tile(int i, int j,TileZ? z)
@@ -60,7 +80,7 @@ namespace SafariModel.Model.Tiles
             //Csak tesztelésre!!!
             Random r = new Random();
             tileType = r.Next(2) == 0 ? TileType.GROUND : TileType.HILL;
-            if (i == 0 || i == Model.MAPSIZE - 1 || j == 0 || j == Model.MAPSIZE - 1) tileType = TileType.FENCE;
+            if (i == 0 || i == TileMap.MAPSIZE - 1 || j == 0 || j == TileMap.MAPSIZE - 1) tileType = TileType.FENCE;
             if (tileType == TileType.HILL) z = new TileZ(r.Next(1,10));
             //
 
@@ -81,8 +101,14 @@ namespace SafariModel.Model.Tiles
             if (placeable != TilePlaceable.IS_GRASS)
             {
                 visitedRoad = new VisitedRoad(false);
-                RoadNetworkHandler.AddRoadToNetwork(this);
+                //RoadNetworkHandler.AddRoadToNetwork(this);
             }
+        }
+        public bool IsInRoadNetwork()
+        {
+            return placeable == TilePlaceable.IS_ROAD ||
+                   placeable == TilePlaceable.IS_SMALL_BRIDGE ||
+                   placeable == TilePlaceable.IS_LARGE_BRIDGE;
         }
         
     }

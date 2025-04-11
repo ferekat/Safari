@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using SafariModel.Model.Tiles;
 namespace SafariModel.Model
 {
     public class Jeep : MovingEntity
@@ -12,6 +12,8 @@ namespace SafariModel.Model
         private static int MAX_CAPACITY = 4;
         private int touristCount;
         private double happiness;
+        private static Tile entrance;
+        private static Tile exit;
         public Jeep(int x,int y) : base(x,y) 
         {
             happiness = 0;

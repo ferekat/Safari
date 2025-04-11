@@ -394,8 +394,8 @@ namespace SafariView.ViewModel
             if (cameraX < 0) cameraX = 0;
             if (cameraY < 0) cameraY = 0;
 
-            if (cameraX > (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE) cameraX = (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE;
-            if (cameraY > (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE) cameraY = (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE;
+            if (cameraX > (TileMap.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE) cameraX = (TileMap.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE;
+            if (cameraY > (TileMap.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE) cameraY = (TileMap.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE;
 
             int cameraXLeft = cameraX - Tile.TILESIZE;
             int cameraYUp = cameraY - Tile.TILESIZE;
@@ -414,9 +414,9 @@ namespace SafariView.ViewModel
 
                 RenderedTiles.Clear();
 
-                for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, Model.MAPSIZE); j++)
+                for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, TileMap.MAPSIZE); j++)
                 {
-                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, Model.MAPSIZE); i++)
+                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, TileMap.MAPSIZE); i++)
                     {
                         Tile t = tileMap[i, j];
 
