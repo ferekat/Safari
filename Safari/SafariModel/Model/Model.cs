@@ -34,18 +34,9 @@ namespace SafariModel.Model
 
 
             //-------- !!IDEIGLENES!! térkép példányosítás
-            Tile[,] map = new Tile[100,100];
-            for (int i = 0; i < 100; i++)
-            {
-                for (int j = 0; j < 100; j++)
-                {
-                    map[i, j] = new Tile(i, j, null);
-                }
-            }
+            
+            tileMap = TileMap.CreateMapTmp();
             //-------------
-
-
-            tileMap = new TileMap(map, map[0, 1], map[0, 2]);
 
             TileCollision tc = new TileCollision(tileMap.Map);
             MovingEntity.RegisterTileCollision(tc);
@@ -54,7 +45,7 @@ namespace SafariModel.Model
             entityHandler.LoadEntity(new Lion(100, 200));
 
             economyHandler = new EconomyHandler(9999);
-            roadNetworkHandler = new RoadNetworkHandler(tileMap.Map);
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
         }
 
         #region Get tile and entity based on coordinates

@@ -28,5 +28,22 @@ namespace SafariModel.Model.Tiles
             this.entrance = entrance;
             this.exit = exit;
         }
+
+        public static TileMap CreateMapTmp()
+        {
+            Tile[,] map = new Tile[100, 100];
+            for (int i = 0; i < 100; i++)
+            {
+                for (int j = 0; j < 100; j++)
+                {
+                    map[i, j] = new Tile(i, j, null);
+                }
+            }
+
+            map[0, 1].SetType(TileType.ENTRANCE);
+            map[0,2].SetType(TileType.EXIT);
+
+            return new TileMap(map, map[0, 1], map[0, 2]);
+        }
     }
 }

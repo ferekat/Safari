@@ -23,9 +23,8 @@ namespace SafariModel.Model.Tiles
 
     public class Tile
     {
-        
-
         public static readonly int TILESIZE = 50;
+     
         private int i;
         private int j;
         private TileZ? z;
@@ -57,6 +56,7 @@ namespace SafariModel.Model.Tiles
         {
             {"Road",TilePlaceable.IS_ROAD},
             {"Bridge",TilePlaceable.IS_LARGE_BRIDGE}
+            //TODO: smallbridge
         };
 
 
@@ -77,7 +77,7 @@ namespace SafariModel.Model.Tiles
             this.i = i;
             this.j = j;
             tileType = TileType.GROUND;
-            //Csak tesztelésre!!!
+            //IDEIGLENES térkép példányosítás!!!
             Random r = new Random();
             tileType = r.Next(2) == 0 ? TileType.GROUND : TileType.HILL;
             if (i == 0 || i == TileMap.MAPSIZE - 1 || j == 0 || j == TileMap.MAPSIZE - 1) tileType = TileType.FENCE;
