@@ -26,6 +26,7 @@ namespace SafariModel.Model.AbstractEntity
 
         }
         protected abstract void KillAnimal();
+        protected abstract void ChaseTarget();
 
         protected override void EntityLogic()
         {

@@ -99,7 +99,8 @@ namespace SafariView.ViewModel
             {typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
             {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
             {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
-            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) }
+            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            {typeof(Hunter),new SolidColorBrush(Color.FromRgb(150,150,150)) },
         };
         private static Brush HillBrush(Tile hill)
         {

@@ -37,7 +37,7 @@ namespace SafariModel.Model.InstanceEntity
 
         }
         #endregion
-        protected void ChaseTarget()
+        protected override void ChaseTarget()
         {
             targX = targetAnimal!.X;
             targY = targetAnimal!.Y;
