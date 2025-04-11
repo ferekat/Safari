@@ -14,6 +14,7 @@ namespace SafariModel.Model.Utils
         {
             switch (name)
             {
+                case "Jeep": return new Jeep(x, y);
                 case "Guard": return new Guard(x, y);
                 case "Lion": return new Lion(x, y); 
                 case "Leopard": return new Leopard(x, y);

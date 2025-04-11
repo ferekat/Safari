@@ -99,7 +99,8 @@ namespace SafariView.ViewModel
             {typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
             {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
             {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
-            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) }
+            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            { typeof(Jeep),new SolidColorBrush(Color.FromRgb(226, 105, 240))}
         };
         private static Brush HillBrush(Tile hill)
         {
@@ -257,6 +258,13 @@ namespace SafariView.ViewModel
                     SelectedShopName = "";
                     return;
                 }
+                if (shopString == "Jeep")
+                {
+
+                    model.BuyItem("Jeep", 100, 100);
+                  //  CAction = ClickAction.NOTHING;
+                    return;
+                }
                 if (CAction != ClickAction.BUY)
                 {
                     CAction = ClickAction.BUY;
@@ -359,6 +367,7 @@ namespace SafariView.ViewModel
             }
             if (CAction == ClickAction.BUY)
             {
+               
                 model.BuyItem(SelectedShopName, gameX, gameY);
             }
 

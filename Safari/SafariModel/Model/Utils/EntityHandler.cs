@@ -19,6 +19,7 @@ namespace SafariModel.Model.Utils
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
 
+
         private int CurrentID;
 
         public EntityHandler() 

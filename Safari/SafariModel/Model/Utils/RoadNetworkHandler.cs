@@ -17,8 +17,9 @@ namespace SafariModel.Model.Utils
         private Tile exit;
 
         private List<Tile> roadNetwork = new();
-        private List<Tile> shortestPathBetweenGates = new();
+        private static List<Tile> shortestPathEntranceToExit = new();
 
+        public static List<Tile> ShortestPathEntranceToExit { get { return shortestPathEntranceToExit; } }
         private TileMap tileMap;
         public RoadNetworkHandler(TileMap tileMap)
         {
@@ -26,6 +27,7 @@ namespace SafariModel.Model.Utils
             entrance = tileMap.Entrance;
             exit = tileMap.Exit;
             AddPathNode(entrance,null);
+            ShortestPathAStar();
         }
         public void AddToRoadNetwork(Tile tile)
         {
@@ -79,17 +81,15 @@ namespace SafariModel.Model.Utils
 
         public void ShortestPathAStar()
         {
-            shortestPathBetweenGates.Clear();
+            shortestPathEntranceToExit.Clear();
 
             PriorityQueue<(Tile, int), int> endPoints = new(); // pq <(végpont,végpont g távolsága),f összköltség>    A*: f = h + g
             endPoints.Enqueue((entrance, 0), TotalCost(entrance, 0));
 
             int it = 0;
             bool foundExit = false;
-Debug.WriteLine("------------");
             while (endPoints.Count > 0)
             {
-                Debug.WriteLine($"iter:{it}");
                   
                 (Tile, int) parentTileData = endPoints.Dequeue();
                 Tile parentTile = parentTileData.Item1;
@@ -129,7 +129,6 @@ Debug.WriteLine("------------");
                 }
                 it++;
             }
-            Debug.WriteLine("------------");
 
             foreach (Tile road in roadNetwork)
             {
@@ -139,7 +138,7 @@ Debug.WriteLine("------------");
         private void BackTrackShortestPath(Tile tile)
         {
            
-            shortestPathBetweenGates.Add(tile);
+            shortestPathEntranceToExit.Add(tile);
             tile.SetPlaceable(TilePlaceable.S);
             Tile next;
             if (tile.NetworkNode!.parent != null)

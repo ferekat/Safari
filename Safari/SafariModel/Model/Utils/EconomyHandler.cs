@@ -16,6 +16,7 @@ namespace SafariModel.Model.Utils
 
         private Dictionary<Type, int> entityCostTable = new Dictionary<Type, int>
         {
+            { typeof(Jeep),300},
             { typeof(Lion),200},
             { typeof(Leopard),300},
             { typeof(Gazelle),150},
