@@ -19,9 +19,7 @@ build_model:
   before_script:
     - dotnet --version
   script:
-    - dotnet build TicTacToeGame.Model.Basic
-    - dotnet build TicTacToeGame.Persistence.Text
-    - dotnet build TicTacToeGame.Persistence.Binary
+    - dotnet build SafariModel
 
 # Build complete solution
 # (Uses Windows-based runner, because windows tag IS specified.)
@@ -43,10 +41,10 @@ test_model:
   stage: test
   before_script:    
     # Restore NuGet packages to the local .nuget folder (inside the project directory).
-    - dotnet restore SafariGame.Test --packages .nuget
+    - dotnet restore SafariTest --packages .nuget
   script:
     - > 
-      dotnet test SafariGame.Test --no-restore
+      dotnet test SafariTest --no-restore
       --logger:"junit;LogFilePath=../junit/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
       --collect="XPlat Code Coverage"
     # Install tools for code coverage extraction from Cobertura XML files
