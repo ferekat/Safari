@@ -14,10 +14,10 @@ namespace SafariModel.Model.Tiles
         public readonly TileNode? parent;
         public readonly Tile tile;
 
-        public TileNode(Tile tile, TileNode? parent)
+        public TileNode(Tile tile,TileNode? parent)
         {
-            this.parent = parent;
             this.tile = tile;
+            this.parent = parent; 
         }
     }
 
@@ -101,14 +101,16 @@ namespace SafariModel.Model.Tiles
             if (placeable != TilePlaceable.IS_GRASS)
             {
                 visitedRoad = new VisitedRoad(false);
-                //RoadNetworkHandler.AddRoadToNetwork(this);
+              // RoadNetworkHandler.AddRoadToNetwork(this);
             }
         }
         public bool IsInRoadNetwork()
         {
             return placeable == TilePlaceable.IS_ROAD ||
                    placeable == TilePlaceable.IS_SMALL_BRIDGE ||
-                   placeable == TilePlaceable.IS_LARGE_BRIDGE;
+                   placeable == TilePlaceable.IS_LARGE_BRIDGE ||
+                   tileType == TileType.ENTRANCE ||
+                   tileType == TileType.EXIT;
         }
         
     }

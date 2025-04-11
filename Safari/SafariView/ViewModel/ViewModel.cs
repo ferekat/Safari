@@ -73,9 +73,10 @@ namespace SafariView.ViewModel
             { TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
             { TileType.EMPTY,new SolidColorBrush(Color.FromRgb(0, 0, 0))},
             { TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
-           // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
+            { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
-            { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
+            { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))},
+           
         };
 
         private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
@@ -83,7 +84,8 @@ namespace SafariView.ViewModel
             {TilePlaceable.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
             {TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
             {TilePlaceable.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
-            {TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
+            {TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )},
+            {TilePlaceable.S,new SolidColorBrush(Color.FromRgb(100,100,0))},
         };
         #endregion
 

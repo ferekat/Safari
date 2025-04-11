@@ -39,9 +39,17 @@ namespace SafariModel.Model.Tiles
                     map[i, j] = new Tile(i, j, null);
                 }
             }
+            for (int i = 1; i < 30; i++)
+            {
+                for (int j = 1;j < 30; j++)
+                {
+                    map[i,j].SetType(TileType.GROUND);
+                }
+            }
 
-            map[0, 1].SetType(TileType.ENTRANCE);
-            map[0,2].SetType(TileType.EXIT);
+            map[1, 5].SetType(TileType.ENTRANCE);
+            map[5,0].SetType(TileType.EXIT);
+
 
             return new TileMap(map, map[0, 1], map[0, 2]);
         }

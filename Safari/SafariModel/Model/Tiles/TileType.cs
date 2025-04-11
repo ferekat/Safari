@@ -15,6 +15,7 @@ namespace SafariModel.Model.Tiles
         HILL,
         WATER,
 
+      
         ENTRANCE, 
         EXIT,
         FENCE,

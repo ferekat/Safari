@@ -12,6 +12,7 @@ namespace SafariModel.Model.Tiles
         IS_ROAD,
         IS_SMALL_BRIDGE,
         IS_LARGE_BRIDGE,
-        IS_GRASS
+        IS_GRASS,
+        S,
     }
 }

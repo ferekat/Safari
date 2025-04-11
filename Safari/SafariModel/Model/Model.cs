@@ -120,6 +120,10 @@ namespace SafariModel.Model
                 if (economyHandler.BuyPlaceable(clickedTile.Type, placeable))
                 {
                     clickedTile.SetPlaceable(placeable);
+                    if (clickedTile.IsInRoadNetwork())
+                    {
+                        roadNetworkHandler.ShortestPathAStar();
+                    }
                     OnTileMapUpdated();
                 }
                 return;
