@@ -15,16 +15,12 @@ namespace SafariModel.Model.InstanceEntity
         #region Private Fields
         private int salary;
         private int level;
-        private Carnivore? targetAnimal;
-        private int targX;
-        private int targY;
         #endregion
         public int Salary { get { return salary; } }
-        public Carnivore TargetAnimal { get { return targetAnimal!; } set { targetAnimal = value; } }
 
         public event EventHandler<KillAnimalEventArgs>? KilledAnimal;
         #region Constructor
-        public Guard(int x, int y) : base(x, y, 100, 0)
+        public Guard(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
         {
             level = 1;
             salary = SetSalary();
@@ -37,30 +33,20 @@ namespace SafariModel.Model.InstanceEntity
 
         }
         #endregion
-        protected override void ChaseTarget()
-        {
-            targX = targetAnimal!.X;
-            targY = targetAnimal!.Y;
-            this.SetTarget(new Point(targX, targY));
-        }
         protected override void EntityLogic()
         {
-            if (targetAnimal != null)
+            if (TargetAnimal != null)
             {
-                if (targX != targetAnimal.X || targY != targetAnimal.Y)
+                if (TargX != TargetAnimal.X || TargY != TargetAnimal.Y)
                 {
                     ChaseTarget();
                 }
-                if (targX == x && targY == y)
+                if (TargX == x && TargY == y)
                 {
                     KillAnimal();
-                    targetAnimal = null;
+                    TargetAnimal = null;
                 }
             }
-        }
-        protected override void KillAnimal()
-        {
-            KilledAnimal?.Invoke(this, new KillAnimalEventArgs(TargetAnimal));
         }
         #region Private methods
         private int SetSalary()

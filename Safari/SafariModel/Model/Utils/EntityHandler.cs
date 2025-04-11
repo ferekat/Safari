@@ -1,5 +1,6 @@
 ﻿using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.InstanceEntity;
+using SafariModel.Model.EventArgsClasses;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
@@ -76,30 +77,58 @@ namespace SafariModel.Model.Utils
         }
         public Hunter? GetNextHunter()
         {
-            if (hunters.Count == 0) return null;
+            if (hunters.Count == 0) SpawnHunter();
             return hunters.Last();
         }
         public void SpawnHunter()
         {
             if (hunters.Count < 10)
             {
+                Hunter? hunter = null;
                 switch (random.Next(4))
                 {
                     case 0:
-                        LoadEntity(new Hunter(38, random.Next((Model.MAPSIZE + 1) * 49)));
+                        hunter = new Hunter(50, random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), SetHunterTargetAnimal());
                         break;
                     case 1:
-                        LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), 38));
+                        hunter = new Hunter(random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), 50, SetHunterTargetAnimal());
                         break;
                     case 2:
-                        LoadEntity(new Hunter((Model.MAPSIZE + 1) * 49 - 1, random.Next((Model.MAPSIZE + 1) * 49)));
+                        hunter = new Hunter((Model.MAPSIZE + 1) * 49 - 12, random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), SetHunterTargetAnimal());
                         break;
                     case 3:
-                        LoadEntity(new Hunter(random.Next((Model.MAPSIZE + 1) * 49), (Model.MAPSIZE + 1) * 49 - 1));
+                        hunter = new Hunter(random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), (Model.MAPSIZE + 1) * 49 - 12, SetHunterTargetAnimal());
                         break;
                 }
+                hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
+                hunter!.HunterTarget += new EventHandler<HunterTargetEventArgs>(SetHunterTarget);
+                hunter!.HunterEscaped += new EventHandler<HunterEscapeEventArgs>(RemoveHunter);
+                LoadEntity(hunter);
             }
         }
+        public Animal? SetHunterTargetAnimal()
+        {
+            int car = GetCarnivoreCount();
+            int her = GetHerbivoreCount();
+            if (car == 0 && her == 0) return null;
+            if (car == 0)
+            {
+                return herbivores[random.Next(her)];
+            }
+            if (her == 0)
+            {
+                return carnivores[random.Next(car)];
+            }
+            if (random.Next(2) == 0)
+            {
+                return carnivores[random.Next(car)];
+            }
+            else
+            {
+                return herbivores[random.Next(her)];
+            }
+        }
+
         public void TargetHunter(Guard guard, Hunter hunter)
         {
             //SetTarget
@@ -115,6 +144,19 @@ namespace SafariModel.Model.Utils
         public List<Entity> GetEntities()
         {
             return entities;
+        }
+        public void KillAnimal(object? sender, KillAnimalEventArgs e)
+        {
+            RemoveEntity(e.Animal);
+        }
+
+        public void SetHunterTarget(object? sender, HunterTargetEventArgs e)
+        {
+            e.Hunter.TargetAnimal = SetHunterTargetAnimal();
+        }
+        public void RemoveHunter(object? sender, HunterEscapeEventArgs e)
+        {
+            RemoveEntity(e.Hunter);
         }
     }
 }

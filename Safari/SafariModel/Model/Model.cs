@@ -17,7 +17,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
-        
+
         public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
 
@@ -38,12 +38,12 @@ namespace SafariModel.Model
             entityHandler = new EntityHandler();
             secondCounterHunter = 0;
 
-            tileMap = new Tile[MAPSIZE,MAPSIZE];
+            tileMap = new Tile[MAPSIZE, MAPSIZE];
             for (int i = 0; i < MAPSIZE; i++)
             {
                 for (int j = 0; j < MAPSIZE; j++)
                 {
-                    tileMap[i, j] = new Tile(i, j,null);
+                    tileMap[i, j] = new Tile(i, j, null);
                 }
             }
 
@@ -52,7 +52,7 @@ namespace SafariModel.Model
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Lion(100, 200));
-            entityHandler.LoadEntity(new Hunter(38,38));
+
 
             economyHandler = new EconomyHandler(9999);
 
@@ -61,7 +61,7 @@ namespace SafariModel.Model
         }
 
         #region Get tile and entity based on coordinates
-        public (int,int) GetTileFromCoords(int x,int y)
+        public (int, int) GetTileFromCoords(int x, int y)
         {
             return (x / Tile.TILESIZE, y / Tile.TILESIZE);
         }
@@ -102,7 +102,7 @@ namespace SafariModel.Model
 
         private void OnNewGameStarted()
         {
-            NewGameStarted?.Invoke(this, EventArgs.Empty);  
+            NewGameStarted?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnTileMapUpdated()
@@ -127,27 +127,27 @@ namespace SafariModel.Model
             //Decide if the player won or not
             GameOver?.Invoke(this, win);
         }
-       
-        
-        
+
+
+
         public void BuyItem(string itemName, int x, int y)
         {
             int tileX = GetTileFromCoords(x, y).Item1;
             int tileY = GetTileFromCoords(x, y).Item2;
             Tile clickedTile = tileMap[tileX, tileY];
-            
+
             if (Tile.tileTypeMap.ContainsKey(itemName) && Tile.tileTypeMap[itemName] is TileType tiletype)
             {
-                if (economyHandler.BuyTile(clickedTile.Type,tiletype))
+                if (economyHandler.BuyTile(clickedTile.Type, tiletype))
                 {
                     clickedTile.SetType(tiletype);
                     OnTileMapUpdated();
                 }
                 return;
             }
-            if ( Tile.placeableMap.ContainsKey(itemName) && Tile.placeableMap[itemName] is TilePlaceable placeable)
+            if (Tile.placeableMap.ContainsKey(itemName) && Tile.placeableMap[itemName] is TilePlaceable placeable)
             {
-                if (economyHandler.BuyPlaceable(clickedTile.Type,placeable))
+                if (economyHandler.BuyPlaceable(clickedTile.Type, placeable))
                 {
                     clickedTile.SetPlaceable(placeable);
                     OnTileMapUpdated();
@@ -157,20 +157,20 @@ namespace SafariModel.Model
             Entity? entity = EntityFactory.CreateEntity(itemName, x, y);
             Type? type = entity?.GetType();
 
-            
 
-      
+
+
             if (entity == null) return;
 
             if (entity is Guard guardEntity)
             {
-                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillCarnivore);
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
                 if (!economyHandler.PaySalary(guardEntity)) return;
             }
 
             if (!economyHandler.BuyEntity(type!)) return;
 
-          
+
 
             entityHandler.LoadEntity(entity!);
 
@@ -183,9 +183,9 @@ namespace SafariModel.Model
             economyHandler.SellEntity(e.GetType());
             entityHandler.RemoveEntity(e);
         }
-        public void KillCarnivore(object? sender, KillAnimalEventArgs e)
+        public void KillAnimal(object? sender, KillAnimalEventArgs e)
         {
-            entityHandler.RemoveEntity(e.Carnivore);
+            entityHandler.RemoveEntity(e.Animal);
         }
     }
 }
