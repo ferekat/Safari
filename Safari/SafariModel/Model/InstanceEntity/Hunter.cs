@@ -1,4 +1,4 @@
-﻿using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.EventArgsClasses;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace SafariModel.Model.InstanceEntity
             leavingMap = false;
             mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
         }
-        public void TakeAnimal()
+        private void TakeAnimal()
         {
             //itt majd megy vele az állat is, ha az Animal-ben a leader logika megvalósul
             hasEntered = false;
