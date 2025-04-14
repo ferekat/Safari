@@ -1,4 +1,5 @@
 ﻿using SafariModel.Model.InstanceEntity;
+using SafariModel.Model.AbstractEntity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,18 @@ namespace SafariModel.Model.EventArgsClasses
 {
     public class KillAnimalEventArgs : EventArgs
     {
-        private Carnivore? carnivore;
+        private Animal? animal;
+        private Gunman? killer;
 
-        public Carnivore Carnivore { get { return carnivore!; } private set { carnivore = value; } }
+        public Animal Animal { get { return animal!; } private set { animal = value; } }
+        public Gunman Killer { get { return killer!; } private set { killer = value; } }
 
-        public KillAnimalEventArgs(Carnivore c)
+
+        public KillAnimalEventArgs(Animal a, Gunman g)
         {
-            Carnivore = c;
+            Animal = a;
+            Killer = g;
+
         }
     }
 }
