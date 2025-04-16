@@ -370,8 +370,9 @@ namespace SafariView.ViewModel
 
         private void Model_TileMapUpdated(object? sender, (int,int) updatedTile)
         {
+            if (cachedGameData == null) return;
             force_render_next_frame = true;
-            UpdateMinimap(updatedTile.Item1, updatedTile.Item2);
+            UpdateMinimap(updatedTile.Item1, updatedTile.Item2, cachedGameData!.tileMap);
         }
 
         private void Model_NewGameStarted(object? sender, EventArgs e)
@@ -545,8 +546,6 @@ namespace SafariView.ViewModel
             MessageBox.Show("Redrawing minimap");
             redrawMinimap = false;
 
-            double minimapTileSize = (double)MINIMAPSIZE / Model.MAPSIZE;
-
             for(int i = 0; i < Model.MAPSIZE; i++)
             {
                 for(int j = 0; j < Model.MAPSIZE; j++)
@@ -582,9 +581,33 @@ namespace SafariView.ViewModel
             }
         }
 
-        private void UpdateMinimap(int tileX, int tileY)
+        private void UpdateMinimap(int tileX, int tileY, Tile[,] tileMap)
         {
+            Tile t = tileMap[tileX, tileY];
 
+            byte[]? b = null;
+
+            //Get type of tile
+            if (t.HasPlaceable())
+            {
+                b = minimapConditionBrushes[t.Placeable];
+            }
+            else
+            {
+
+                if (t.Type == TileType.HILL)
+                {
+                    b = HillBrushMinimap(t);
+                }
+                else
+                {
+
+                    b = minimaptileBrushes[t.Type];
+                }
+            }
+            Int32Rect rect = new Int32Rect(tileX, tileY, 1, 1);
+            minimapBitmap.WritePixels(rect, b, 3, 0);
+            MinimapBitmap = minimapBitmap;
         }
 
         private void UpdateMinimapMarker(int camX, int camY)
