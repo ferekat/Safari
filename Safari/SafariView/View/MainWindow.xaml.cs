@@ -18,7 +18,8 @@ namespace SafariView
     public partial class MainWindow : Window
     {
 
-        public event EventHandler<Point>? CanvasClick;
+        public event EventHandler<Point>? TileCanvasClick;
+        public event EventHandler<Point>? MinimapCanvasClick;
         public event EventHandler<(int, int)>? CameraChange;
 
         public MainWindow(List<TileRender> renderedTiles)
@@ -50,10 +51,16 @@ namespace SafariView
             CameraChange?.Invoke(this, (x, y));
         }
 
-        private void Canvas_MouseDown(object? sender, MouseEventArgs e)
+        private void TileMapCanvas_MouseDown(object? sender, MouseEventArgs e)
         {
             Point p = Mouse.GetPosition(tileCanvas);
-            CanvasClick?.Invoke(this,p);
+            TileCanvasClick?.Invoke(this,p);
+        }
+
+        private void MinimapCanvas_MouseDown(object? sender, MouseEventArgs e)
+        {
+            Point p = Mouse.GetPosition(minimapCanvas);
+            MinimapCanvasClick?.Invoke(this,p);
         }
     }
 }

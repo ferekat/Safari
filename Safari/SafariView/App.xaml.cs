@@ -44,7 +44,8 @@ namespace SafariView
             
             mainWindow = new MainWindow(renderedTiles);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
-            mainWindow.CanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
+            mainWindow.TileCanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
+            mainWindow.MinimapCanvasClick += new EventHandler<Point>(viewModel.ClickMinimap);
 
             viewModel.RequestCameraChange += new EventHandler<(int, int)>(mainWindow.ViewModel_CameraChangeRequest);
             mainWindow.CameraChange += new EventHandler<(int, int)>(viewModel.MainWindow_CameraMovement);

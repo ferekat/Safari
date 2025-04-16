@@ -44,13 +44,13 @@
                 <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas Background="Transparent" MouseDown="Canvas_MouseDown">
+                            <Canvas Background="Transparent" MouseDown="TileMapCanvas_MouseDown">
                             </Canvas>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="{Binding Size}" Height="{Binding Size}" Fill="{Binding Col}" Margin="{Binding Margin}" MouseDown="Canvas_MouseDown">
+                            <Rectangle Width="{Binding Size}" Height="{Binding Size}" Fill="{Binding Col}" Margin="{Binding Margin}" MouseDown="TileMapCanvas_MouseDown">
                             </Rectangle>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -59,12 +59,12 @@
             </Grid>
 
             <!--Minimap -->
-            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
-                <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="Linear"/>
+            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
+                <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </Border>
-            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
-                <Canvas Background="Transparent">
-                    <Rectangle Width="{Binding PLAYERMARKERSIZE, Mode=OneTime}" Height="{Binding PLAYERMARKERSIZE, Mode=OneTime}" Fill="Red" Margin="{Binding MinimapPosition}"/>
+            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
+                <Canvas Background="Transparent" MouseDown="MinimapCanvas_MouseDown" x:Name="minimapCanvas">
+                    <Rectangle Width="{Binding PlayerMarkerWidth, Mode=OneTime}" Height="{Binding PlayerMarkerHeight, Mode=OneTime}" Fill="Transparent" Stroke="White" Margin="{Binding MinimapPosition}"/>
                 </Canvas>
             </Border>
             <!--Minimap -->

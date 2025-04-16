@@ -21,6 +21,8 @@ using System.Data.SqlTypes;
 using System.Globalization;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Windows.Data;
+using System.Diagnostics.Contracts;
 
 namespace SafariView.ViewModel
 {
@@ -171,7 +173,9 @@ namespace SafariView.ViewModel
         public string BottomRowHeightString { get { return bottomRowHeightString; } private set { bottomRowHeightString = value; OnPropertyChanged(); } }
 
         public int MINIMAPSIZE { get { return 300; } }
-        public int PLAYERMARKERSIZE { get { return 10; } }
+        public int MINIMAPBORDERTHICKNESS { get { return 20; } }
+        public double PlayerMarkerWidth { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * HORIZONTALTILECOUNT); } }
+        public double PlayerMarkerHeight { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * VERTICALTILECOUNT); } }
         public Thickness MinimapPosition { get { return minimapPosition; } private set { minimapPosition.Left = value.Left; minimapPosition.Top = value.Top; OnPropertyChanged(); } }
         public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
 
@@ -386,12 +390,11 @@ namespace SafariView.ViewModel
         }
         #endregion
 
-        #region Game area click handler
+        #region Click handlers
         public void ClickPlayArea(object? sender, Point p)
         {
             int gameX = cameraX + (int)p.X;
             int gameY = cameraY + (int)p.Y;
-
 
             if (CAction == ClickAction.NOTHING)
             {
@@ -437,6 +440,23 @@ namespace SafariView.ViewModel
                 }
             }
         }
+
+        public void ClickMinimap(object? sender, Point p)
+        {
+            int canvasSize = MINIMAPSIZE - 2 * MINIMAPBORDERTHICKNESS;
+            double xPercent = p.X/ canvasSize;
+            double yPercent = p.Y/ canvasSize;
+
+            int mapSizeinPixels = Model.MAPSIZE * Tile.TILESIZE;
+
+            int clickedXPos = (int)(mapSizeinPixels * xPercent);
+            int clickedYPos = (int)(mapSizeinPixels * yPercent);
+
+            cameraX = clickedXPos - (HORIZONTALTILECOUNT / 2) * Tile.TILESIZE;
+            cameraY = clickedYPos - (VERTICALTILECOUNT / 2) * Tile.TILESIZE;
+
+            force_render_next_frame = true;
+        }
         #endregion
 
         #region Camera movement
@@ -468,7 +488,7 @@ namespace SafariView.ViewModel
             int cameraXLeft = cameraX - Tile.TILESIZE;
             int cameraYUp = cameraY - Tile.TILESIZE;
 
-            UpdateMinimapMarker(cameraXLeft, cameraYUp);
+            UpdateMinimapMarker(cameraX, cameraY);
             if (redrawMinimap) ReDrawMinimap(tileMap);
 
             if (camchange_x != 0 || camchange_y != 0 || force_render_next_frame)
@@ -543,7 +563,6 @@ namespace SafariView.ViewModel
 
         private void ReDrawMinimap(Tile[,] tileMap)
         {
-            MessageBox.Show("Redrawing minimap");
             redrawMinimap = false;
 
             for(int i = 0; i < Model.MAPSIZE; i++)
@@ -617,7 +636,7 @@ namespace SafariView.ViewModel
             double xPercent = camX / mapSizeinPixels;
             double yPercent = camY / mapSizeinPixels;
 
-            MinimapPosition = new Thickness(xPercent * MINIMAPSIZE, yPercent * MINIMAPSIZE,0,0);
+            MinimapPosition = new Thickness(xPercent * (MINIMAPSIZE-(2*MINIMAPBORDERTHICKNESS)), yPercent * (MINIMAPSIZE-(2 * MINIMAPBORDERTHICKNESS)), 0,0);
         }
 
         private void OnCameraChangeRequest()
