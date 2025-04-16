@@ -57,6 +57,18 @@
                 </ItemsControl>
 
             </Grid>
+
+            <!--Minimap -->
+            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
+                <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="Linear"/>
+            </Border>
+            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
+                <Canvas Background="Transparent">
+                    <Rectangle Width="{Binding PLAYERMARKERSIZE, Mode=OneTime}" Height="{Binding PLAYERMARKERSIZE, Mode=OneTime}" Fill="Red" Margin="{Binding MinimapPosition}"/>
+                </Canvas>
+            </Border>
+            <!--Minimap -->
+
             <!--> UI elemek</!-->
             <Grid Panel.ZIndex="2">
                 <Grid.RowDefinitions>
@@ -96,11 +108,6 @@
                         <ColumnDefinition Width="0.66*"/>
                         <ColumnDefinition Width="0.17*"/>
                     </Grid.ColumnDefinitions>
-                    <!--To be replaced by the actual minimap -->
-                    <Border Grid.Column="0" BorderBrush="#FF6C5200" BorderThickness="20" Margin="0,-90,10,10" HorizontalAlignment="Left">
-                        <TextBlock Background="Green" Padding="80,0">Minimap</TextBlock>
-                    </Border>
-                    <!--To be replaced by the actual minimap -->
                     <Grid Grid.Column="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.9*" />

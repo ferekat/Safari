@@ -27,7 +27,7 @@ namespace SafariView
             tileCanvas.tiles = renderedTiles;
         }
 
-        public void ShowRender()
+        public void ShowTileMapRender()
         {
             tileCanvas.InvalidateVisual();
         }

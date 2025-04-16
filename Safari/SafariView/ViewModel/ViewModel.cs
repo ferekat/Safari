@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.CodeDom;
 using SafariModel.Model.InstanceEntity;
@@ -19,6 +20,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace SafariView.ViewModel
 {
@@ -46,9 +48,13 @@ namespace SafariView.ViewModel
         private readonly int VERTICALCAMERACHANGERANGE = 150;
         private readonly int CAMERASPEED = 10;
         private bool force_render_next_frame;
+        private bool redrawMinimap;
 
         private int camchange_x = 0;
         private int camchange_y = 0;
+
+        private Thickness minimapPosition;
+        private WriteableBitmap minimapBitmap;
 
         private DispatcherTimer tickTimer;
         private DispatcherTimer renderTimer;
@@ -80,6 +86,25 @@ namespace SafariView.ViewModel
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
         };
 
+        private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()
+        {
+            {TileType.WATER, new byte[] {55,55,255} },
+            { TileType.GROUND, new byte[] {153,76,0}},
+            { TileType.EMPTY,new byte[] {0,0,0}},
+            { TileType.FENCE,new byte[] {30,30,30}},
+           // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
+            { TileType.ENTRANCE,new byte[] {255,0,0}},
+            { TileType.EXIT,new byte[] {0,255,0}}
+        };
+
+        private static Dictionary<TilePlaceable, byte[]> minimapConditionBrushes = new Dictionary<TilePlaceable, byte[]>()
+        {
+            {TilePlaceable.EMPTY,new byte[] {0,0,0} },
+            {TilePlaceable.IS_ROAD,new byte[] {235,125,52}},
+            {TilePlaceable.IS_LARGE_BRIDGE,new byte[] {125,37,37} },
+            {TilePlaceable.IS_SMALL_BRIDGE,new byte[] {140,136,136}}
+        };
+
         private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
         {
             {TilePlaceable.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
@@ -105,6 +130,11 @@ namespace SafariView.ViewModel
         private static Brush HillBrush(Tile hill)
         {
             return new SolidColorBrush(Color.FromRgb(0, (byte)(102 + hill.Z), 0));
+        }
+
+        private static byte[] HillBrushMinimap(Tile hill)
+        {
+            return new byte[] { 0, (byte)(102 + hill.Z), 0 };
         }
 
         #endregion
@@ -140,6 +170,13 @@ namespace SafariView.ViewModel
         public string TopRowHeightString { get { return topRowHeightString; } private set { topRowHeightString = value; OnPropertyChanged(); } }
         public string BottomRowHeightString { get { return bottomRowHeightString; } private set { bottomRowHeightString = value; OnPropertyChanged(); } }
 
+        public int MINIMAPSIZE { get { return 300; } }
+        public int PLAYERMARKERSIZE { get { return 10; } }
+        public Thickness MinimapPosition { get { return minimapPosition; } private set { minimapPosition.Left = value.Left; minimapPosition.Top = value.Top; OnPropertyChanged(); } }
+        public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
+
+
+
         public ClickAction CAction { get { return cAction; } private set { cAction = value; OnPropertyChanged(); } }
 
         public string MoneyString { get { return moneyString; } private set { moneyString = value; OnPropertyChanged(); } }
@@ -172,7 +209,7 @@ namespace SafariView.ViewModel
         #region EventHandlers
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
-        public event EventHandler? FinishedRendering;
+        public event EventHandler? FinishedRenderingTileMap;
         public event EventHandler<(int, int)>? RequestCameraChange;
         #endregion
 
@@ -182,6 +219,7 @@ namespace SafariView.ViewModel
             this.model = model;
             RenderedEntities = new ObservableCollection<EntityRender>();
             this.RenderedTiles = renderedTiles;
+            minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE,96,96, PixelFormats.Rgb24, null);
             tickTimer = new DispatcherTimer(DispatcherPriority.Normal);
             tickTimer.Tick += new EventHandler(OnGameTimerTick);
             tickTimer.Interval = TimeSpan.FromSeconds(1 / 120.0);
@@ -206,7 +244,7 @@ namespace SafariView.ViewModel
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
             model.GameOver += new EventHandler<bool>(Model_GameOver);
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
-            model.TileMapUpdated += new EventHandler(Model_TileMapUpdated);
+            model.TileMapUpdated += new EventHandler<(int,int)>(Model_TileMapUpdated);
 
             //Set window bindings
             IndexPage = "Visible";
@@ -223,16 +261,7 @@ namespace SafariView.ViewModel
             selectedEntityID = -1;
 
             force_render_next_frame = true;
-        }
-
-        
-
-        private void Model_NewGameStarted(object? sender, EventArgs e)
-        {
-            CreditsPage = "Hidden";
-            LoadGamePage = "Hidden";
-            OptionName = "SAFARI";
-            StartGame?.Invoke(this, EventArgs.Empty);
+            redrawMinimap = true;
         }
         #endregion
 
@@ -339,9 +368,20 @@ namespace SafariView.ViewModel
             throw new NotImplementedException();
         }
 
-        private void Model_TileMapUpdated(object? sender, EventArgs e)
+        private void Model_TileMapUpdated(object? sender, (int,int) updatedTile)
         {
             force_render_next_frame = true;
+            UpdateMinimap(updatedTile.Item1, updatedTile.Item2);
+        }
+
+        private void Model_NewGameStarted(object? sender, EventArgs e)
+        {
+            CreditsPage = "Hidden";
+            LoadGamePage = "Hidden";
+            OptionName = "SAFARI";
+            StartGame?.Invoke(this, EventArgs.Empty);
+
+            redrawMinimap = true;
         }
         #endregion
 
@@ -427,6 +467,9 @@ namespace SafariView.ViewModel
             int cameraXLeft = cameraX - Tile.TILESIZE;
             int cameraYUp = cameraY - Tile.TILESIZE;
 
+            UpdateMinimapMarker(cameraXLeft, cameraYUp);
+            if (redrawMinimap) ReDrawMinimap(tileMap);
+
             if (camchange_x != 0 || camchange_y != 0 || force_render_next_frame)
             {
 
@@ -474,13 +517,13 @@ namespace SafariView.ViewModel
                             }
                         }
 
-                        TileRender tile = new TileRender(realX, realY, b!);
+                        TileRender tile = new TileRender(realX, realY,Tile.TILESIZE, b!);
 
                         RenderedTiles.Add(tile);
                     }
                 }
 
-                FinishedRender();
+                FinishedTileMapRender();
             }
             //render entities
 
@@ -495,6 +538,63 @@ namespace SafariView.ViewModel
             }
 
             
+        }
+
+        private void ReDrawMinimap(Tile[,] tileMap)
+        {
+            MessageBox.Show("Redrawing minimap");
+            redrawMinimap = false;
+
+            double minimapTileSize = (double)MINIMAPSIZE / Model.MAPSIZE;
+
+            for(int i = 0; i < Model.MAPSIZE; i++)
+            {
+                for(int j = 0; j < Model.MAPSIZE; j++)
+                {
+
+                    Tile t = tileMap[i, j];
+
+                    byte[]? b = null;
+
+                    //Get type of tile
+                    if (t.HasPlaceable())
+                    {
+                        b = minimapConditionBrushes[t.Placeable];
+                    }
+                    else
+                    {
+                        
+                        if (t.Type == TileType.HILL)
+                        {
+                            b = HillBrushMinimap(t);
+                        }
+                        else
+                        {
+                        
+                        b = minimaptileBrushes[t.Type];
+                        }
+                    }
+                    Int32Rect rect = new Int32Rect(i, j, 1, 1);
+                    minimapBitmap.WritePixels(rect, b, 3, 0);
+                }
+
+                MinimapBitmap = minimapBitmap;
+            }
+        }
+
+        private void UpdateMinimap(int tileX, int tileY)
+        {
+
+        }
+
+        private void UpdateMinimapMarker(int camX, int camY)
+        {
+            double mapSizeinPixels = Model.MAPSIZE * Tile.TILESIZE;
+            
+            double xPercent = camX / mapSizeinPixels;
+            double yPercent = camY / mapSizeinPixels;
+
+            MinimapPosition = new Thickness(xPercent * MINIMAPSIZE, yPercent * MINIMAPSIZE,0,0);
         }
 
         private void OnCameraChangeRequest()
@@ -513,9 +613,9 @@ namespace SafariView.ViewModel
             model.UpdatePerTick();
         }
 
-        private void FinishedRender()
+        private void FinishedTileMapRender()
         {
-            FinishedRendering?.Invoke(this, EventArgs.Empty);
+            FinishedRenderingTileMap?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }
