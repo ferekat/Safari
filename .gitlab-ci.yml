@@ -27,7 +27,7 @@ build_model:
   before_script:
     - dotnet --version
   script:
-    - dotnet build Safari/SafariModel/SafariModel.csproj
+    - dotnet build Safari/SafariModel
 
 # Build complete solution
 # (Uses Windows-based runner, because windows tag IS specified.)
@@ -41,7 +41,7 @@ build_view:
   before_script:
     - dotnet --version
   script:
-    - dotnet build Safari/Safari.sln
+    - dotnet build Safari
 
 # Test
 # (Uses Linux-based runner, because windows tag is NOT specified.)
@@ -49,10 +49,10 @@ test_model:
   stage: test
   before_script:    
     # Restore NuGet packages to the local .nuget folder (inside the project directory).
-    - dotnet restore SafariTest --packages .nuget
+    - dotnet restore Safari/SafariTest --packages .nuget
   script:
     - > 
-      dotnet test SafariTest --no-restore
+      dotnet test Safari/SafariTest --no-restore
       --logger:"junit;LogFilePath=../junit/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
       --collect="XPlat Code Coverage"
     # Install tools for code coverage extraction from Cobertura XML files
