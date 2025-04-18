@@ -49,10 +49,11 @@ test_model:
   stage: test
   before_script:    
     # Restore NuGet packages to the local .nuget folder (inside the project directory).
-    - dotnet restore Safari/SafariTest --packages .nuget
+    - cd Safari
+    - dotnet restore SafariTest --packages .nuget
   script:
     - > 
-      dotnet test Safari/SafariTest --no-restore
+      dotnet test SafariTest --no-restore
       --logger:"junit;LogFilePath=../junit/{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
       --collect="XPlat Code Coverage"
     # Install tools for code coverage extraction from Cobertura XML files
