@@ -9,8 +9,16 @@ stages:
 include:
   # NuGet Dependency Scanning
   # https://docs.gitlab.com/ee/user/application_security/dependency_scanning/
-  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
-  - local: ci/Code-Quality-dotNET.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml  
+  # Secret Detection
+  # https://docs.gitlab.com/user/application_security/secret_detection/
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  # Static Application Security Testing (SAST)
+  # https://docs.gitlab.com/user/application_security/sast/
+  - template: Jobs/SAST.gitlab-ci.yml
+  # Static analysis-based Code Quality evaluation for .NET/C#
+  # https://szofttech.inf.elte.hu/components/code-quality-dotnet
+  - component: szofttech.inf.elte.hu/components/code-quality-dotnet/code-quality-dotnet@1
 
 # Build model
 # (Uses Linux-based runner, because windows tag is NOT specified.)
@@ -19,7 +27,7 @@ build_model:
   before_script:
     - dotnet --version
   script:
-    - dotnet build SafariModel
+    - dotnet build Safari/SafariModel/SafariModel.csproj
 
 # Build complete solution
 # (Uses Windows-based runner, because windows tag IS specified.)
@@ -33,7 +41,7 @@ build_view:
   before_script:
     - dotnet --version
   script:
-    - dotnet build Safari.sln
+    - dotnet build Safari/Safari.sln
 
 # Test
 # (Uses Linux-based runner, because windows tag is NOT specified.)
