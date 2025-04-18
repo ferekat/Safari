@@ -43,8 +43,10 @@ namespace SafariView.ViewModel
         private string selectedShopName;
         private GameData? cachedGameData;
         //Mennyi tile lesz látható a képernyőn
-        private readonly int HORIZONTALTILECOUNT = 38;
-        private readonly int VERTICALTILECOUNT = 16;
+        private int HorizontalTileCount;
+        private int VerticalTileCount;
+        private int HorizontalCameraAdjustment;
+        private int VerticalCameraAdjustment;
 
         private readonly int HORIZONTALCAMERACHANGERANGE = 150;
         private readonly int VERTICALCAMERACHANGERANGE = 150;
@@ -174,8 +176,8 @@ namespace SafariView.ViewModel
 
         public int MINIMAPSIZE { get { return 300; } }
         public int MINIMAPBORDERTHICKNESS { get { return 20; } }
-        public double PlayerMarkerWidth { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * HORIZONTALTILECOUNT); } }
-        public double PlayerMarkerHeight { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * VERTICALTILECOUNT); } }
+        public double PlayerMarkerWidth { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * HorizontalTileCount); } }
+        public double PlayerMarkerHeight { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * VerticalTileCount); } }
         public Thickness MinimapPosition { get { return minimapPosition; } private set { minimapPosition.Left = value.Left; minimapPosition.Top = value.Top; OnPropertyChanged(); } }
         public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
 
@@ -261,6 +263,11 @@ namespace SafariView.ViewModel
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
             Mid = 1 - TopRowHeightRelative - BottomRowHeightRelative;
+            HorizontalTileCount = 1;
+            VerticalTileCount = 1;
+            HorizontalCameraAdjustment = 0;
+            VerticalCameraAdjustment = 0;
+
             selectedTile = (-1, -1);
             selectedEntityID = -1;
 
@@ -452,10 +459,27 @@ namespace SafariView.ViewModel
             int clickedXPos = (int)(mapSizeinPixels * xPercent);
             int clickedYPos = (int)(mapSizeinPixels * yPercent);
 
-            cameraX = clickedXPos - (HORIZONTALTILECOUNT / 2) * Tile.TILESIZE;
-            cameraY = clickedYPos - (VERTICALTILECOUNT / 2) * Tile.TILESIZE;
+            cameraX = clickedXPos - (HorizontalTileCount / 2) * Tile.TILESIZE;
+            cameraY = clickedYPos - (VerticalTileCount / 2) * Tile.TILESIZE;
 
             force_render_next_frame = true;
+        }
+        #endregion
+
+        #region Tile canvas resize event handler
+        public void TileCanvas_SizeChanged(object? sender, SizeChangedEventArgs e)
+        {
+            double sizeX = e.NewSize.Width;
+            double sizeY = e.NewSize.Height;
+
+            HorizontalTileCount = (int)(sizeX / Tile.TILESIZE);
+            VerticalTileCount = (int)(sizeY / Tile.TILESIZE);
+
+            HorizontalCameraAdjustment = (int)(sizeX - HorizontalTileCount * Tile.TILESIZE);
+            VerticalCameraAdjustment = (int)(sizeY - VerticalTileCount * Tile.TILESIZE);
+
+            OnPropertyChanged(nameof(PlayerMarkerWidth));
+            OnPropertyChanged(nameof(PlayerMarkerHeight));
         }
         #endregion
 
@@ -482,8 +506,10 @@ namespace SafariView.ViewModel
             if (cameraX < 0) cameraX = 0;
             if (cameraY < 0) cameraY = 0;
 
-            if (cameraX > (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE) cameraX = (Model.MAPSIZE - HORIZONTALTILECOUNT) * Tile.TILESIZE;
-            if (cameraY > (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE) cameraY = (Model.MAPSIZE - VERTICALTILECOUNT) * Tile.TILESIZE;
+            if (cameraX > ((Model.MAPSIZE - HorizontalTileCount) * Tile.TILESIZE) - HorizontalCameraAdjustment) 
+                cameraX = ((Model.MAPSIZE - HorizontalTileCount) * Tile.TILESIZE) - HorizontalCameraAdjustment;
+            if (cameraY > ((Model.MAPSIZE - VerticalTileCount) * Tile.TILESIZE) - VerticalCameraAdjustment) 
+                cameraY = ((Model.MAPSIZE - VerticalTileCount) * Tile.TILESIZE) - VerticalCameraAdjustment;
 
             int cameraXLeft = cameraX - Tile.TILESIZE;
             int cameraYUp = cameraY - Tile.TILESIZE;
@@ -505,9 +531,9 @@ namespace SafariView.ViewModel
 
                 RenderedTiles.Clear();
 
-                for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, Model.MAPSIZE); j++)
+                for (int j = tileMapTop; j < Math.Min(tileMapTop + VerticalTileCount + 3, Model.MAPSIZE); j++)
                 {
-                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, Model.MAPSIZE); i++)
+                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HorizontalTileCount + 3, Model.MAPSIZE); i++)
                     {
                         Tile t = tileMap[i, j];
 
@@ -552,7 +578,7 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
-                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HORIZONTALTILECOUNT + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VERTICALTILECOUNT + 2) * Tile.TILESIZE))
+                if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
                 }

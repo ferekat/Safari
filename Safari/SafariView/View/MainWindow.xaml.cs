@@ -35,6 +35,7 @@ namespace SafariView
 
         public void ViewModel_CameraChangeRequest(object? sender, (int,int) changerange)
         {
+
             Point minimapcheck = Mouse.GetPosition(minimapCanvas);
             //if cursor is on minimap
             if (minimapcheck.X > 0 && minimapcheck.X < minimapCanvas.ActualWidth && minimapcheck.Y > 0 && minimapcheck.Y < minimapCanvas.ActualHeight)

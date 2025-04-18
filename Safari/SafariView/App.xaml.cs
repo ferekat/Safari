@@ -49,7 +49,8 @@ namespace SafariView
 
             viewModel.RequestCameraChange += new EventHandler<(int, int)>(mainWindow.ViewModel_CameraChangeRequest);
             mainWindow.CameraChange += new EventHandler<(int, int)>(viewModel.MainWindow_CameraMovement);
-            
+
+            mainWindow.tileCanvas.SizeChanged += new SizeChangedEventHandler(viewModel.TileCanvas_SizeChanged);
 
             lobbyWindow.Show();
         }

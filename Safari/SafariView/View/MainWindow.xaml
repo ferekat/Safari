@@ -19,29 +19,30 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!--> Tileok megjelentítése</!-->
-            <Grid Panel.ZIndex="0" IsHitTestVisible="False">
+            <!--Minimap -->
+            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
+                <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+            </Border>
+            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
+                <Canvas Background="Transparent" MouseDown="MinimapCanvas_MouseDown" x:Name="minimapCanvas">
+                    <Rectangle Width="{Binding PlayerMarkerWidth}" Height="{Binding PlayerMarkerHeight}" Fill="Transparent" Stroke="White" Margin="{Binding MinimapPosition}"/>
+                </Canvas>
+            </Border>
+            <!--Minimap -->
 
+            <!--> UI elemek</!-->
+            <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="{Binding TopRowHeightString}"/>
+                    <RowDefinition Height="{Binding TopRowHeightString}"  />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
+                
+                <!--Tileok megjelenítése/!-->
+                <vm:TileCanvas Panel.ZIndex="0" Background="{Binding BackgroundBrush,Mode=OneTime}" IsHitTestVisible="False" Grid.Row="1" x:Name="tileCanvas"/>
 
-
-                <vm:TileCanvas Background="{Binding BackgroundBrush,Mode=OneTime}" IsHitTestVisible="False" Grid.Row="1" x:Name="tileCanvas"/>
-
-            </Grid>
-            <!--> Entityk megjelenítése</!-->
-            <Grid Panel.ZIndex="1">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{Binding TopRowHeightString}"/>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="{Binding BottomRowHeightString}"/>
-                </Grid.RowDefinitions> 
-
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}" >
+                <!--Entityk megjelenítése/!-->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}" Panel.ZIndex="1" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Background="Transparent" MouseDown="TileMapCanvas_MouseDown">
@@ -56,27 +57,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-            </Grid>
-
-            <!--Minimap -->
-            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
-                <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-            </Border>
-            <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
-                <Canvas Background="Transparent" MouseDown="MinimapCanvas_MouseDown" x:Name="minimapCanvas">
-                    <Rectangle Width="{Binding PlayerMarkerWidth, Mode=OneTime}" Height="{Binding PlayerMarkerHeight, Mode=OneTime}" Fill="Transparent" Stroke="White" Margin="{Binding MinimapPosition}"/>
-                </Canvas>
-            </Border>
-            <!--Minimap -->
-
-            <!--> UI elemek</!-->
-            <Grid Panel.ZIndex="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="{Binding TopRowHeightString}"  />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="{Binding BottomRowHeightString}"/>
-                </Grid.RowDefinitions>
-                <Grid Background="#FF6C5200" Grid.Row="0">
+                <Grid Panel.ZIndex="2" Background="#FF6C5200" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
                         <ColumnDefinition Width="1*"/>
@@ -102,7 +83,7 @@
                         <TextBlock FontSize="30px" Margin="10" Padding="10" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFC3DBAD" Foreground="#FFAAA556" Text="{Binding MoneyString}"></TextBlock>
                     </StackPanel>
                 </Grid>
-                <Grid Grid.Row="2" Background="#FF6C5200" HorizontalAlignment="Stretch">
+                <Grid Panel.ZIndex="2" Grid.Row="2" Background="#FF6C5200" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.17*" />
                         <ColumnDefinition Width="0.66*"/>
