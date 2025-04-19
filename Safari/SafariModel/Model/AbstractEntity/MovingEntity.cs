@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace SafariModel.Model.AbstractEntity
 {
     public abstract class MovingEntity : Entity
     {
-        private Queue<Point> targetPoints;
+        protected Queue<Point> targetPoints; 
         private Point currentTarget;
         private Vector2 movementVector;
         private float subX;
@@ -74,6 +75,11 @@ namespace SafariModel.Model.AbstractEntity
         public void SetPath(Queue<Point> points)
         {
             targetPoints = points;
+            foreach (Point p in targetPoints)
+            {
+                Debug.Write($"(x:{p.X}), (y:{p.Y}) ");
+            }
+            Debug.WriteLine("");
             if(targetPoints.Count > 0)
             {
                 CurrentTarget = targetPoints.Dequeue();
@@ -127,7 +133,7 @@ namespace SafariModel.Model.AbstractEntity
         {
             return GetTileCoords(p.X, p.Y);
         }
-
+       
         private void CalculateMovementVector()
         {
             currentTarget.X = Math.Clamp(currentTarget.X, 0, TileMap.MAPSIZE * Tile.TILESIZE);
@@ -155,20 +161,20 @@ namespace SafariModel.Model.AbstractEntity
             subY -= float.Floor(subY);
             this.x += wholeX;
             this.y += wholeY;
-
+            //hack
             //entity is outside map
-            if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
-            {
-                this.x += 1;
-                this.y += 1;
-                NextTargetPoint();
-            }
-            if (this.X > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
-            {
-                this.x -= 1;
-                this.y -= 1;
-                NextTargetPoint();
-            }
+            //if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
+            //{
+            //    this.x += 1;
+            //    this.y += 1;
+            //    NextTargetPoint();
+            //}
+            //if (this.X > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
+            //{
+            //    this.x -= 1;
+            //    this.y -= 1;
+            //    NextTargetPoint();
+            //}
 
 
             if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) < movementVector.Length() * 1.5) //In range of target point

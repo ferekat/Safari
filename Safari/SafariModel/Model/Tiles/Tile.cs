@@ -1,6 +1,8 @@
-﻿using SafariModel.Model.Utils;
+﻿using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.Utils;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -114,6 +116,10 @@ namespace SafariModel.Model.Tiles
                    tileType == TileType.EXIT ||
                    placeable == TilePlaceable.S;
         }
-        
+
+        public Point TileCenterPoint(Entity entity)
+        {
+            return new Point((i * TILESIZE) + (TILESIZE / 2) - (entity.EntitySize / 2), (j * TILESIZE) + (TILESIZE / 2) - (entity.EntitySize / 2));
+        }
     }
 }

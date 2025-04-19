@@ -16,7 +16,6 @@ namespace SafariModel.Model.Tiles
         private Tile entrance;
         private Tile exit;
 
-
         public Tile[,] Map { get { return map; } }
         public Tile Entrance { get { return entrance; } }
         public Tile Exit { get { return exit; } }

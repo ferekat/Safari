@@ -260,9 +260,10 @@ namespace SafariView.ViewModel
                 }
                 if (shopString == "Jeep")
                 {
-
-                    model.BuyItem("Jeep", 100, 100);
-                  //  CAction = ClickAction.NOTHING;
+                    Jeep dummy = new Jeep(0, 0);
+                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPoint(dummy);
+                    model.BuyItem("Jeep",p.X,p.Y);
+                  
                     return;
                 }
                 if (CAction != ClickAction.BUY)

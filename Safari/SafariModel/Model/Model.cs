@@ -21,6 +21,9 @@ namespace SafariModel.Model
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
         private RoadNetworkHandler roadNetworkHandler;
+
+
+        public TileMap TileMap { get { return tileMap; } }
         #region Events
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
