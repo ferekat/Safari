@@ -18,8 +18,8 @@ namespace SafariModel.Model
         private static int MAX_CAPACITY = 4;
         private int touristCount;
         private double happiness;
-        private static Tile entrance;
-        private static Tile exit;
+        private Tile entrance;
+        private Tile exit;
         private bool waitingAtEntrance;
         private bool waitingAtExit;
         private int waitingTimer;
@@ -59,14 +59,16 @@ namespace SafariModel.Model
                 if (!atExit)
                 {
                     atExit = true;
+                    SetTarget(entrance.TileCenterPoint(this));
                     //isMoving = true;
-                    PathToEntrance(true);
+                    //PathToEntrance(true);
                 }
                 else
                 {
                     atExit = false;
+                    SetTarget(exit.TileCenterPoint(this));
                     //isMoving = true;
-                    PathToEntrance(false);
+                //    PathToEntrance(false);
                    // ShortestPathToEntrance();
                 }
             }

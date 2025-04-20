@@ -261,7 +261,7 @@ namespace SafariView.ViewModel
                 if (shopString == "Jeep")
                 {
                     Jeep dummy = new Jeep(0, 0);
-                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPoint(dummy);
+                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPoint(dummy); //a jeepet rárakjuk a bejárat tile közepére
                     model.BuyItem("Jeep",p.X,p.Y);
                   
                     return;

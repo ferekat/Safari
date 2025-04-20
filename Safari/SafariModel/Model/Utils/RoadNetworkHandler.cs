@@ -18,8 +18,13 @@ namespace SafariModel.Model.Utils
 
         private List<Tile> roadNetwork = new();
         private static List<Tile> shortestPathExitToEntrance = new();
-
+        private static List<Tile> shortestPathEntranceToExit = new();
         public static List<Tile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } }
+
+        public static List<Tile> ShortestPathEntranceToExit { get { return shortestPathEntranceToExit; } }
+        public Tile Entrance { get { return entrance; } }
+        public Tile Exit { get { return exit; } }
+        
         private TileMap tileMap;
         public RoadNetworkHandler(TileMap tileMap)
         {
@@ -32,6 +37,11 @@ namespace SafariModel.Model.Utils
         public void AddToRoadNetwork(Tile tile)
         {
             roadNetwork.Add(tile);
+            List<Tile> neighbours = GetTileNeighbours(tile);
+            if (neighbours.Count > 1)
+            {
+                ShortestPathAStar();
+            }
         }
         private void AddPathNode(Tile tile,TileNode? parent)
         {
@@ -92,7 +102,7 @@ namespace SafariModel.Model.Utils
             PriorityQueue<(Tile, int), int> endPoints = new(); // pq <(végpont,végpont g távolsága),f összköltség>    A*: f = h + g
             endPoints.Enqueue((entrance, 0), TotalCost(entrance, 0));
 
-            int it = 0;
+            
             bool foundExit = false;
             while (endPoints.Count > 0)
             {
@@ -133,7 +143,6 @@ namespace SafariModel.Model.Utils
                     BackTrackShortestPath(exit);
                     return;
                 }
-                it++;
             }
 
             foreach (Tile road in roadNetwork)

@@ -41,7 +41,7 @@ namespace SafariModel.Model
             tileMap = TileMap.CreateMapTmp();
             //-------------
 
-            TileCollision tc = new TileCollision(tileMap.Map);
+            TileCollision tc = new TileCollision(tileMap);
             MovingEntity.RegisterTileCollision(tc);
 
             //Alap entityk hozzáadása

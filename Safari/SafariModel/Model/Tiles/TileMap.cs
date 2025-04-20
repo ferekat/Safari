@@ -50,6 +50,8 @@ namespace SafariModel.Model.Tiles
 
             map[0, 5].SetType(TileType.ENTRANCE);
             map[5,0].SetType(TileType.EXIT);
+            map[0, 5].SetPlaceable(TilePlaceable.IS_ROAD);
+            map[5, 0].SetPlaceable(TilePlaceable.IS_ROAD);
 
 
             return new TileMap(map, map[0,5], map[5,0]);

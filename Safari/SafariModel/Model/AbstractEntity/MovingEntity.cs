@@ -21,7 +21,11 @@ namespace SafariModel.Model.AbstractEntity
         private float subX;
         private float subY;
 
+
+        
         private static TileCollision tileCollision;
+       
+        
         private static (int, int)[] coordSets = new (int, int)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
         protected float speed;
@@ -44,10 +48,12 @@ namespace SafariModel.Model.AbstractEntity
             speed = 5.5F;
         }
 
+
         public static void RegisterTileCollision(TileCollision collision)
         {
-            tileCollision = collision;
+            tileCollision = collision;  
         }
+       
 
         public void SetTarget(Point p)
         {
@@ -75,11 +81,7 @@ namespace SafariModel.Model.AbstractEntity
         public void SetPath(Queue<Point> points)
         {
             targetPoints = points;
-            foreach (Point p in targetPoints)
-            {
-                Debug.Write($"(x:{p.X}), (y:{p.Y}) ");
-            }
-            Debug.WriteLine("");
+           
             if(targetPoints.Count > 0)
             {
                 CurrentTarget = targetPoints.Dequeue();
@@ -161,7 +163,9 @@ namespace SafariModel.Model.AbstractEntity
             subY -= float.Floor(subY);
             this.x += wholeX;
             this.y += wholeY;
+
             //hack
+
             //entity is outside map
             //if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
             //{

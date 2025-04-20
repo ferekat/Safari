@@ -73,7 +73,7 @@ namespace SafariModel.Model.AbstractEntity
         {
             throw new NotImplementedException();
         }
-
+       
         protected void RandomWander()
         {
             wanderTimer = random.Next(600);
