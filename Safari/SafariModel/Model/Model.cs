@@ -30,7 +30,7 @@ namespace SafariModel.Model
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
         public event EventHandler<bool>? GameOver;
-        public event EventHandler? TileMapUpdated;
+        public event EventHandler<(int,int)>? TileMapUpdated;
         #endregion
 
         public Model()
@@ -105,9 +105,9 @@ namespace SafariModel.Model
             NewGameStarted?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnTileMapUpdated()
+        private void OnTileMapUpdated(int tileX, int tileY)
         {
-            TileMapUpdated?.Invoke(this, EventArgs.Empty);
+            TileMapUpdated?.Invoke(this, (tileX,tileY));
         }
 
         private void InvokeTickPassed()
@@ -141,7 +141,7 @@ namespace SafariModel.Model
                 if (economyHandler.BuyTile(clickedTile.Type, tiletype))
                 {
                     clickedTile.SetType(tiletype);
-                    OnTileMapUpdated();
+                    OnTileMapUpdated(tileX,tileY);
                 }
                 return;
             }
@@ -150,15 +150,12 @@ namespace SafariModel.Model
                 if (economyHandler.BuyPlaceable(clickedTile.Type, placeable))
                 {
                     clickedTile.SetPlaceable(placeable);
-                    OnTileMapUpdated();
+                    OnTileMapUpdated(tileX, tileY);
                 }
                 return;
             }
             Entity? entity = EntityFactory.CreateEntity(itemName, x, y);
             Type? type = entity?.GetType();
-
-
-
 
             if (entity == null) return;
 

@@ -18,9 +18,9 @@ namespace SafariView.ViewModel
         public Rect Rectangle {  get { return rect; } }
         public Brush Texture { get { return texture; } }
 
-        public TileRender(int x, int y, Brush tex)
+        public TileRender(double x, double y, double size, Brush tex)
         {
-            rect = new Rect(x, y, Tile.TILESIZE, Tile.TILESIZE);
+            rect = new Rect(x, y, size, size);
             texture = tex;
         }
     }
