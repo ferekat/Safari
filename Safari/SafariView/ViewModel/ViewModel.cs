@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Diagnostics.Contracts;
+using SafariModel.Model.EventArgsClasses;
 
 namespace SafariView.ViewModel
 {
@@ -31,6 +32,7 @@ namespace SafariView.ViewModel
         #region Private fields
         private List<TileRender> RenderedTiles;
         public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
+        public ObservableCollection<FloatingText> FloatingTexts { get; private set; }
         private int money;
         private GameSpeed gameSpeed;
         private int cameraX;
@@ -224,6 +226,7 @@ namespace SafariView.ViewModel
         {
             this.model = model;
             RenderedEntities = new ObservableCollection<EntityRender>();
+            FloatingTexts = new ObservableCollection<FloatingText>();
             this.RenderedTiles = renderedTiles;
             minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE,96,96, PixelFormats.Rgb24, null);
             tickTimer = new DispatcherTimer(DispatcherPriority.Normal);
@@ -251,6 +254,7 @@ namespace SafariView.ViewModel
             model.GameOver += new EventHandler<bool>(Model_GameOver);
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
             model.TileMapUpdated += new EventHandler<(int,int)>(Model_TileMapUpdated);
+            model.NewMessage += OnMessage;
 
             //Set window bindings
             IndexPage = "Visible";
@@ -684,6 +688,23 @@ namespace SafariView.ViewModel
         private void FinishedTileMapRender()
         {
             FinishedRenderingTileMap?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnMessage(object? sender, EventArgs e)
+        {
+            if (e is MessageEventArgs messageEvent)
+            {
+                var screenX = messageEvent.X - cameraX;
+                var screenY = messageEvent.Y - cameraY;
+                var text = new FloatingText($"{messageEvent.Message}", screenX, screenY);
+                FloatingTexts.Add(text);
+
+                Task.Run(async () =>
+                {
+                    await Task.Delay(600);
+                    App.Current.Dispatcher.Invoke(() => FloatingTexts.Remove(text));
+                });
+            }
         }
         #endregion
     }

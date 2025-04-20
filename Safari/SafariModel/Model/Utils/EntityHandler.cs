@@ -67,7 +67,22 @@ namespace SafariModel.Model.Utils
             }
             return -1;
         }
-
+        //entityk térképen való elhelyezkedésének lekérdezése
+        public (int, int) GetCellCoords(Entity e, int tileSize) => (e.X / tileSize, e.Y / tileSize);
+        // a térképen lévő cellákban lévő entityk lekérdezése
+        public void UpdateSpatialMap(Dictionary<(int, int), List<Entity>> spatialMap, int tileSize)
+        {
+            spatialMap.Clear();
+            foreach (Entity entity in entities)
+            {
+                var coords = GetCellCoords(entity, tileSize);
+                if (!spatialMap.ContainsKey(coords))
+                {
+                    spatialMap[coords] = new List<Entity>();
+                }
+                spatialMap[coords].Add(entity);
+            }
+        }
         public void TickEntities()
         {
             foreach (Entity entity in entities.ToList())
@@ -102,7 +117,7 @@ namespace SafariModel.Model.Utils
                 }
                 hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
                 hunter!.HunterTarget += new EventHandler<HunterTargetEventArgs>(SetHunterTarget);
-                hunter!.HunterEscaped += new EventHandler<HunterEscapeEventArgs>(RemoveHunter);
+                hunter!.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(RemoveGunman);
                 LoadEntity(hunter);
             }
         }
@@ -145,6 +160,10 @@ namespace SafariModel.Model.Utils
         {
             return entities;
         }
+        public List<Guard> GetGuards()
+        {
+            return guards;
+        }
         public void KillAnimal(object? sender, KillAnimalEventArgs e)
         {
             RemoveEntity(e.Animal);
@@ -154,9 +173,9 @@ namespace SafariModel.Model.Utils
         {
             e.Hunter.TargetAnimal = SetHunterTargetAnimal();
         }
-        public void RemoveHunter(object? sender, HunterEscapeEventArgs e)
+        public void RemoveGunman(object? sender, GunmanRemoveEventArgs e)
         {
-            RemoveEntity(e.Hunter);
+            RemoveEntity(e.Gunman);
         }
     }
 }
