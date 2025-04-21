@@ -34,6 +34,7 @@ namespace SafariView.ViewModel
         public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
         public ObservableCollection<FloatingText> FloatingTexts { get; private set; }
         private int money;
+        private string? month;
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
@@ -156,15 +157,6 @@ namespace SafariView.ViewModel
         }
         #endregion
 
-        #region GameSpeed enum
-        public enum GameSpeed
-        {
-            Slow,
-            Medium,
-            Fast
-        }
-        #endregion
-
         #region Window bindings
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
@@ -196,6 +188,7 @@ namespace SafariView.ViewModel
         #region Properties
         public float Mid { get { return mid; } set { mid = value; OnPropertyChanged(); } }
         public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
+        public string? Month { get { return month; } set { month = value; OnPropertyChanged(); } }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
         private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
         private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
@@ -211,7 +204,7 @@ namespace SafariView.ViewModel
         public DelegateCommand StartCommand { get; private set; }
         public DelegateCommand CreditsCommand { get; private set; }
         public DelegateCommand ClickedShopIcon { get; private set; }
-        public DelegateCommand ChangedGameSpeed;
+        public DelegateCommand ChangedGameSpeed { get; private set; }
         #endregion
 
         #region EventHandlers
@@ -263,6 +256,8 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
+            Gamespeed = GameSpeed.Slow;
+            Month = "0/12";
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
@@ -322,7 +317,24 @@ namespace SafariView.ViewModel
 
         private void ChangeGameSpeed(object? speedValue)
         {
-            throw new NotImplementedException();
+            if (speedValue is string speed)
+            {
+                switch (speed)
+                {
+                    case "Slow":
+                        Gamespeed = GameSpeed.Slow;
+                        model.GameSpeed = GameSpeed.Slow;
+                        break;
+                    case "Medium":
+                        Gamespeed = GameSpeed.Medium;
+                        model.GameSpeed = GameSpeed.Medium;
+                        break;
+                    case "Fast":
+                        Gamespeed = GameSpeed.Fast;
+                        model.GameSpeed = GameSpeed.Fast;
+                        break;
+                }
+            }
         }
 
         private void OnGameExit()
@@ -376,6 +388,7 @@ namespace SafariView.ViewModel
         {
             cachedGameData = data;
             Money = data.money;
+            Month = $"{data.month}/12";
         }
 
         private void Model_GameOver(object? sender, bool playerWin)

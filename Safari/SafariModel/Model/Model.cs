@@ -17,17 +17,28 @@ namespace SafariModel.Model
 {
     public class Model
     {
+        const int HOURS_PER_DAY = 24;
+        const int DAYS_PER_WEEK = 7;
+        const int WEEKS_PER_MONTH = 4;
 
         public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
+        private GameData? data;
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
         private int tickCount;
+        private int tickPerGameSpeedCount;
         private int secondCounterHunter;
+
+        private GameSpeed gameSpeed;
 
         // entityk helyének térképen való eloszlására
         private Dictionary<(int, int), List<Entity>> spatialMap = new();
+
+        #region Properties
+        public GameSpeed GameSpeed { get { return gameSpeed; } set { gameSpeed = value; } }
+        #endregion
 
         #region Events
         public event EventHandler? NewGameStarted;
@@ -61,7 +72,10 @@ namespace SafariModel.Model
             economyHandler = new EconomyHandler(9999);
 
             tickCount = 0;
+            tickPerGameSpeedCount = 0;
+            gameSpeed = GameSpeed.Slow;
 
+            data = new GameData();
         }
 
         #region Get tile and entity based on coordinates
@@ -84,6 +98,7 @@ namespace SafariModel.Model
         {
             //Ide jön gamelogic
             tickCount++;
+            tickPerGameSpeedCount++;
             if (tickCount % 120 == 0)
             {
                 secondCounterHunter++;
@@ -128,15 +143,81 @@ namespace SafariModel.Model
 
         private void InvokeTickPassed()
         {
-            GameData data = new GameData();
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
-            data.tileMap = tileMap;
+            data!.tileMap = tileMap;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
+            if(tickPerGameSpeedCount >= 36000)
+            {
+                tickPerGameSpeedCount = 0;
+                CountTimePassed(data);
+            }
             TickPassed?.Invoke(this, data);
         }
-
+        private void CountTimePassed(GameData data)
+        {
+            switch (gameSpeed)
+            {
+                case GameSpeed.Slow:
+                    {
+                        data.hour++;
+                        if (data.hour >= HOURS_PER_DAY)
+                        {
+                            data.hour = 0;
+                            data.day++;
+                            if (data.day >= DAYS_PER_WEEK)
+                            {
+                                data.day = 0;
+                                data.week++;
+                                if (data.week >= WEEKS_PER_MONTH)
+                                {
+                                    data.week = 0;
+                                    data.month++;
+                                    if (data.month >= 12)
+                                    {
+                                        InvokeGameOver();
+                                    }
+                                }
+                            }
+                        }  
+                        break;
+                    }
+                case GameSpeed.Medium:
+                    {
+                        data.day++;
+                        if (data.day >= DAYS_PER_WEEK)
+                        {
+                            data.day = 0;
+                            data.week++;
+                            if (data.week >= WEEKS_PER_MONTH)
+                            {
+                                data.week = 0;
+                                data.month++;
+                                if (data.month >= 12)
+                                {
+                                    InvokeGameOver();
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case GameSpeed.Fast:
+                    {
+                        data.week++;
+                        if (data.week >= WEEKS_PER_MONTH)
+                        {
+                            data.week = 0;
+                            data.month++;
+                            if (data.month >= 12)
+                            {
+                                InvokeGameOver();
+                            }
+                        }
+                        break;
+                    }
+            }
+        }
         private void InvokeGameOver()
         {
             bool win = false;
