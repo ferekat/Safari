@@ -10,6 +10,9 @@
         WindowStartupLocation="CenterScreen"
         Title="Safari" 
         FontFamily="Rockwell">
+    <Window.Resources>
+        <vm:OffsetMarginConverter x:Key="OffsetMarginConverter"/>
+    </Window.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -56,7 +59,39 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
+                
+                <!-- Floating texts -->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding FloatingTexts}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas IsHitTestVisible="False"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}"
+                                       Foreground="Red"
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Margin="{Binding Margin}"
+                                       Opacity="1">
+                                <TextBlock.Triggers>
+                                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                    From="{Binding Margin}"
+                                                                    To="{Binding Margin, Converter={StaticResource OffsetMarginConverter}, ConverterParameter=-20}"
+                                                                    Duration="0:0:0.6" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </TextBlock.Triggers>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                   
                 <Grid Panel.ZIndex="2" Background="#FF6C5200" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />

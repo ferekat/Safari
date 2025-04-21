@@ -26,11 +26,15 @@ namespace SafariModel.Model
         private int tickCount;
         private int secondCounterHunter;
 
+        // entityk helyének térképen való eloszlására
+        private Dictionary<(int, int), List<Entity>> spatialMap = new();
+
         #region Events
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
         public event EventHandler<bool>? GameOver;
         public event EventHandler<(int,int)>? TileMapUpdated;
+        public event EventHandler? NewMessage;
         #endregion
 
         public Model()
@@ -89,13 +93,25 @@ namespace SafariModel.Model
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
+                        hunter.TookDamage += OnNewMessage;
                         entityHandler.SpawnHunter();
                         secondCounterHunter = 0;
                     }
                 }
             }
             entityHandler.TickEntities();
-
+            entityHandler.UpdateSpatialMap(spatialMap, Tile.TILESIZE);
+            foreach (Guard g in entityHandler.GetGuards())
+            {
+                g.NearbyHunters.Clear();
+                foreach (Entity f in GetNearbyEntities(g, g.HunterRange))
+                {
+                    if (f is Hunter h)
+                    {
+                        g.NearbyHunters.Add(h);
+                    }
+                }
+            }
             InvokeTickPassed();
         }
         #endregion
@@ -161,7 +177,10 @@ namespace SafariModel.Model
 
             if (entity is Guard guardEntity)
             {
-                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
+                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
+                guardEntity.TookDamage += OnNewMessage;
+                guardEntity.LevelUp += OnNewMessage;
                 if (!economyHandler.PaySalary(guardEntity)) return;
             }
 
@@ -180,9 +199,34 @@ namespace SafariModel.Model
             economyHandler.SellEntity(e.GetType());
             entityHandler.RemoveEntity(e);
         }
-        public void KillAnimal(object? sender, KillAnimalEventArgs e)
+        public List<Entity> GetNearbyEntities(MovingEntity me, int range)
         {
-            entityHandler.RemoveEntity(e.Animal);
+            var rangeInCells = (range + Tile.TILESIZE - 1) / Tile.TILESIZE;
+            var (cx, cy) = entityHandler.GetCellCoords(me, Tile.TILESIZE);
+            List<Entity> nearbyEntities = new();
+
+            for (int dx = -rangeInCells; dx <= rangeInCells; dx++)
+            {
+                for (int dy = -rangeInCells; dy <= rangeInCells; dy++)
+                {
+                    var cell = (cx + dx, cy + dy);
+                    if (spatialMap.TryGetValue(cell, out var entitesInCell))
+                    {
+                        foreach (var e in entitesInCell)
+                        {
+                            if (e != me && Math.Abs(e.X - me.X) <= range && Math.Abs(e.Y - me.Y) <= range)
+                            {
+                                nearbyEntities.Add(e);
+                            }
+                        }
+                    }
+                }
+            }
+            return nearbyEntities;
+        }
+        private void OnNewMessage(object? sender, MessageEventArgs e)
+        {
+            NewMessage?.Invoke(sender, e);
         }
     }
 }

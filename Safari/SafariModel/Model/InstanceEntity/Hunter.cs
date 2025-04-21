@@ -20,15 +20,16 @@ namespace SafariModel.Model.InstanceEntity
         private int tickBeforeTarget;
         private bool leavingMap;
         private int mapSizeConvert;
+        private bool duel;
 
         public bool IsVisible { get { return isVisible; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
         public int EnterField { get { return enterField; } set { enterField = value; } }
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
         public int WaitingTime { get { return waitingTime; } set { waitingTime = value; } }
+        public bool Duel { get { return duel; } set { duel = value; } }
 
         public event EventHandler<HunterTargetEventArgs>? HunterTarget;
-        public event EventHandler<HunterEscapeEventArgs>? HunterEscaped;
         public Hunter(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
 
         {
@@ -40,6 +41,8 @@ namespace SafariModel.Model.InstanceEntity
             tickBeforeTarget = 0;
             leavingMap = false;
             mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
+            duel = false;
+
         }
         private void TakeAnimal()
         {
@@ -88,34 +91,43 @@ namespace SafariModel.Model.InstanceEntity
         }
         protected override void EntityLogic()
         {
-            if (!leavingMap)
+            if (!duel)
             {
-                if (TargetAnimal == null)
+                if (!leavingMap)
                 {
-                    tickBeforeTarget++;
-                    if (tickBeforeTarget == waitingTime)
+                    if (TargetAnimal == null)
                     {
-                        HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
-                        tickBeforeTarget = 0;
-                        waitingTime = SetWaitingTime();
+                        tickBeforeTarget++;
+                        if (tickBeforeTarget == waitingTime)
+                        {
+                            HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
+                            tickBeforeTarget = 0;
+                            waitingTime = SetWaitingTime();
+                        }
+                    }
+                    else if (hasEntered)
+                    {
+                        if (TargX != TargetAnimal!.X || TargY != TargetAnimal.Y)
+                        {
+                            ChaseTarget();
+                        }
+                        if (TargX == x && TargY == y)
+                        {
+                            DecideTask();
+                        }
+
                     }
                 }
-                else if (hasEntered)
+                else if (X == 50 || X == mapSizeConvert || Y == 50 || Y == mapSizeConvert)
                 {
-                    if (TargX != TargetAnimal!.X || TargY != TargetAnimal.Y)
-                    {
-                        ChaseTarget();
-                    }
-                    if (TargX == x && TargY == y)
-                    {
-                        DecideTask();
-                    }
-
+                    RemoveGunman(this);
                 }
             }
-            else if (X == 50 || X == mapSizeConvert || Y == 50 || Y == mapSizeConvert)
+            else if (X != TargX || Y != TargY)
             {
-                HunterEscaped?.Invoke(this, new HunterEscapeEventArgs(this));
+                TargX = X;
+                TargY = Y;
+                SetTarget(new Point(TargX, TargY));
             }
         }
         private int TimeNextHunter()
