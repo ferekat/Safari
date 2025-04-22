@@ -69,10 +69,7 @@ namespace SafariView.ViewModel
         private string? optionName;
 
         //Kiválasztott entitás adatai
-        private string health;
-        private string food;
-        private string water;
-        private string action;
+        private string selectedEntityData;
         private Visibility entityDataVisibility;
 
         private string moneyString;
@@ -189,10 +186,7 @@ namespace SafariView.ViewModel
         public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
 
 
-        public string Health { get { return health; } private set { health = value; OnPropertyChanged(); } }
-        public string Food { get { return food; } private set { food = value; OnPropertyChanged(); } }
-        public string Water { get { return water; } private set { water = value; OnPropertyChanged(); } }
-        public string Action { get { return action; } private set { action = value; OnPropertyChanged(); } }
+        public string SelectedEntityData { get { return selectedEntityData; } private set { selectedEntityData = value; OnPropertyChanged(); } }
         public Visibility EntityDataVisibility { get { return entityDataVisibility; } private set { entityDataVisibility = value; OnPropertyChanged(); } }
 
         public ClickAction CAction { get { return cAction; } private set { cAction = value; OnPropertyChanged(); } }
@@ -689,10 +683,12 @@ namespace SafariView.ViewModel
             if(selected is Animal a)
             {
                 EntityDataVisibility = Visibility.Visible;
-                Health = a.Health.ToString()+"\n";
-                Food = a.Food.ToString() + "\n";
-                Water = a.Water.ToString() + "\n";
-                Action = a.Action.ToString() + "\n";
+                SelectedEntityData = $"""
+                Health: {a.Health}
+                Food: {a.Food}
+                Water: {a.Water}
+                Action: {a.Action}
+                """;
             }
             else
             {
