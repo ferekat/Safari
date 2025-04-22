@@ -98,7 +98,7 @@ namespace SafariModel.Model.AbstractEntity
         protected override void EntityLogic()
         {
             PassTick();
-            SelectAction();
+            Action = SelectAction();
             switch(Action)
             {
                 case AnimalActions.Resting: Rest();break;
@@ -126,12 +126,14 @@ namespace SafariModel.Model.AbstractEntity
 
         }
 
-        private void SelectAction()
+        private AnimalActions SelectAction()
         {
-            Action = AnimalActions.Resting;
-            if (Water < 80 && Hunger < 80) Action = AnimalActions.Wandering;
-            if (Food < 40) Action = AnimalActions.GoEat;
-            if (Water < 40) Action = AnimalActions.GoDrink;
+            
+            if (Water < 80 && Food < 80) return AnimalActions.Wandering;
+            if (Water < 40) return AnimalActions.GoDrink;
+            if (Food < 40) return AnimalActions.GoEat;
+
+            return AnimalActions.Resting;
         }
 
         #region Action methods

@@ -13,7 +13,11 @@ namespace SafariModel.Model.InstanceEntity
         {
             entitySize = 40;
         }
-       
+        public Lion(int x, int y,int age, int health,  int food, int water,int hunger, int thirst) : base(x, y, age, health, food, water, hunger, thirst)
+        {
+            entitySize = 40;
+        }
+
         #endregion
 
         #region Methods

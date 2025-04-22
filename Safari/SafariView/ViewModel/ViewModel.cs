@@ -688,6 +688,8 @@ namespace SafariView.ViewModel
                 Food: {a.Food}
                 Water: {a.Water}
                 Action: {a.Action}
+                Current target:
+                {a.CurrentTarget}
                 """;
             }
             else

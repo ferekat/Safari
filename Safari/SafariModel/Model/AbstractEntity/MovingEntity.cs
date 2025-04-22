@@ -31,7 +31,7 @@ namespace SafariModel.Model.AbstractEntity
         public int Range { get { return range; } }
         public bool IsMoving { get { return isMoving; } }
 
-        private Point CurrentTarget { get { return currentTarget; } set { currentTarget = value; CalculateMovementVector(); } }
+        public Point CurrentTarget { get { return currentTarget; } private set { currentTarget = value; CalculateMovementVector(); } }
         protected MovingEntity(int x, int y) : base(x, y)
 
         {

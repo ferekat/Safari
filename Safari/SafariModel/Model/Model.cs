@@ -51,7 +51,7 @@ namespace SafariModel.Model
             MovingEntity.RegisterTileCollision(tc);
 
             //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Lion(100, 200));
+            entityHandler.LoadEntity(new Lion(100, 200,0,300,81,81,0,0));
 
 
             economyHandler = new EconomyHandler(9999);
