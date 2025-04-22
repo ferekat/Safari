@@ -17,17 +17,59 @@ namespace SafariModel.Model
 {
     public class Model
     {
+        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
+        const int HOURS_PER_DAY = 24;
+        const int DAYS_PER_WEEK = 7;
+        const int WEEKS_PER_MONTH = 4;
 
         public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
+        private GameData? data;
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
         private int tickCount;
+        private int tickPerGameSpeedCount;
         private int secondCounterHunter;
+
+        private GameSpeed gameSpeed;
+        private int speedBoost;
 
         // entityk helyének térképen való eloszlására
         private Dictionary<(int, int), List<Entity>> spatialMap = new();
+        #region Properites
+        public GameSpeed GameSpeed
+        {
+            get { return gameSpeed; }
+            set
+            {
+                gameSpeed = value;
+                speedBoost = gameSpeed switch
+                {
+                    GameSpeed.Slow => 1,
+                    GameSpeed.Medium => 3,
+                    GameSpeed.Fast => 9,
+                    _ => 1
+                };
+
+                foreach (Entity entity in entityHandler.GetEntities())
+                {
+                    if (entity is MovingEntity me)
+                    {
+                        me.UpdateSpeedMultiplier(speedBoost);
+                        if(me is Hunter h)
+                        {
+                            h.EnterField /= speedBoost;
+                            if(h.WaitingTime != 0)
+                            {
+                                h.WaitingTime /= speedBoost;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Events
         public event EventHandler? NewGameStarted;
@@ -61,7 +103,11 @@ namespace SafariModel.Model
             economyHandler = new EconomyHandler(9999);
 
             tickCount = 0;
+            tickPerGameSpeedCount = 0;
+            gameSpeed = GameSpeed.Slow;
+            speedBoost = 1;
 
+            data = new GameData();
         }
 
         #region Get tile and entity based on coordinates
@@ -84,17 +130,18 @@ namespace SafariModel.Model
         {
             //Ide jön gamelogic
             tickCount++;
+            tickPerGameSpeedCount++;
             if (tickCount % 120 == 0)
             {
                 secondCounterHunter++;
-                Hunter? hunter = entityHandler.GetNextHunter();
+                Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
                 if (hunter != null)
                 {
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
                         hunter.TookDamage += OnNewMessage;
-                        entityHandler.SpawnHunter();
+                        entityHandler.SpawnHunter(speedBoost);
                         secondCounterHunter = 0;
                     }
                 }
@@ -128,15 +175,54 @@ namespace SafariModel.Model
 
         private void InvokeTickPassed()
         {
-            GameData data = new GameData();
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
-            data.tileMap = tileMap;
+            data!.tileMap = tileMap;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
+            CountTimePassed(data);
             TickPassed?.Invoke(this, data);
         }
-
+        private void CountTimePassed(GameData data)
+        {
+            int divider = 1;
+            switch (gameSpeed)
+            {
+                case GameSpeed.Slow:
+                    divider = 1;
+                    break;
+                case GameSpeed.Medium:
+                    divider = HOURS_PER_DAY;
+                    break;
+                case GameSpeed.Fast:
+                    divider = HOURS_PER_DAY * DAYS_PER_WEEK;
+                    break;
+            }
+            if (tickPerGameSpeedCount >= TICK_PER_TIME_UNIT / divider)
+            {
+                tickPerGameSpeedCount = 0;
+                data.hour++;
+                if (data.hour >= HOURS_PER_DAY)
+                {
+                    data.hour = 0;
+                    data.day++;
+                    if (data.day > DAYS_PER_WEEK)
+                    {
+                        data.day = 1;
+                        data.week++;
+                        if (data.week > WEEKS_PER_MONTH)
+                        {
+                            data.week = 1;
+                            data.month++;
+                            if (data.month >= 12)
+                            {
+                                InvokeGameOver();
+                            }
+                        }
+                    }
+                }
+            }
+        }
         private void InvokeGameOver()
         {
             bool win = false;
@@ -174,6 +260,11 @@ namespace SafariModel.Model
             Type? type = entity?.GetType();
 
             if (entity == null) return;
+
+            if(entity is MovingEntity me)
+            {
+                me.UpdateSpeedMultiplier(speedBoost);
+            }
 
             if (entity is Guard guardEntity)
             {
