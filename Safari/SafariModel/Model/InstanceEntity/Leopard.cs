@@ -9,7 +9,7 @@ namespace SafariModel.Model.InstanceEntity
     public class Leopard : Carnivore
     {
         #region Constructor
-        public Leopard(int x, int y) : base(x, y, 0, 200, 250, 200)
+        public Leopard(int x, int y) : base(x, y, 0, 200,250,200, 0, 0)
         {
             entitySize = 30;
         }

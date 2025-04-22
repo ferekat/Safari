@@ -17,10 +17,6 @@ namespace SafariModel.Model.AbstractEntity
         private int id;
 
         private static int CurrentID = 0;
-
-      
-       
-
         public int X { get { return x; } }
         public int Y { get { return y; } }
 

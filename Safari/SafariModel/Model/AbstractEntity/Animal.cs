@@ -27,25 +27,39 @@ namespace SafariModel.Model.AbstractEntity
         private List<Animal> members;
         private int wanderTimer;
         private Random random;
+
+        private int hungerLimit;
+        private int thirstLimit;
+        private int healLimit;
+        private int healTimer;
         #endregion
 
         #region Properties
         public int Age { get; protected set; }
         public int Hunger { get; protected set; }
         public int Thirst { get; protected set; }
+        public int Food { get; protected set; }
+        public int Water { get; protected set; }
         public int Health { get; protected set; }
         public AnimalActions Action { get; protected set; }
         public bool IsLeader { get; private set; }
         #endregion
 
         #region Constructor
-        protected Animal(int x, int y, int age, int health, int hunger, int thrist) : base(x, y)
+        protected Animal(int x, int y, int age, int health, int food, int water, int hunger, int thirst) : base(x, y)
         {
             Age = age;
+            Food = food;
+            Water = water;
             Hunger = hunger;
-            Thirst = thrist;
+            Thirst = thirst;
             Health = health;
             Action = AnimalActions.Resting;
+
+            hungerLimit = 1000;
+            thirstLimit = 600;
+            healLimit = 1200;
+            healTimer = 0;
 
             exploredFoodPlaces = new List<Point>();
             exploredWaterPlaces = new List<Point>();
@@ -58,7 +72,6 @@ namespace SafariModel.Model.AbstractEntity
         #endregion
 
         #region Methods
-
 
         protected void SearchForFood()
         {
@@ -84,11 +97,69 @@ namespace SafariModel.Model.AbstractEntity
 
         protected override void EntityLogic()
         {
-            wanderTimer--;
-            if (wanderTimer <= 0) RandomWander();
+            PassTick();
+            SelectAction();
+            switch(Action)
+            {
+                case AnimalActions.Resting: Rest();break;
+                case AnimalActions.Wandering: Wander(); break;
+                case AnimalActions.GoEat: GoEat(); break;
+                case AnimalActions.GoDrink: GoDrink(); break;
+            }
 
             AnimalLogic();
         }
+
+        private void PassTick()
+        {
+            if (++Hunger >= hungerLimit)
+            {
+                Hunger = 0;
+                if (--Food < 0) --Health;
+            }
+            if (++Thirst >= thirstLimit)
+            {
+                Thirst = 0;
+                if (--Water < 0) --Health;
+            }
+
+
+        }
+
+        private void SelectAction()
+        {
+            Action = AnimalActions.Resting;
+            if (Water < 80 && Hunger < 80) Action = AnimalActions.Wandering;
+            if (Food < 40) Action = AnimalActions.GoEat;
+            if (Water < 40) Action = AnimalActions.GoDrink;
+        }
+
+        #region Action methods
+
+        private void GoEat()
+        {
+
+        }
+
+        private void GoDrink()
+        {
+
+        }
+
+        private void Wander()
+        {
+            wanderTimer--;
+            if (wanderTimer <= 0) RandomWander();
+        }
+        private void Rest()
+        {
+            if(++healTimer >= healLimit)
+            {
+                ++Health;
+                healTimer = 0;
+            }
+        }
+        #endregion
 
         protected abstract void AnimalLogic();
 

@@ -19,6 +19,19 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <!--Kiválasztott entity adatai-->
+            <TextBlock Visibility="{Binding EntityDataVisibility}" Panel.ZIndex="4" Background="White" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Run Text="Health:"/>
+                <Run Text="{Binding Health, Mode=OneWay}"/>
+                <Run Text="Food:"/>
+                <Run Text="{Binding Food, Mode=OneWay}"/>
+                <Run Text="Water:"/>
+                <Run Text="{Binding Water, Mode=OneWay}"/>
+                <Run Text="Action:"/>
+                <Run Text="{Binding Action, Mode=OneWay}"/>
+            </TextBlock>
+            <!--Kiválasztott entity adatai-->
+
             <!--Minimap -->
             <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
                 <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>

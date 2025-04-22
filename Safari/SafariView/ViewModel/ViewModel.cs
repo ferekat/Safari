@@ -68,6 +68,13 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? optionName;
 
+        //Kiválasztott entitás adatai
+        private string health;
+        private string food;
+        private string water;
+        private string action;
+        private Visibility entityDataVisibility;
+
         private string moneyString;
         private string topRowHeightString;
         private string bottomRowHeightString;
@@ -182,6 +189,11 @@ namespace SafariView.ViewModel
         public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
 
 
+        public string Health { get { return health; } private set { health = value; OnPropertyChanged(); } }
+        public string Food { get { return food; } private set { food = value; OnPropertyChanged(); } }
+        public string Water { get { return water; } private set { water = value; OnPropertyChanged(); } }
+        public string Action { get { return action; } private set { action = value; OnPropertyChanged(); } }
+        public Visibility EntityDataVisibility { get { return entityDataVisibility; } private set { entityDataVisibility = value; OnPropertyChanged(); } }
 
         public ClickAction CAction { get { return cAction; } private set { cAction = value; OnPropertyChanged(); } }
 
@@ -259,6 +271,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
+            entityDataVisibility = Visibility.Hidden;
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
@@ -665,6 +678,29 @@ namespace SafariView.ViewModel
             MinimapPosition = new Thickness(xPercent * (MINIMAPSIZE-(2*MINIMAPBORDERTHICKNESS)), yPercent * (MINIMAPSIZE-(2 * MINIMAPBORDERTHICKNESS)), 0,0);
         }
 
+        private void ShowSelectedEntityData()
+        {
+            Entity? selected = model.GetEntityByID(selectedEntityID);
+            if(selected == null)
+            {
+                EntityDataVisibility = Visibility.Hidden;
+                return;
+            }
+            if(selected is Animal a)
+            {
+                EntityDataVisibility = Visibility.Visible;
+                Health = a.Health.ToString()+"\n";
+                Food = a.Food.ToString() + "\n";
+                Water = a.Water.ToString() + "\n";
+                Action = a.Action.ToString() + "\n";
+            }
+            else
+            {
+                EntityDataVisibility = Visibility.Hidden;
+                return;
+            }
+        }
+
         private void OnCameraChangeRequest()
         {
             RequestCameraChange?.Invoke(this, (HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
@@ -674,6 +710,7 @@ namespace SafariView.ViewModel
         {
             OnCameraChangeRequest();
             RenderGameArea();
+            ShowSelectedEntityData();
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)
