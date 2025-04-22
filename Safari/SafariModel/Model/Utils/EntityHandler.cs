@@ -13,22 +13,18 @@ namespace SafariModel.Model.Utils
 {
     public class EntityHandler
     {
-
-
-       
         private List<Entity> entities = new();
         private List<Carnivore> carnivores = new();
         private List<Herbivore> herbivores = new();
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
+
+        private Dictionary<int, Entity> entitiesByID = new();
         
         private Random random;
 
-        private int CurrentID;
-
         public EntityHandler() 
         {
-            CurrentID = 0;
             random = new Random();
         }
 
@@ -40,6 +36,8 @@ namespace SafariModel.Model.Utils
             if (entity is Herbivore h) herbivores.Add(h);
             if (entity is Hunter hu) hunters.Add(hu);
             if(entity is Guard g) guards.Add(g);
+
+            entitiesByID.Add(entity.ID, entity);
         }
         public void RemoveEntity(Entity entity)
         {
@@ -53,10 +51,7 @@ namespace SafariModel.Model.Utils
         public Entity? GetEntityByID(int id)
         {
             Entity? e = null;
-            foreach (Entity entity in entities)
-            {
-                if(entity.ID == id) e = entity;
-            }
+            if (entitiesByID.ContainsKey(id)) e = entitiesByID[id];
             return e;
         }
         public int GetEntityIDFromCoords(int x, int y)
