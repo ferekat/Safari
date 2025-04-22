@@ -57,6 +57,14 @@ namespace SafariModel.Model
                     if (entity is MovingEntity me)
                     {
                         me.UpdateSpeedMultiplier(speedBoost);
+                        if(me is Hunter h)
+                        {
+                            h.EnterField /= speedBoost;
+                            if(h.WaitingTime != 0)
+                            {
+                                h.WaitingTime /= speedBoost;
+                            }
+                        }
                     }
                 }
             }
@@ -126,14 +134,14 @@ namespace SafariModel.Model
             if (tickCount % 120 == 0)
             {
                 secondCounterHunter++;
-                Hunter? hunter = entityHandler.GetNextHunter();
+                Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
                 if (hunter != null)
                 {
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
                         hunter.TookDamage += OnNewMessage;
-                        entityHandler.SpawnHunter();
+                        entityHandler.SpawnHunter(speedBoost);
                         secondCounterHunter = 0;
                     }
                 }

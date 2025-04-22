@@ -90,12 +90,12 @@ namespace SafariModel.Model.Utils
                 entity.EntityTick();
             }
         }
-        public Hunter? GetNextHunter()
+        public Hunter? GetNextHunter(int speed)
         {
-            if (hunters.Count == 0) SpawnHunter();
+            if (hunters.Count == 0) SpawnHunter(speed);
             return hunters.Last();
         }
-        public void SpawnHunter()
+        public void SpawnHunter(int speed)
         {
             if (hunters.Count < 10)
             {
@@ -115,6 +115,7 @@ namespace SafariModel.Model.Utils
                         hunter = new Hunter(random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), (Model.MAPSIZE + 1) * 49 - 12, SetHunterTargetAnimal());
                         break;
                 }
+                hunter!.EnterField /= speed;
                 hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
                 hunter!.HunterTarget += new EventHandler<HunterTargetEventArgs>(SetHunterTarget);
                 hunter!.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(RemoveGunman);
