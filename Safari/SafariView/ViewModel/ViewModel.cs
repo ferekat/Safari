@@ -766,20 +766,6 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
-            /*int speed = 1;
-            switch (Gamespeed)
-            {
-                case GameSpeed.Medium:
-                    speed = 24;
-                    break;
-                case GameSpeed.Fast:
-                    speed = 24*7;
-                    break;
-            }
-            for(int i = 0; i < speed; i++)
-            {
-                model.UpdatePerTick();
-            }*/
             model.UpdatePerTick();
         }
 
