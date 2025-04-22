@@ -34,7 +34,10 @@ namespace SafariView.ViewModel
         public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
         public ObservableCollection<FloatingText> FloatingTexts { get; private set; }
         private int money;
-        private string? month;
+        private int hour;
+        private int day;
+        private int week;
+        private int month;
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
@@ -188,7 +191,54 @@ namespace SafariView.ViewModel
         #region Properties
         public float Mid { get { return mid; } set { mid = value; OnPropertyChanged(); } }
         public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
-        public string? Month { get { return month; } set { month = value; OnPropertyChanged(); } }
+        public string? Hour
+        {
+            get { return hour.ToString("D2"); }
+            set
+            {
+                if (int.TryParse(value, out int parsedHour))
+                {
+                    hour = parsedHour;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string? Day
+        {
+            get { return day.ToString("D2"); }
+            set
+            {
+                if (int.TryParse(value, out int parsedDay))
+                {
+                    day = parsedDay;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string? Week
+        {
+            get { return week.ToString("D2"); }
+            set
+            {
+                if (int.TryParse(value, out int parsedWeek))
+                {
+                    week = parsedWeek;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string? Month
+        {
+            get { return $"{month}/12"; }
+            set
+            {
+                if (int.TryParse(value!.Split('/')[0], out int parsedMonth))
+                {
+                    month = parsedMonth;
+                    OnPropertyChanged();
+                }
+            }
+        }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
         private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
         private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
@@ -257,6 +307,9 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
             Gamespeed = GameSpeed.Slow;
+            Hour = "0";
+            Day = "1";
+            Week = "1";
             Month = "0/12";
 
             TopRowHeightRelative = 0.08F;
@@ -387,8 +440,26 @@ namespace SafariView.ViewModel
         private void Model_TickPassed(object? sender, GameData data)
         {
             cachedGameData = data;
-            Money = data.money;
-            Month = $"{data.month}/12";
+            if(Money != data.money)
+            {
+                Money = data.money;
+            }
+            if(hour != data.hour)
+            {
+                Hour = data.hour.ToString();
+            }
+            if (day != data.day)
+            {
+                Day = data.day.ToString();
+            }
+            if (week != data.week)
+            {
+                Week = data.week.ToString();
+            }
+            if (Month != $"{data.month}/12")
+            {
+                Month = $"{data.month}/12";
+            }
         }
 
         private void Model_GameOver(object? sender, bool playerWin)
@@ -695,6 +766,20 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
+            /*int speed = 1;
+            switch (Gamespeed)
+            {
+                case GameSpeed.Medium:
+                    speed = 24;
+                    break;
+                case GameSpeed.Fast:
+                    speed = 24*7;
+                    break;
+            }
+            for(int i = 0; i < speed; i++)
+            {
+                model.UpdatePerTick();
+            }*/
             model.UpdatePerTick();
         }
 

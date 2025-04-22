@@ -17,6 +17,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
+        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
         const int WEEKS_PER_MONTH = 4;
@@ -32,12 +33,34 @@ namespace SafariModel.Model
         private int secondCounterHunter;
 
         private GameSpeed gameSpeed;
+        private int speedBoost;
 
         // entityk helyének térképen való eloszlására
         private Dictionary<(int, int), List<Entity>> spatialMap = new();
+        #region Properites
+        public GameSpeed GameSpeed
+        {
+            get { return gameSpeed; }
+            set
+            {
+                gameSpeed = value;
+                speedBoost = gameSpeed switch
+                {
+                    GameSpeed.Slow => 1,
+                    GameSpeed.Medium => 3,
+                    GameSpeed.Fast => 9,
+                    _ => 1
+                };
 
-        #region Properties
-        public GameSpeed GameSpeed { get { return gameSpeed; } set { gameSpeed = value; } }
+                foreach (Entity entity in entityHandler.GetEntities())
+                {
+                    if (entity is MovingEntity me)
+                    {
+                        me.UpdateSpeedMultiplier(speedBoost);
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Events
@@ -74,6 +97,7 @@ namespace SafariModel.Model
             tickCount = 0;
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
+            speedBoost = 1;
 
             data = new GameData();
         }
@@ -148,74 +172,47 @@ namespace SafariModel.Model
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
-            if(tickPerGameSpeedCount >= 36000)
-            {
-                tickPerGameSpeedCount = 0;
-                CountTimePassed(data);
-            }
+            CountTimePassed(data);
             TickPassed?.Invoke(this, data);
         }
         private void CountTimePassed(GameData data)
         {
+            int divider = 1;
             switch (gameSpeed)
             {
                 case GameSpeed.Slow:
-                    {
-                        data.hour++;
-                        if (data.hour >= HOURS_PER_DAY)
-                        {
-                            data.hour = 0;
-                            data.day++;
-                            if (data.day >= DAYS_PER_WEEK)
-                            {
-                                data.day = 0;
-                                data.week++;
-                                if (data.week >= WEEKS_PER_MONTH)
-                                {
-                                    data.week = 0;
-                                    data.month++;
-                                    if (data.month >= 12)
-                                    {
-                                        InvokeGameOver();
-                                    }
-                                }
-                            }
-                        }  
-                        break;
-                    }
+                    divider = 1;
+                    break;
                 case GameSpeed.Medium:
-                    {
-                        data.day++;
-                        if (data.day >= DAYS_PER_WEEK)
-                        {
-                            data.day = 0;
-                            data.week++;
-                            if (data.week >= WEEKS_PER_MONTH)
-                            {
-                                data.week = 0;
-                                data.month++;
-                                if (data.month >= 12)
-                                {
-                                    InvokeGameOver();
-                                }
-                            }
-                        }
-                        break;
-                    }
+                    divider = HOURS_PER_DAY;
+                    break;
                 case GameSpeed.Fast:
+                    divider = HOURS_PER_DAY * DAYS_PER_WEEK;
+                    break;
+            }
+            if (tickPerGameSpeedCount >= TICK_PER_TIME_UNIT / divider)
+            {
+                tickPerGameSpeedCount = 0;
+                data.hour++;
+                if (data.hour >= HOURS_PER_DAY)
+                {
+                    data.hour = 0;
+                    data.day++;
+                    if (data.day > DAYS_PER_WEEK)
                     {
+                        data.day = 1;
                         data.week++;
-                        if (data.week >= WEEKS_PER_MONTH)
+                        if (data.week > WEEKS_PER_MONTH)
                         {
-                            data.week = 0;
+                            data.week = 1;
                             data.month++;
                             if (data.month >= 12)
                             {
                                 InvokeGameOver();
                             }
                         }
-                        break;
                     }
+                }
             }
         }
         private void InvokeGameOver()
@@ -255,6 +252,11 @@ namespace SafariModel.Model
             Type? type = entity?.GetType();
 
             if (entity == null) return;
+
+            if(entity is MovingEntity me)
+            {
+                me.UpdateSpeedMultiplier(speedBoost);
+            }
 
             if (entity is Guard guardEntity)
             {
