@@ -12,7 +12,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Greasewood(int x, int y) : base(x, y, 20) 
         {
-            entitySize = 18;
+            entitySize = 40;
         }
         #endregion
     }

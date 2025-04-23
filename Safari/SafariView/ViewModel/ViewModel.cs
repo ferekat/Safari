@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Diagnostics.Contracts;
 using SafariModel.Model.EventArgsClasses;
+using System.Windows.Controls;
 
 namespace SafariView.ViewModel
 {
@@ -46,6 +47,7 @@ namespace SafariView.ViewModel
         private (int, int) selectedTile;
         private int selectedEntityID;
         private ClickAction cAction;
+        private string? bridges;
         private string selectedShopName;
         private GameData? cachedGameData;
         //Mennyi tile lesz látható a képernyőn
@@ -87,10 +89,25 @@ namespace SafariView.ViewModel
         #region Tile brushes
         private static Dictionary<TileType, Brush> tileBrushes = new Dictionary<TileType, Brush>()
         {
-            {TileType.WATER, new SolidColorBrush(Color.FromRgb(55, 55, 255))},
-            { TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
+            //{TileType.WATER, new SolidColorBrush(Color.FromRgb(55, 55, 255))},
+            //{ TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
+            //{ TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
+            {TileType.WATER, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/water.png")),
+                } 
+            },
+            {TileType.GROUND, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.jpg")),
+                }
+            },
+            {TileType.FENCE, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.jpg")),
+                }
+            },
             { TileType.EMPTY,new SolidColorBrush(Color.FromRgb(0, 0, 0))},
-            { TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
            // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
@@ -118,24 +135,74 @@ namespace SafariView.ViewModel
         private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
         {
             {TilePlaceable.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            {TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
-            {TilePlaceable.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
-            {TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
+            {TilePlaceable.IS_ROAD, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
+                }
+            },
+             {TilePlaceable.IS_LARGE_BRIDGE, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
+                }
+            },
+             {TilePlaceable.IS_SMALL_BRIDGE, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
+                }
+            },
+            //{TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
+            //{TilePlaceable.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
+            //{TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
         };
         #endregion
 
         #region Entity brushes
         private static Dictionary<Type, Brush> entityBrushes = new Dictionary<Type, Brush>()
         {
-            {typeof(Lion),new SolidColorBrush(Color.FromRgb(204,204,0)) },
-            {typeof(Leopard),new SolidColorBrush(Color.FromRgb(212,170,33)) },
-            {typeof(Gazelle),new SolidColorBrush(Color.FromRgb(189,168,98)) },
-            { typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))},
-            {typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
-            {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
-            {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
-            {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            {typeof(Hunter),new SolidColorBrush(Color.FromRgb(150,150,150)) },
+            {typeof(Lion),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/lion.png")),
+                } },
+            {typeof(Leopard),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/leopard.png")),
+                } },
+            {typeof(Gazelle),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/gazelle.png")),
+                } },
+            {typeof(Giraffe),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/giraffe.png")),
+                } },
+            {typeof(Cactus),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/cactus.png")),
+                } },
+            {typeof(Greasewood),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/greasewood.png")),
+                } },
+            {typeof(PalmTree),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/palmtree.png")),
+                } },
+            {typeof(Guard),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/guard.png")),
+                } },
+            {typeof(Hunter),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/hunter.png")),
+                } },
+            //{typeof(Leopard),new SolidColorBrush(Color.FromRgb(212,170,33)) },
+            //{typeof(Gazelle),new SolidColorBrush(Color.FromRgb(189,168,98)) },
+            //{ typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))},
+            //{typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
+            //{typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
+            //{typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
+            //{typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            //{typeof(Hunter),new SolidColorBrush(Color.FromRgb(150,150,150)) },
         };
         private static Brush HillBrush(Tile hill)
         {
@@ -185,7 +252,7 @@ namespace SafariView.ViewModel
         public string MoneyString { get { return moneyString; } private set { moneyString = value; OnPropertyChanged(); } }
 
         public string SelectedShopName { get { return selectedShopName; } private set { selectedShopName = value; OnPropertyChanged(); } }
-
+        public string? Bridges { get { return bridges; } private set { bridges = value; OnPropertyChanged(); } }
         #endregion
 
         #region Properties
@@ -255,6 +322,7 @@ namespace SafariView.ViewModel
         public DelegateCommand CreditsCommand { get; private set; }
         public DelegateCommand ClickedShopIcon { get; private set; }
         public DelegateCommand ChangedGameSpeed { get; private set; }
+        public DelegateCommand BuyBridge { get; private set; }
         #endregion
 
         #region EventHandlers
@@ -284,6 +352,7 @@ namespace SafariView.ViewModel
             SaveGameCommand = new DelegateCommand((param) => SaveGame());
             LoadGameCommand = new DelegateCommand((param) => LoadGame());
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
+            BuyBridge = new DelegateCommand((param) => BuyBridges(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
             NewGamePageCommand = new DelegateCommand((param) => OnNewGamePageClicked());
@@ -311,6 +380,7 @@ namespace SafariView.ViewModel
             Day = "1";
             Week = "1";
             Month = "0/12";
+            Bridges = "Hidden";
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
@@ -339,6 +409,17 @@ namespace SafariView.ViewModel
             throw new NotImplementedException();
         }
 
+        private void BuyBridges(object? param)
+        {
+            if (Bridges == "Hidden")
+            {
+                Bridges = "Visible";
+            }
+            else
+            {
+                Bridges = "Hidden";
+            }
+        }
         private void ClickShop(object? clickParam)
         {
 

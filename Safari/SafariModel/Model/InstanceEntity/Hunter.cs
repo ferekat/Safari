@@ -33,7 +33,7 @@ namespace SafariModel.Model.InstanceEntity
         public Hunter(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
 
         {
-            entitySize = 12;
+            entitySize = 25;
             random = new Random();
             enterField = TimeNextHunter();
             hasEntered = false;

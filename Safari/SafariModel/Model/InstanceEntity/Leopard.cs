@@ -11,7 +11,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Leopard(int x, int y) : base(x, y, 0, 200, 250, 200)
         {
-            entitySize = 30;
+            entitySize = 60;
         }
         #endregion
 
