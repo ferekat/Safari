@@ -21,6 +21,7 @@ namespace SafariModel.Model.InstanceEntity
         private int tickBeforeFire;
         private int baseDamage;
         private Hunter? targetHunter;
+        private int timeShots;
         #endregion
         public int Salary { get { return salary; } }
         public List<Hunter> NearbyHunters { get { return nearbyHunters; } }
@@ -44,6 +45,7 @@ namespace SafariModel.Model.InstanceEntity
             tickBeforeFire = 0;
             Damage = 15;
             targetHunter = null;
+            timeShots = 72;
         }
         #endregion
         #region Public methods
@@ -56,7 +58,7 @@ namespace SafariModel.Model.InstanceEntity
         {
             if (NearbyHunters.Count > 0)
             {
-                if (tickBeforeFire % 60 == 0)
+                if (tickBeforeFire % (timeShots/Multiplier) == 0)
                 {
                     if (targetHunter == null)
                     {

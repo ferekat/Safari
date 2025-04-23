@@ -57,13 +57,9 @@ namespace SafariModel.Model
                     if (entity is MovingEntity me)
                     {
                         me.UpdateSpeedMultiplier(speedBoost);
-                        if(me is Hunter h)
+                        if(me is Gunman g)
                         {
-                            h.EnterField /= speedBoost;
-                            if(h.WaitingTime != 0)
-                            {
-                                h.WaitingTime /= speedBoost;
-                            }
+                            g.Multiplier = speedBoost;
                         }
                     }
                 }
@@ -268,6 +264,7 @@ namespace SafariModel.Model
 
             if (entity is Guard guardEntity)
             {
+                guardEntity.Multiplier = speedBoost;
                 guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
                 guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
                 guardEntity.TookDamage += OnNewMessage;

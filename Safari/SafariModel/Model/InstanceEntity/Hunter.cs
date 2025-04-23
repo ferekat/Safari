@@ -24,9 +24,9 @@ namespace SafariModel.Model.InstanceEntity
 
         public bool IsVisible { get { return isVisible; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
-        public int EnterField { get { return enterField; } set { enterField = value; } }
+        public int EnterField { get { return enterField / Multiplier; } set { enterField = value; } }
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
-        public int WaitingTime { get { return waitingTime; } set { waitingTime = value; } }
+        public int WaitingTime { get { return waitingTime / Multiplier; } set { waitingTime = value; } }
         public bool Duel { get { return duel; } set { duel = value; } }
 
         public event EventHandler<HunterTargetEventArgs>? HunterTarget;
@@ -42,7 +42,6 @@ namespace SafariModel.Model.InstanceEntity
             leavingMap = false;
             mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
             duel = false;
-
         }
         private void TakeAnimal()
         {
@@ -98,7 +97,7 @@ namespace SafariModel.Model.InstanceEntity
                     if (TargetAnimal == null)
                     {
                         tickBeforeTarget++;
-                        if (tickBeforeTarget == waitingTime)
+                        if (tickBeforeTarget == WaitingTime)
                         {
                             HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
                             tickBeforeTarget = 0;

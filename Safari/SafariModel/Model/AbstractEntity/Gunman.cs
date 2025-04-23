@@ -18,6 +18,7 @@ namespace SafariModel.Model.AbstractEntity
         private int targX;
         private int targY;
         private Random random;
+        private int multiplier;
 
         public int Health { get; protected set; }
         public int Damage { get; protected set; }
@@ -25,6 +26,7 @@ namespace SafariModel.Model.AbstractEntity
         public Animal? TargetAnimal { get { return targetAnimal!; } set { targetAnimal = value; } }
         public int TargX { get { return targX; } set { targX = value; } }
         public int TargY { get { return targY; } set { targY = value; } }
+        public int Multiplier { get { return multiplier; } set { multiplier = value; } }
 
         public event EventHandler<KillAnimalEventArgs>? KilledAnimal;
         public event EventHandler<GunmanRemoveEventArgs>? GunmanRemove;
