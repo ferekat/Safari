@@ -14,6 +14,10 @@ namespace SafariModel.Model.InstanceEntity
         {
             entitySize = 30;
         }
+        public Gazelle(int x, int y, int age, int health, int food, int water, int hunger, int thirst) : base(x, y, age, health, food, water, hunger, thirst)
+        {
+            entitySize = 30;
+        }
         #endregion
 
         #region Methods

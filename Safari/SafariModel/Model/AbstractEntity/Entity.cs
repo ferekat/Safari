@@ -71,6 +71,12 @@ namespace SafariModel.Model.AbstractEntity
             return entities;
         }
 
+        public void RemoveSelf()
+        {
+            if (entityHandler == null) return;
+            entityHandler.RemoveEntity(this);
+        }
+
         public int Debug_GetEntitySameChunkCount()
         {
             return GetEntitiesInChunk(this.GetChunkCoordinates()).Count;

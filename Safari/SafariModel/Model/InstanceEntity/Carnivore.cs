@@ -14,6 +14,18 @@ namespace SafariModel.Model.InstanceEntity
         {
             //Egyéb húsevő specifikus dolgok
         }
+
         #endregion
+
+        protected override bool IsPreferredFood(Entity e)
+        {
+            return e is Herbivore;
+        }
+
+        protected override void EatInteraction(Entity e)
+        {
+            Food = 100;
+            e.RemoveSelf();
+        }
     }
 }

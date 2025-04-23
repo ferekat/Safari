@@ -412,6 +412,22 @@ namespace SafariModel.Model.AbstractEntity
             return tilesInRange;
         }
 
+        protected bool IsAccessibleTile(int i, int j, out (int,int) walkableNeighbor)
+        {
+            foreach((int, int) possibleCoords in coordSets)
+            {
+                int xChange = possibleCoords.Item1;
+                int yChange = possibleCoords.Item2;
+                if (tileCollision.IsPassable(i+xChange,j+yChange))
+                {
+                    walkableNeighbor = (i + xChange, j + yChange);
+                    return true;
+                }
+            }
+            walkableNeighbor = (-1, -1);
+            return false;
+        }
+
         protected abstract void EntityLogic();
     }
 }

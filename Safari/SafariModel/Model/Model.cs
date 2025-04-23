@@ -53,7 +53,7 @@ namespace SafariModel.Model
             Entity.RegisterTileMap(tileMap);
 
             //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Lion(100, 200,0,300,81,81,0,0));
+            entityHandler.LoadEntity(new Gazelle(100, 200,0,300,45,45,0,0));
 
 
             economyHandler = new EconomyHandler(9999);

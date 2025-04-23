@@ -29,6 +29,11 @@ namespace SafariModel.Model.AbstractEntity
             
         }
 
+        public void GetEaten()
+        {
+
+        }
+
         #endregion
     }
 }
