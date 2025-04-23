@@ -583,15 +583,46 @@ namespace SafariView.ViewModel
 
             RenderedEntities.Clear();
 
+            MovingEntity? selected = null;
+
             foreach (Entity e in entities)
             {
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
                 }
+                //debug
+                if(e.ID == selectedEntityID && e is MovingEntity m)
+                {
+                    selected = m;
+                }
+                //
             }
 
-            
+            //debug
+            if (selected != null)
+            {
+                foreach (Entity visible in selected.GetEntitiesInRange())
+                {
+                    RenderedEntities.Add(new EntityRender(visible.X - cameraX, visible.Y - cameraY, new SolidColorBrush(Color.FromRgb(255, 0, 0)), 10));
+                }
+                foreach(Tile t in selected.GetTilesInRange())
+                {
+
+                    int tileScaledX = t.I * Tile.TILESIZE;
+                    int tileScaledY = t.J * Tile.TILESIZE;
+
+                    //Convert to real coordinates and add to render list
+                    int realX = tileScaledX - cameraXLeft - Tile.TILESIZE;
+                    int realY = tileScaledY - cameraYUp - Tile.TILESIZE;
+
+                    TileRender tile = new TileRender(realX, realY, Tile.TILESIZE, new SolidColorBrush(Color.FromRgb(0, 255, 0)));
+
+                    RenderedTiles.Add(tile);
+                }
+            }//
+
+
         }
 
         private void ReDrawMinimap(Tile[,] tileMap)
@@ -690,6 +721,11 @@ namespace SafariView.ViewModel
                 Action: {a.Action}
                 Current target:
                 {a.CurrentTarget}
+                Current chunk:
+                {a.GetChunkCoordinates().ToString()}
+                Entities in same chunk: {a.Debug_GetEntitySameChunkCount().ToString()}
+                Range: {a.Range}
+                Entities in range: {a.GetEntitiesInRange().Count.ToString()}
                 """;
             }
             else

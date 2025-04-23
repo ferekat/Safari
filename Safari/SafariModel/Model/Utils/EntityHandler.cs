@@ -16,11 +16,14 @@ namespace SafariModel.Model.Utils
         private List<Entity> entities = new();
         private List<Carnivore> carnivores = new();
         private List<Herbivore> herbivores = new();
+        private List<Plant> plants = new();
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
+        
 
         private Dictionary<int, Entity> entitiesByID = new();
-        
+        private Dictionary<(int,int),List<Entity>> entitiesByChunks = new();
+
         private Random random;
 
         public EntityHandler() 
@@ -36,8 +39,11 @@ namespace SafariModel.Model.Utils
             if (entity is Herbivore h) herbivores.Add(h);
             if (entity is Hunter hu) hunters.Add(hu);
             if(entity is Guard g) guards.Add(g);
+            if (entity is Plant p) plants.Add(p);
 
             entitiesByID.Add(entity.ID, entity);
+            UpdateChunks((-1,-1),entity.GetChunkCoordinates(),entity);
+            entity.ChunkCoordinateChanged += new EventHandler<((int, int), (int, int))>(EntityChunkChange);
         }
         public void RemoveEntity(Entity entity)
         {
@@ -46,6 +52,10 @@ namespace SafariModel.Model.Utils
             if (entity is Carnivore c) carnivores.Remove(c);
             if (entity is Hunter hu) hunters.Remove(hu);
             if (entity is Guard g) guards.Remove(g);
+            if (entity is Plant p) plants.Remove(p);
+
+            entitiesByID.Remove(entity.ID);
+            entitiesByChunks[entity.GetChunkCoordinates()].Remove(entity);
         }
 
         public Entity? GetEntityByID(int id)
@@ -61,6 +71,38 @@ namespace SafariModel.Model.Utils
                 if (x >= entity.X && x <= (entity.X + entity.EntitySize) && y >= entity.Y && y <= (entity.Y + entity.EntitySize)) return entity.ID;
             }
             return -1;
+        }
+
+        public List<Entity>? GetEntitiesInChunk((int,int) chunk)
+        {
+            List<Entity>? entities;
+            if (entitiesByChunks.TryGetValue(chunk, out entities))
+            {
+                return entities;
+            }
+            return null;
+        }
+
+        private void EntityChunkChange(object? sender, ((int, int), (int, int)) chunkdata)
+        {
+            if(sender is Entity e && sender != null)
+            {
+                UpdateChunks(chunkdata.Item1, chunkdata.Item2, e);
+            }
+        }
+
+        private void UpdateChunks((int,int) prev, (int,int) current, Entity e)
+        {
+            List<Entity>? prevChunk;
+            if(entitiesByChunks.TryGetValue(prev,out prevChunk))
+            {
+                prevChunk.Remove(e);
+            }
+            if(!entitiesByChunks.ContainsKey(current))
+            {
+                entitiesByChunks[current] = new List<Entity>();
+            }
+            entitiesByChunks[current].Add(e);
         }
 
         public void TickEntities()

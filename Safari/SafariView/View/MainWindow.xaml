@@ -20,7 +20,7 @@
             </Grid.RowDefinitions>
 
             <!--Kiválasztott entity adatai-->
-            <TextBlock Text="{Binding SelectedEntityData}" Visibility="{Binding EntityDataVisibility}" Panel.ZIndex="4" Background="White" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding SelectedEntityData}" Visibility="{Binding EntityDataVisibility}" Panel.ZIndex="4" Background="White" Width="200" Height="300" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <!--Kiválasztott entity adatai-->
 
             <!--Minimap -->
