@@ -37,7 +37,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding TopRowHeightString}"  />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
                 
@@ -45,7 +45,8 @@
                 <vm:TileCanvas Panel.ZIndex="0" Background="{Binding BackgroundBrush,Mode=OneTime}" IsHitTestVisible="False" Grid.Row="1" x:Name="tileCanvas"/>
 
                 <!--Entityk megjelenítése/!-->
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}" Panel.ZIndex="1" >
+                <vm:TileCanvas Panel.ZIndex="1" Background="Transparent" IsHitTestVisible="False" Grid.Row="1" x:Name="entityCanvas"/>
+                <ItemsControl Grid.Row="1" Panel.ZIndex="1" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Background="Transparent" MouseDown="TileMapCanvas_MouseDown">
@@ -54,17 +55,17 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="{Binding Size}" Height="{Binding Size}" Fill="{Binding Col}" Margin="{Binding Margin}" MouseDown="TileMapCanvas_MouseDown">
+                            <Rectangle MouseDown="TileMapCanvas_MouseDown">
                             </Rectangle>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                
+
                 <!-- Floating texts -->
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding FloatingTexts}">
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding FloatingTexts}" Panel.ZIndex="2">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas IsHitTestVisible="False"/>
+                            <Canvas/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -74,7 +75,8 @@
                                        FontWeight="Bold"
                                        FontSize="16"
                                        Margin="{Binding Margin}"
-                                       Opacity="1">
+                                       Opacity="1"
+                                       >
                                 <TextBlock.Triggers>
                                     <EventTrigger RoutedEvent="FrameworkElement.Loaded">
                                         <BeginStoryboard>

@@ -22,15 +22,21 @@ namespace SafariView
         public event EventHandler<Point>? MinimapCanvasClick;
         public event EventHandler<(int, int)>? CameraChange;
 
-        public MainWindow(List<TileRender> renderedTiles)
+        public MainWindow(List<RenderObject> renderedTiles, List<RenderObject> renderedEntities)
         {
             InitializeComponent();
             tileCanvas.tiles = renderedTiles;
+            entityCanvas.tiles = renderedEntities;
         }
 
         public void ShowTileMapRender()
         {
             tileCanvas.InvalidateVisual();
+        }
+
+        public void ShowEntityRender()
+        {
+            entityCanvas.InvalidateVisual();
         }
 
         public void ViewModel_CameraChangeRequest(object? sender, (int,int) changerange)

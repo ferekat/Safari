@@ -30,8 +30,8 @@ namespace SafariView.ViewModel
     public class ViewModel : ViewModelBase
     {
         #region Private fields
-        private List<TileRender> RenderedTiles;
-        public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
+        private List<RenderObject> RenderedTiles;
+        private List<RenderObject> RenderedEntities;
         public ObservableCollection<FloatingText> FloatingTexts { get; private set; }
         private int money;
         private int hour;
@@ -261,14 +261,15 @@ namespace SafariView.ViewModel
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
         public event EventHandler? FinishedRenderingTileMap;
+        public event EventHandler? FinishedRenderingEntities;
         public event EventHandler<(int, int)>? RequestCameraChange;
         #endregion
 
         #region Constructor
-        public ViewModel(Model model, List<TileRender> renderedTiles)
+        public ViewModel(Model model, List<RenderObject> renderedTiles, List<RenderObject> renderedEntities)
         {
             this.model = model;
-            RenderedEntities = new ObservableCollection<EntityRender>();
+            this.RenderedEntities = renderedEntities;
             FloatingTexts = new ObservableCollection<FloatingText>();
             this.RenderedTiles = renderedTiles;
             minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE,96,96, PixelFormats.Rgb24, null);
@@ -652,7 +653,7 @@ namespace SafariView.ViewModel
                             }
                         }
 
-                        TileRender tile = new TileRender(realX, realY,Tile.TILESIZE, b!);
+                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!);
 
                         RenderedTiles.Add(tile);
                     }
@@ -668,11 +669,10 @@ namespace SafariView.ViewModel
             {
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
-                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
+                    RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize, entityBrushes[e.GetType()]));
                 }
             }
-
-            
+            FinishedEntityRender();
         }
 
         private void ReDrawMinimap(Tile[,] tileMap)
@@ -769,6 +769,10 @@ namespace SafariView.ViewModel
             model.UpdatePerTick();
         }
 
+        private void FinishedEntityRender()
+        {
+            FinishedRenderingEntities?.Invoke(this, EventArgs.Empty);
+        }
         private void FinishedTileMapRender()
         {
             FinishedRenderingTileMap?.Invoke(this, EventArgs.Empty);
