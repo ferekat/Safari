@@ -74,6 +74,11 @@ namespace SafariModel.Model.AbstractEntity
             isMoving = true;
         }
 
+        public void CancelMovement()
+        {
+            targetPoints.Clear();
+            isMoving = false;
+        }
         public void SetPath(Queue<Point> points)
         {
             targetPoints = points;
@@ -400,7 +405,7 @@ namespace SafariModel.Model.AbstractEntity
             {
                 for (int j = startY; j <= endY; j++)
                 {
-                    if (i < 0 || j < 0) continue;
+                    if (i < 0 || j < 0 || i >= Model.MAPSIZE || j >= Model.MAPSIZE) continue;
 
                     int xCorrection = (i < entityX) ? 1 : 0;
                     int yCorrection = (j < entityY) ? 1 : 0;

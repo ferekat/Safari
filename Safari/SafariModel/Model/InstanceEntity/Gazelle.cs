@@ -10,7 +10,7 @@ namespace SafariModel.Model.InstanceEntity
     public class Gazelle : Herbivore
     {
         #region Constructor
-        public Gazelle(int x, int y) : base(x, y, 0, 200, 200, 250, 0, 0)
+        public Gazelle(int x, int y) : base(x, y, 0, 200, 79, 79, 0, 0)
         {
             entitySize = 30;
         }

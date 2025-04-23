@@ -75,7 +75,10 @@ namespace SafariModel.Model.AbstractEntity
         {
             if (entityHandler == null) return;
             entityHandler.RemoveEntity(this);
+            RemoveEvent();
         }
+
+        protected virtual void RemoveEvent() {}
 
         public int Debug_GetEntitySameChunkCount()
         {

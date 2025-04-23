@@ -66,7 +66,7 @@ namespace SafariModel.Model.Utils
         }
         public int GetEntityIDFromCoords(int x, int y)
         {
-            foreach(Entity entity in entitiesByChunks[Entity.GetChunkCoordinates(x,y)]) 
+            foreach(Entity entity in entities) 
             {
                 if (x >= entity.X && x <= (entity.X + entity.EntitySize) && y >= entity.Y && y <= (entity.Y + entity.EntitySize)) return entity.ID;
             }

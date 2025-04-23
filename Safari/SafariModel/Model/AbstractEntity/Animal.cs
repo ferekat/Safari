@@ -2,6 +2,7 @@
 using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -17,23 +18,28 @@ namespace SafariModel.Model.AbstractEntity
             Resting,
             GoEat,
             GoDrink,
-            Wandering
+            Wandering,
+            FindLeader
         }
         #endregion
-       
+
         #region Private fields
         private List<Point> exploredFoodPlaces;
         private List<Point> exploredWaterPlaces;
         private HashSet<(int, int)> exploredFoodChunks;
         private HashSet<(int, int)> exploredWaterChunks;
-        private List<Animal> members;
+        private List<Animal>? members;
+        private Animal? leader;
         private int wanderTimer;
         private int searchTimer;
         private Random random;
         private int interactionRange;
+        private bool searchingForLeader;
 
         private Entity? targetedFood;
         private Point targetedWater;
+
+        private static readonly int LEADER_FOLLOW_RANGE = Tile.TILESIZE * 15;
 
         private int searchLimit;
         private int hungerLimit;
@@ -50,12 +56,15 @@ namespace SafariModel.Model.AbstractEntity
         public int Water { get; protected set; }
         public int Health { get; protected set; }
         public AnimalActions Action { get; protected set; }
-        public bool IsLeader { get; private set; }
+        public bool IsLeader { get { return leader == null && members != null; } }
+        public bool InGroup { get { return leader != null || members != null; } }
 
         //Debug
         public int ExploredFoodCount { get { return exploredFoodPlaces.Count; } }
         public int ExploredWaterCount { get { return exploredWaterPlaces.Count; } }
         public int SearchTimer { get { return searchTimer; } }
+
+        public int MemberCount { get { return members == null ? -2 : members.Count; } }
 
         #endregion
 
@@ -82,7 +91,8 @@ namespace SafariModel.Model.AbstractEntity
             exploredWaterPlaces = new List<Point>();
             exploredFoodChunks = new HashSet<(int, int)>();
             exploredWaterChunks = new HashSet<(int, int)>();
-            members = new List<Animal>();
+
+            CheckArea();
 
             //random járkálás
             random = new Random();
@@ -94,7 +104,7 @@ namespace SafariModel.Model.AbstractEntity
 
         protected void SearchForFood()
         {
-            if(ReachedTarget && !IsMoving)
+            if (ReachedTarget && !IsMoving)
             {
                 List<Entity> entitiesInRange = GetEntitiesInRange();
                 foreach (Entity e in entitiesInRange)
@@ -109,7 +119,7 @@ namespace SafariModel.Model.AbstractEntity
                 //Couldn't find food source
                 //if this point is in the explored food points, remove it (because there is no accessible source from here)
                 Point current = new Point(this.X, this.Y);
-                if(exploredFoodPlaces.Contains(current))
+                if (exploredFoodPlaces.Contains(current))
                 {
                     exploredFoodPlaces.Remove(current);
                     exploredFoodChunks.Remove(GetChunkCoordinates());
@@ -128,7 +138,7 @@ namespace SafariModel.Model.AbstractEntity
             //if the animal found a point, go to it until it is in interaction range
             if (targetedFood != null)
             {
-                if(DistanceToEntity(targetedFood) < interactionRange)
+                if (DistanceToEntity(targetedFood) < interactionRange)
                 {
                     EatFood(targetedFood);
                 }
@@ -145,7 +155,7 @@ namespace SafariModel.Model.AbstractEntity
                     if (t.Type == TileType.WATER)
                     {
                         //Only go to water tile if it has a walkable tile adjacent to it
-                        if(IsAccessibleTile(t.I,t.J,out (int,int) target))
+                        if (IsAccessibleTile(t.I, t.J, out (int, int) target))
                         {
                             int tileX = t.I * Tile.TILESIZE;
                             int tileY = t.J * Tile.TILESIZE;
@@ -165,7 +175,7 @@ namespace SafariModel.Model.AbstractEntity
                     exploredWaterPlaces.Remove(current);
                     exploredWaterChunks.Remove(GetChunkCoordinates());
                 }
-                if(exploredWaterPlaces.Count > 0)
+                if (exploredWaterPlaces.Count > 0)
                 {
                     SetTarget(exploredWaterPlaces[random.Next(0, exploredWaterPlaces.Count)]);
                 }
@@ -179,7 +189,7 @@ namespace SafariModel.Model.AbstractEntity
             //if the animal found a point, go to it until it is in interaction range
             if (targetedWater.X >= 0 && targetedWater.Y >= 0)
             {
-                if (Math.Sqrt(Math.Pow(this.X-targetedWater.X,2)+Math.Pow(this.Y-targetedWater.Y,2)) < interactionRange)
+                if (Math.Sqrt(Math.Pow(this.X - targetedWater.X, 2) + Math.Pow(this.Y - targetedWater.Y, 2)) < interactionRange)
                 {
                     DrinkWater();
                 }
@@ -193,21 +203,27 @@ namespace SafariModel.Model.AbstractEntity
         protected void RandomWander()
         {
             wanderTimer = random.Next(300);
-            int newX = random.Next(-300, 300);
-            int newY = random.Next(-300, 300);
-            this.SetTarget(new Point(this.x + newX,this.y+newY));
+            int newX = random.Next(-1000, 1000);
+            int newY = random.Next(-1000, 1000);
+            this.SetTarget(new Point(this.x + newX, this.y + newY));
         }
 
         protected override void EntityLogic()
         {
             PassTick();
-            Action = SelectAction();
-            switch(Action)
+            if (!searchingForLeader && leader != null && DistanceToEntity(leader) > LEADER_FOLLOW_RANGE) 
             {
-                case AnimalActions.Resting: Rest();break;
+                searchingForLeader = true;
+                SetTarget(new Point(leader.X, leader.Y));
+            }
+            Action = SelectAction();
+            switch (Action)
+            {
+                case AnimalActions.Resting: Rest(); break;
                 case AnimalActions.Wandering: Wander(); break;
                 case AnimalActions.GoEat: GoEat(); break;
                 case AnimalActions.GoDrink: GoDrink(); break;
+                case AnimalActions.FindLeader: FindLeader(); break;
             }
 
             AnimalLogic();
@@ -231,6 +247,7 @@ namespace SafariModel.Model.AbstractEntity
         {
             if (Water < 40) return AnimalActions.GoDrink;
             if (Food < 40) return AnimalActions.GoEat;
+            if (searchingForLeader) return AnimalActions.FindLeader;
             if (Water < 80 || Food < 80) return AnimalActions.Wandering;
 
             return AnimalActions.Resting;
@@ -238,7 +255,7 @@ namespace SafariModel.Model.AbstractEntity
 
         private void Search()
         {
-            if(++searchTimer >= searchLimit)
+            if (++searchTimer >= searchLimit)
             {
                 searchTimer = 0;
                 CheckArea();
@@ -265,19 +282,44 @@ namespace SafariModel.Model.AbstractEntity
 
             foreach (Tile t in tilesInRange)
             {
-                if(t.Type == TileType.WATER)
+                if (t.Type == TileType.WATER)
                 {
                     //mark water's location (limited to 1 per chunk)
-                    if(!exploredWaterChunks.Contains(GetChunkCoordinates()))
+                    if (!exploredWaterChunks.Contains(GetChunkCoordinates()))
                     {
                         exploredWaterChunks.Add(GetChunkCoordinates());
-                        exploredWaterPlaces.Add(new Point(this.X,this.Y));
+                        exploredWaterPlaces.Add(new Point(this.X, this.Y));
                     }
                 }
             }
 
-            foreach(Entity e in entitiesInRange)
+            foreach (Entity e in entitiesInRange)
             {
+
+                //if animal doesn't have a leader or a group, try finding one in range
+                if(!InGroup)
+                {
+                    if(e.GetType().Equals(this.GetType()))
+                    {
+                        if(e is Animal a)
+                        {
+                            if(a.IsLeader)
+                            {
+                                this.SetLeader(a);
+                            }
+                            else if(a.leader != null)
+                            {
+                                this.SetLeader(a.leader);
+                            }
+                            //this animal doesn't belong to a group either
+                            else
+                            {
+                                this.SetLeader(a);
+                            }
+                        }
+                    }
+                }
+
                 if (IsPreferredFood(e))
                 {
                     //mark food's location (limited to 1 per chunk)
@@ -287,6 +329,40 @@ namespace SafariModel.Model.AbstractEntity
                         exploredFoodPlaces.Add(new Point(this.X, this.Y));
                     }
                 }
+            }
+        }
+
+        protected void SetLeader(Animal? leader)
+        {
+            this.leader = leader;
+            leader?.AddToGroup(this);
+        }
+
+        protected void AddToGroup(Animal a)
+        {
+            if(members == null) members = new List<Animal>();
+            members.Add(a);
+        }
+
+        protected void RemoveFromGroup(Animal a)
+        {
+            if (members == null) return;
+            members.Remove(a);
+        }
+
+        protected override void RemoveEvent()
+        {
+            if (leader != null)
+            {
+                leader.RemoveFromGroup(this);
+            }
+            else if(members != null)
+            {
+                //új random vezető választása
+                Animal newLeader = members[random.Next(0, members.Count)];
+                newLeader.SetLeader(null);
+                members.Remove(newLeader);
+                newLeader.members = this.members;
             }
         }
 
@@ -316,6 +392,18 @@ namespace SafariModel.Model.AbstractEntity
             {
                 ++Health;
                 healTimer = 0;
+            }
+        }
+
+        private void FindLeader()
+        {
+            if (leader == null) return;
+            if(ReachedTarget && !IsMoving) SetTarget(new Point(leader.X, leader.Y));
+            //Found leader
+            if (DistanceToEntity(leader) < Range)
+            {
+                CancelMovement();
+                searchingForLeader = false;
             }
         }
         #endregion

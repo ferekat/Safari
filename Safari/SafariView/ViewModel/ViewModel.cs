@@ -694,6 +694,9 @@ namespace SafariView.ViewModel
                 Search timer : {a.SearchTimer}
                 Explored food count : {a.ExploredFoodCount}
                 Explored water count : {a.ExploredWaterCount}
+                In Group? {a.InGroup}
+                Leader? {a.IsLeader}
+                Member count: {a.MemberCount}
                 """;
             }
             else
