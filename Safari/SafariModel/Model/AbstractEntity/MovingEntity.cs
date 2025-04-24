@@ -66,7 +66,7 @@ namespace SafariModel.Model.AbstractEntity
             int tileX;
             int tileY;
             (tileX, tileY) = GetTileCoords(p);
-            if (!tileCollision.IsPassable(tileX, tileY)) return;
+            if (!tileCollision.IsPassable(tileX, tileY,this.ImPassableTileTypes())) return;
 
             targetPoints.Clear();
 
@@ -119,7 +119,7 @@ namespace SafariModel.Model.AbstractEntity
 
             for (; n > 0; --n)
             {
-                if (!tileCollision.IsPassable(x, y)) return false;
+                if (!tileCollision.IsPassable(x, y, this.ImPassableTileTypes())) return false;
 
                 if (error > 0)
                 {
@@ -184,22 +184,7 @@ namespace SafariModel.Model.AbstractEntity
             //check if chunk coordinate changed
             (int, int) currentChunkCoords = GetChunkCoordinates();
             if (!prevChunkCoords.Equals(currentChunkCoords)) OnChunkCoordinatesChanged(prevChunkCoords, currentChunkCoords);
-
-
-            //entity is outside map
-            //if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
-            //{
-            //    this.x += 1;
-            //    this.y += 1;
-            //    NextTargetPoint();
-            //}
-            //if (this.X > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
-            //{
-            //    this.x -= 1;
-            //    this.y -= 1;
-            //    NextTargetPoint();
-            //}
-
+            
 
             if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) < movementVector.Length() * 1.5) //In range of target point
             {
@@ -320,7 +305,7 @@ namespace SafariModel.Model.AbstractEntity
                     int targetX = nodeX + coordset.Item1;
                     int targetY = nodeY + coordset.Item2;
                     //Ha ráléphet a tilera, és azt a tilet nem dolgoztuk még fel és nincs benne a feldolgozandó tileok között...
-                    if (tileCollision.IsPassable(targetX, targetY) && !closedList.Contains((targetX, targetY)) && !openListCoords.Contains((targetX, targetY)))
+                    if (tileCollision.IsPassable(targetX, targetY, this.ImPassableTileTypes()) && !closedList.Contains((targetX, targetY)) && !openListCoords.Contains((targetX, targetY)))
                     {
                         //Új node, amit eltárolunk az openlistben
                         PathNode newNode = new PathNode(
@@ -437,7 +422,7 @@ namespace SafariModel.Model.AbstractEntity
             {
                 int xChange = possibleCoords.Item1;
                 int yChange = possibleCoords.Item2;
-                if (tileCollision.IsPassable(i+xChange,j+yChange))
+                if (tileCollision.IsPassable(i+xChange,j+yChange,this.ImPassableTileTypes()))
                 {
                     walkableNeighbor = (i + xChange, j + yChange);
                     return true;
@@ -445,6 +430,11 @@ namespace SafariModel.Model.AbstractEntity
             }
             walkableNeighbor = (-1, -1);
             return false;
+        }
+
+        protected virtual TileType[] ImPassableTileTypes()
+        {
+            return new TileType[] { TileType.FENCE, TileType.DEEP_WATER, TileType.ENTRANCE, TileType.EXIT };
         }
 
         protected abstract void EntityLogic();

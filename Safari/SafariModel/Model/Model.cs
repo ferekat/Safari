@@ -68,9 +68,15 @@ namespace SafariModel.Model
                 secondCounterHunter = 0;
             }
         }
+        public TileMap TileMap { get { return tileMap; } }
+
+        public EconomyHandler EconomyHandler { get { return economyHandler; } }
+        public EntityHandler EntityHandler { get { return entityHandler; } }  
+        public RoadNetworkHandler RoadNetworkHandler { get { return roadNetworkHandler; } }
+
+
         #endregion
 
-        public TileMap TileMap { get { return tileMap; } }
         #region Events
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;

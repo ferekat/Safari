@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SafariModel\SafariModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.13.0" />
   </ItemGroup>
 

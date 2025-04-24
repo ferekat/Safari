@@ -32,6 +32,7 @@ namespace SafariModel.Model.Utils
             random = new Random();
         }
 
+        public List<Entity> Entities { get { return entities; } }   
         public void LoadEntity(Entity entity)
         {
             entities.Add(entity);

@@ -125,5 +125,10 @@ namespace SafariModel.Model
             TouristHandler.TouristLeave(happiness);
             happiness = 0;
         }
+
+        protected override TileType[] ImPassableTileTypes()
+        {
+            return new TileType[] { TileType.DEEP_WATER };
+        }
     }
 }

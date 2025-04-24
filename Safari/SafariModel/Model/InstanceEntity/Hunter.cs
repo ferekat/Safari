@@ -1,5 +1,6 @@
 using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.EventArgsClasses;
+using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -141,6 +142,11 @@ namespace SafariModel.Model.InstanceEntity
         {
             int x = random.Next(1200, 7200);
             return x;
+        }
+
+        protected override TileType[] ImPassableTileTypes()
+        {
+            return new TileType[] { TileType.DEEP_WATER };
         }
     }
 }
