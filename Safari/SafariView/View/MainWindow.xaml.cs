@@ -18,22 +18,37 @@ namespace SafariView
     public partial class MainWindow : Window
     {
 
-        public event EventHandler<Point>? CanvasClick;
+        public event EventHandler<Point>? TileCanvasClick;
+        public event EventHandler<Point>? MinimapCanvasClick;
         public event EventHandler<(int, int)>? CameraChange;
 
-        public MainWindow(List<TileRender> renderedTiles)
+        public MainWindow(List<RenderObject> renderedTiles, List<RenderObject> renderedEntities)
         {
             InitializeComponent();
             tileCanvas.tiles = renderedTiles;
+            entityCanvas.tiles = renderedEntities;
         }
 
-        public void ShowRender()
+        public void ShowTileMapRender()
         {
             tileCanvas.InvalidateVisual();
         }
 
+        public void ShowEntityRender()
+        {
+            entityCanvas.InvalidateVisual();
+        }
+
         public void ViewModel_CameraChangeRequest(object? sender, (int,int) changerange)
         {
+
+            Point minimapcheck = Mouse.GetPosition(minimapCanvas);
+            //if cursor is on minimap
+            if (minimapcheck.X > 0 && minimapcheck.X < minimapCanvas.ActualWidth && minimapcheck.Y > 0 && minimapcheck.Y < minimapCanvas.ActualHeight)
+            {
+                OnCameraChange(0, 0);
+                return;
+            }
             int x = 0;
             int y = 0;
             Point p = Mouse.GetPosition(tileCanvas);
@@ -50,10 +65,16 @@ namespace SafariView
             CameraChange?.Invoke(this, (x, y));
         }
 
-        private void Canvas_MouseDown(object? sender, MouseEventArgs e)
+        private void TileMapCanvas_MouseDown(object? sender, MouseEventArgs e)
         {
             Point p = Mouse.GetPosition(tileCanvas);
-            CanvasClick?.Invoke(this,p);
+            TileCanvasClick?.Invoke(this,p);
+        }
+
+        private void MinimapCanvas_MouseDown(object? sender, MouseEventArgs e)
+        {
+            Point p = Mouse.GetPosition(minimapCanvas);
+            MinimapCanvasClick?.Invoke(this,p);
         }
     }
 }

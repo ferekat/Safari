@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace SafariView.ViewModel
 {
-    public class TileRender : ViewModelBase
+    public class RenderObject : ViewModelBase
     {
         private Rect rect;
         private Brush texture;
@@ -18,9 +18,9 @@ namespace SafariView.ViewModel
         public Rect Rectangle {  get { return rect; } }
         public Brush Texture { get { return texture; } }
 
-        public TileRender(int x, int y, Brush tex)
+        public RenderObject(double x, double y, double size, Brush tex)
         {
-            rect = new Rect(x, y, Tile.TILESIZE, Tile.TILESIZE);
+            rect = new Rect(x, y, size, size);
             texture = tex;
         }
     }

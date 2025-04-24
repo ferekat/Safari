@@ -26,6 +26,10 @@ namespace SafariModel.Persistence
         {
             //TODO: Finish constructor
             //throw new NotImplementedException();
+            hour = 0;
+            day = 1;
+            week = 1;
+            month = 0;
         }
     }
 }

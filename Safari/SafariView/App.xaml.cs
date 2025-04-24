@@ -32,30 +32,39 @@ namespace SafariView
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
             model = new Model();
-            List<TileRender> renderedTiles = new List<TileRender>();
+            List<RenderObject> renderedTiles = new List<RenderObject>();
+            List<RenderObject> renderedEntities = new List<RenderObject>();
 
-            viewModel = new ViewModel.ViewModel(model,renderedTiles);
+            viewModel = new ViewModel.ViewModel(model,renderedTiles,renderedEntities);
             viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
             viewModel.StartGame += new EventHandler(ViewModel_GameStart);
-            viewModel.FinishedRendering += new EventHandler(ViewModel_FinishedRendering);
-            
+            viewModel.FinishedRenderingTileMap += new EventHandler(ViewModel_FinishedTileMapRendering);
+            viewModel.FinishedRenderingEntities += new EventHandler(ViewModel_FinishedEntityRendering);
+
 
             lobbyWindow = new LobbyWindow();
             
-            mainWindow = new MainWindow(renderedTiles);
+            mainWindow = new MainWindow(renderedTiles,renderedEntities);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;
-            mainWindow.CanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
+            mainWindow.TileCanvasClick += new EventHandler<Point>(viewModel.ClickPlayArea);
+            mainWindow.MinimapCanvasClick += new EventHandler<Point>(viewModel.ClickMinimap);
 
             viewModel.RequestCameraChange += new EventHandler<(int, int)>(mainWindow.ViewModel_CameraChangeRequest);
             mainWindow.CameraChange += new EventHandler<(int, int)>(viewModel.MainWindow_CameraMovement);
-            
+
+            mainWindow.tileCanvas.SizeChanged += new SizeChangedEventHandler(viewModel.TileCanvas_SizeChanged);
 
             lobbyWindow.Show();
         }
 
-        private void ViewModel_FinishedRendering(object? sender, EventArgs e)
+        private void ViewModel_FinishedTileMapRendering(object? sender, EventArgs e)
         {
-            mainWindow!.ShowRender();
+            mainWindow!.ShowTileMapRender();
+        }
+
+        private void ViewModel_FinishedEntityRendering(object? sender, EventArgs e)
+        {
+            mainWindow!.ShowEntityRender();
         }
 
         private void ViewModel_GameExit(object? sender, System.EventArgs e)
