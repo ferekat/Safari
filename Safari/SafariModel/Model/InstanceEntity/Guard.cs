@@ -21,6 +21,7 @@ namespace SafariModel.Model.InstanceEntity
         private int tickBeforeFire;
         private int baseDamage;
         private Hunter? targetHunter;
+        private int timeShots;
         #endregion
         public int Salary { get { return salary; } }
         public List<Hunter> NearbyHunters { get { return nearbyHunters; } }
@@ -37,13 +38,14 @@ namespace SafariModel.Model.InstanceEntity
             level = 1;
             shotWeight = 0;
             salary = SetSalary();
-            entitySize = 12;
+            entitySize = 50;
             nearbyHunters = new List<Hunter>();
             hunterRange = 200;
             baseDamage = 15;
             tickBeforeFire = 0;
             Damage = 15;
             targetHunter = null;
+            timeShots = 72;
         }
         #endregion
         #region Public methods
@@ -54,14 +56,11 @@ namespace SafariModel.Model.InstanceEntity
         #endregion
         protected override void EntityLogic()
         {
-            if (NearbyHunters.Count > 0)
+            SetTargetHunter();
+            if (targetHunter != null)
             {
-                if (tickBeforeFire % 60 == 0)
+                if (tickBeforeFire % (timeShots/Multiplier) == 0)
                 {
-                    if (targetHunter == null)
-                    {
-                        targetHunter = NearbyHunters[0];
-                    }
                     Fire(this, targetHunter);
                 }
                 tickBeforeFire++;
@@ -86,7 +85,20 @@ namespace SafariModel.Model.InstanceEntity
             Random r = new Random();
             return r.Next(50)+50;
         }
-
+        private void SetTargetHunter()
+        {
+            if (NearbyHunters.Count > 0 && targetHunter == null)
+            {
+                foreach (Hunter h in NearbyHunters)
+                {
+                    if (h.HasEntered)
+                    {
+                        targetHunter = h;
+                        break;
+                    }
+                }
+            }
+        }
         public void IncreaseLevel(int n)
         {
             if (n == 1)

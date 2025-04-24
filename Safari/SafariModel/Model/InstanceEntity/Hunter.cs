@@ -3,6 +3,7 @@ using SafariModel.Model.EventArgsClasses;
 using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -23,18 +24,18 @@ namespace SafariModel.Model.InstanceEntity
         private int mapSizeConvert;
         private bool duel;
 
-        public bool IsVisible { get { return isVisible; } }
+        public bool IsVisible { get { return isVisible; } set { isVisible = value; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
-        public int EnterField { get { return enterField; } set { enterField = value; } }
+        public int EnterField { get { return enterField / Multiplier; } set { enterField = value; } }
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
-        public int WaitingTime { get { return waitingTime; } set { waitingTime = value; } }
+        public int WaitingTime { get { return waitingTime / Multiplier; } set { waitingTime = value; } }
         public bool Duel { get { return duel; } set { duel = value; } }
 
         public event EventHandler<HunterTargetEventArgs>? HunterTarget;
         public Hunter(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
 
         {
-            entitySize = 12;
+            entitySize = 40;
             random = new Random();
             enterField = TimeNextHunter();
             hasEntered = false;
@@ -43,7 +44,7 @@ namespace SafariModel.Model.InstanceEntity
             leavingMap = false;
             mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
             duel = false;
-
+            isVisible = false;
         }
         private void TakeAnimal()
         {
@@ -99,7 +100,7 @@ namespace SafariModel.Model.InstanceEntity
                     if (TargetAnimal == null)
                     {
                         tickBeforeTarget++;
-                        if (tickBeforeTarget == waitingTime)
+                        if (tickBeforeTarget == WaitingTime)
                         {
                             HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
                             tickBeforeTarget = 0;

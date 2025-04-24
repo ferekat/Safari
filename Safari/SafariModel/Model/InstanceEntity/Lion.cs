@@ -11,11 +11,11 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Lion(int x, int y) : base(x, y, 0, 300, 80, 80,0,0, 5000)
         {
-            entitySize = 40;
+            entitySize = 75;
         }
         public Lion(int x, int y, int age, int health, int food, int water, int hunger, int thirst, int breedingCooldown) : base(x, y, age, health, food, water, hunger, thirst, breedingCooldown)
         {
-            entitySize = 30;
+            entitySize = 75;
         }
 
         #endregion

@@ -59,16 +59,13 @@ namespace SafariModel.Model
                     if (entity is MovingEntity me)
                     {
                         me.UpdateSpeedMultiplier(speedBoost);
-                        if(me is Hunter h)
+                        if(me is Gunman g)
                         {
-                            h.EnterField /= speedBoost;
-                            if(h.WaitingTime != 0)
-                            {
-                                h.WaitingTime /= speedBoost;
-                            }
+                            g.Multiplier = speedBoost;
                         }
                     }
                 }
+                secondCounterHunter = 0;
             }
         }
         public TileMap TileMap { get { return tileMap; } }
@@ -107,7 +104,9 @@ namespace SafariModel.Model
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Gazelle(100, 200,18000,300,45,45,0,0, 5000));
 
-            
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            entityHandler.LoadEntity(h);
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
             touristHandler = new TouristHandler();
 
@@ -117,6 +116,7 @@ namespace SafariModel.Model
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
+
 
             data = new GameData();
         }
@@ -167,6 +167,7 @@ namespace SafariModel.Model
                     if (f is Hunter h)
                     {
                         g.NearbyHunters.Add(h);
+                        h.IsVisible = true;
                     }
                 }
             }
@@ -287,6 +288,7 @@ namespace SafariModel.Model
 
             if (entity is Guard guardEntity)
             {
+                guardEntity.Multiplier = speedBoost;
                 guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
                 guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
                 guardEntity.TookDamage += OnNewMessage;

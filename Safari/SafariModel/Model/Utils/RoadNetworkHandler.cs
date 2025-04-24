@@ -59,11 +59,19 @@ namespace SafariModel.Model.Utils
                    
                     switch (neighPathTile.PathType) //HIDAK
                     {
-                        case PathTileType.SMALL_BRIDGE:
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE) return false;
+                        case PathTileType.SMALL_BRIDGE_VERT or PathTileType.SMALL_BRIDGE_HOR or PathTileType.SMALL_BRIDGE_DR or PathTileType.SMALL_BRIDGE_DL or PathTileType.SMALL_BRIDGE_UR or PathTileType.SMALL_BRIDGE_UL:
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE_VERT) return false;
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE_HOR) return false;
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE_DR) return false;
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE_DL) return false;
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE_UR) return false;
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE_UL) return false;
                             break;
-                        case PathTileType.LARGE_BRIDGE:
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE) return false;
+                        case PathTileType.LARGE_BRIDGE_VERT or PathTileType.LARGE_BRIDGE_HOR or PathTileType.LARGE_BRIDGE_U or PathTileType.LARGE_BRIDGE_D:
+                            if (pathToConnect != PathTileType.LARGE_BRIDGE_VERT) return false;
+                            if (pathToConnect != PathTileType.LARGE_BRIDGE_HOR) return false;
+                            if (pathToConnect != PathTileType.LARGE_BRIDGE_D) return false;
+                            if (pathToConnect != PathTileType.LARGE_BRIDGE_U) return false;
                             break;
                         default:
                             break;

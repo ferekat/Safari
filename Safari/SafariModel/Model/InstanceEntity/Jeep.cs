@@ -28,7 +28,7 @@ namespace SafariModel.Model
          
             happiness = 0;
             touristCount = 0;
-            entitySize = 20;
+            entitySize = 50;
             waitTimer = 0;
             atExit = false;
             waitAtEndpointDuration = random.Next(100,130);
