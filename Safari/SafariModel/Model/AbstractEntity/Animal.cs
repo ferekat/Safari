@@ -64,6 +64,8 @@ namespace SafariModel.Model.AbstractEntity
 
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
+        public int SearchTimer { get { return searchTimer; } }
+
         #endregion
 
         #region Event
@@ -95,6 +97,8 @@ namespace SafariModel.Model.AbstractEntity
             exploredWaterChunks = new HashSet<(int, int)>();
 
             breedCooldown = breedingCooldown;
+
+            range = 200;
 
             CheckArea();
 

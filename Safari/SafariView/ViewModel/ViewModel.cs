@@ -781,6 +781,8 @@ namespace SafariView.ViewModel
                 Food: {a.Food}
                 Water: {a.Water}
                 Action: {a.Action}
+                Range: {a.Range}
+                
                 """;
             }
             else
