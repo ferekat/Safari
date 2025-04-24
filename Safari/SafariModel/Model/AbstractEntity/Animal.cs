@@ -80,7 +80,7 @@ namespace SafariModel.Model.AbstractEntity
         #endregion
 
         #region Constructor
-        protected Animal(int x, int y, int age, int health, int food, int water, int hunger, int thirst) : base(x, y)
+        protected Animal(int x, int y, int age, int health, int food, int water, int hunger, int thirst,int breedingCooldown) : base(x, y)
         {
             Age = age;
             Food = food;
@@ -103,7 +103,7 @@ namespace SafariModel.Model.AbstractEntity
             exploredFoodChunks = new HashSet<(int, int)>();
             exploredWaterChunks = new HashSet<(int, int)>();
 
-            breedCooldown = 5000;
+            breedCooldown = breedingCooldown;
 
             CheckArea();
 

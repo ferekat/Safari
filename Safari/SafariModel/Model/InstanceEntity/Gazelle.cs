@@ -10,11 +10,11 @@ namespace SafariModel.Model.InstanceEntity
     public class Gazelle : Herbivore
     {
         #region Constructor
-        public Gazelle(int x, int y) : base(x, y, 0, 200, 79, 79, 0, 0)
+        public Gazelle(int x, int y) : base(x, y, 0, 200, 80, 80, 0, 0, 5000)
         {
             entitySize = 30;
         }
-        public Gazelle(int x, int y, int age, int health, int food, int water, int hunger, int thirst) : base(x, y, age, health, food, water, hunger, thirst)
+        public Gazelle(int x, int y, int age, int health, int food, int water, int hunger, int thirst, int breedingCooldown) : base(x, y, age, health, food, water, hunger, thirst, breedingCooldown)
         {
             entitySize = 30;
         }
