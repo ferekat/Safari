@@ -56,14 +56,11 @@ namespace SafariModel.Model.InstanceEntity
         #endregion
         protected override void EntityLogic()
         {
-            if (NearbyHunters.Count > 0)
+            SetTargetHunter();
+            if (targetHunter != null)
             {
                 if (tickBeforeFire % (timeShots/Multiplier) == 0)
                 {
-                    if (targetHunter == null)
-                    {
-                        targetHunter = NearbyHunters[0];
-                    }
                     Fire(this, targetHunter);
                 }
                 tickBeforeFire++;
@@ -88,7 +85,20 @@ namespace SafariModel.Model.InstanceEntity
             Random r = new Random();
             return r.Next(50)+50;
         }
-
+        private void SetTargetHunter()
+        {
+            if (NearbyHunters.Count > 0 && targetHunter == null)
+            {
+                foreach (Hunter h in NearbyHunters)
+                {
+                    if (h.HasEntered)
+                    {
+                        targetHunter = h;
+                        break;
+                    }
+                }
+            }
+        }
         public void IncreaseLevel(int n)
         {
             if (n == 1)

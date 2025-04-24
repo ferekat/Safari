@@ -63,6 +63,7 @@ namespace SafariModel.Model
                         }
                     }
                 }
+                secondCounterHunter = 0;
             }
         }
         #endregion
@@ -94,6 +95,9 @@ namespace SafariModel.Model
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Lion(100, 200));
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            entityHandler.LoadEntity(h);
 
 
             economyHandler = new EconomyHandler(9999);
@@ -102,6 +106,7 @@ namespace SafariModel.Model
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
+
 
             data = new GameData();
         }
@@ -152,6 +157,7 @@ namespace SafariModel.Model
                     if (f is Hunter h)
                     {
                         g.NearbyHunters.Add(h);
+                        h.IsVisible = true;
                     }
                 }
             }

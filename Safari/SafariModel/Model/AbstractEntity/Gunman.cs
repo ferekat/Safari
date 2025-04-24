@@ -74,6 +74,7 @@ namespace SafariModel.Model.AbstractEntity
                 {
                     RemoveGunman(g);
                     h.Duel = false;
+                    h.IsVisible = false;
                 }
             }
         }

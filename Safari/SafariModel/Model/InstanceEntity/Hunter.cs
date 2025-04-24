@@ -2,6 +2,7 @@ using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.EventArgsClasses;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,7 @@ namespace SafariModel.Model.InstanceEntity
         private int mapSizeConvert;
         private bool duel;
 
-        public bool IsVisible { get { return isVisible; } }
+        public bool IsVisible { get { return isVisible; } set { isVisible = value; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
         public int EnterField { get { return enterField / Multiplier; } set { enterField = value; } }
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
@@ -42,6 +43,7 @@ namespace SafariModel.Model.InstanceEntity
             leavingMap = false;
             mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
             duel = false;
+            isVisible = false;
         }
         private void TakeAnimal()
         {
