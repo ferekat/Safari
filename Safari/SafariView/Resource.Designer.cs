@@ -83,6 +83,16 @@ namespace SafariView {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] deepwater {
+            get {
+                object obj = ResourceManager.GetObject("deepwater", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] fence {
             get {
                 object obj = ResourceManager.GetObject("fence", resourceCulture);
@@ -113,6 +123,26 @@ namespace SafariView {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] grass {
+            get {
+                object obj = ResourceManager.GetObject("grass", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] grass_0 {
+            get {
+                object obj = ResourceManager.GetObject("grass_0", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] greasewood {
             get {
                 object obj = ResourceManager.GetObject("greasewood", resourceCulture);
@@ -133,6 +163,46 @@ namespace SafariView {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ground_0 {
+            get {
+                object obj = ResourceManager.GetObject("ground_0", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ground_1 {
+            get {
+                object obj = ResourceManager.GetObject("ground_1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ground_2 {
+            get {
+                object obj = ResourceManager.GetObject("ground_2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ground_3 {
+            get {
+                object obj = ResourceManager.GetObject("ground_3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] guard {
             get {
                 object obj = ResourceManager.GetObject("guard", resourceCulture);
@@ -146,6 +216,16 @@ namespace SafariView {
         internal static byte[] hunter {
             get {
                 object obj = ResourceManager.GetObject("hunter", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] jeep {
+            get {
+                object obj = ResourceManager.GetObject("jeep", resourceCulture);
                 return ((byte[])(obj));
             }
         }

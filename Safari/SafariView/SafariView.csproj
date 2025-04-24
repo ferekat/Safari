@@ -11,13 +11,21 @@
   <ItemGroup>
     <None Remove="Resources\bridge.png" />
     <None Remove="Resources\cactus.png" />
+    <None Remove="Resources\deepwater.png" />
     <None Remove="Resources\fence.jpg" />
     <None Remove="Resources\gazelle.png" />
     <None Remove="Resources\giraffe.png" />
+    <None Remove="Resources\grass.jpg" />
+    <None Remove="Resources\grass_0.jpg" />
     <None Remove="Resources\greasewood.png" />
     <None Remove="Resources\ground.jpg" />
+    <None Remove="Resources\ground_0.jpg" />
+    <None Remove="Resources\ground_1.jpg" />
+    <None Remove="Resources\ground_2.png" />
+    <None Remove="Resources\ground_3.jpg" />
     <None Remove="Resources\guard.png" />
     <None Remove="Resources\hunter.png" />
+    <None Remove="Resources\jeep.png" />
     <None Remove="Resources\large_d.png" />
     <None Remove="Resources\large_hor.png" />
     <None Remove="Resources\large_u.png" />
@@ -46,17 +54,25 @@
   <ItemGroup>
     <Resource Include="Resources\bridge.png" />
     <Resource Include="Resources\cactus.png" />
+    <Resource Include="Resources\deepwater.png" />
     <Resource Include="Resources\fence.jpg" />
     <Resource Include="Resources\gazelle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\giraffe.png" />
+    <Resource Include="Resources\grass.jpg" />
+    <Resource Include="Resources\grass_0.jpg" />
     <Resource Include="Resources\greasewood.png" />
     <Resource Include="Resources\ground.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\ground_0.jpg" />
+    <Resource Include="Resources\ground_1.jpg" />
+    <Resource Include="Resources\ground_2.png" />
+    <Resource Include="Resources\ground_3.jpg" />
     <Resource Include="Resources\guard.png" />
     <Resource Include="Resources\hunter.png" />
+    <Resource Include="Resources\jeep.png" />
     <Resource Include="Resources\large_d.png" />
     <Resource Include="Resources\large_hor.png" />
     <Resource Include="Resources\large_u.png" />

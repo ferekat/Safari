@@ -11,11 +11,11 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Giraffe(int x, int y) : base(x, y, 0, 350, 80, 80, 0, 0, 5000)
         {
-            entitySize = 60;
+            entitySize = 90;
         }
         public Giraffe(int x, int y, int age, int health, int food, int water, int hunger, int thirst, int breedingCooldown) : base(x, y, age, health, food, water, hunger, thirst, breedingCooldown)
         {
-            entitySize = 60;
+            entitySize = 90;
         }
         #endregion
 

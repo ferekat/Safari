@@ -38,7 +38,7 @@ namespace SafariModel.Model.InstanceEntity
             level = 1;
             shotWeight = 0;
             salary = SetSalary();
-            entitySize = 30;
+            entitySize = 50;
             nearbyHunters = new List<Hunter>();
             hunterRange = 200;
             baseDamage = 15;

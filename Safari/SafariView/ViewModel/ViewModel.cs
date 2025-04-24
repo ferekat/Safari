@@ -89,21 +89,42 @@ namespace SafariView.ViewModel
         #region Tile brushes
         private static Dictionary<TileType, Brush> tileBrushes = new Dictionary<TileType, Brush>()
         {
-            {TileType.DEEP_WATER, new SolidColorBrush(Color.FromRgb(0, 45, 179))},
+            {TileType.DEEP_WATER, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/deepwater.png")),
+                }},
             {TileType.SHALLOW_WATER,new ImageBrush
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/water.png")),
                 } },
             { TileType.GROUND, new ImageBrush
                 {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass_0.jpg")),
+                }}, //sötét zöld
+             { TileType.GROUND_SMALL, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass.jpg")),
+                }}, //világos zöld
+            { TileType.SMALL_HILL, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_0.jpg")),
+                }}, //sárga
+             { TileType.SMALL_MEDIUM, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_1.jpg")),
+                }}, //narancs
+                { TileType.MEDIUM_HILL, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_2.png")),
+                }}, //piros
+                 { TileType.MEDIUM_HIGH, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_3.jpg")),
+                }}, //rózsaszín
+            { TileType.HIGH_HILL,new ImageBrush
+                {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.jpg")),
-                }},
-             { TileType.GROUND_SMALL, new SolidColorBrush(Color.FromRgb(119, 255, 51))},
-            { TileType.SMALL_HILL, new SolidColorBrush(Color.FromRgb(230, 230, 0))},
-             { TileType.SMALL_MEDIUM, new SolidColorBrush(Color.FromRgb(255, 153, 102))},
-                { TileType.MEDIUM_HILL, new SolidColorBrush(Color.FromRgb(255, 51, 0))},
-                 { TileType.MEDIUM_HIGH, new SolidColorBrush(Color.FromRgb(255, 102, 153))},
-            { TileType.HIGH_HILL,new SolidColorBrush(Color.FromRgb(204, 0, 204))},
+                }}, //lila
             { TileType.FENCE,new ImageBrush
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.jpg")),
@@ -238,14 +259,10 @@ namespace SafariView.ViewModel
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/hunter.png")),
                 } },
-            //{typeof(Leopard),new SolidColorBrush(Color.FromRgb(212,170,33)) },
-            //{typeof(Gazelle),new SolidColorBrush(Color.FromRgb(189,168,98)) },
-            //{ typeof(Giraffe),new SolidColorBrush(Color.FromRgb(243,226,69))},
-            //{typeof(Cactus),new SolidColorBrush(Color.FromRgb(107,168,50)) },
-            //{typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
-            //{typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
-            //{typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            //{typeof(Hunter),new SolidColorBrush(Color.FromRgb(150,150,150)) },
+            { typeof(Jeep),new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/jeep.png")),
+                }},
         };
        
       

@@ -449,7 +449,7 @@
                                 </Button.Style>
                                 <Image Source="../Resources/palmtree.png" Stretch="Uniform"/>
                             </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Jeep" Margin="0,0,10,0" Content="Jeep">
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Jeep" Margin="0,0,10,0" >
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Setter Property="Background" Value="#FFFFD243"/>
@@ -460,6 +460,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
+                                <Image Source="../Resources/jeep.png" Stretch="Uniform"/>
                             </Button>
                             <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Guard" Margin="0,0,10,0">
                                 <Button.Style>

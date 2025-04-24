@@ -124,6 +124,9 @@
   <data name="cactus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\cactus.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="deepwater" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\deepwater.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="fence" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\fence.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -133,17 +136,38 @@
   <data name="giraffe" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\giraffe.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\grass.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="grass_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\grass_0.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="greasewood" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\greasewood.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="ground" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ground.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ground_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ground_0.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ground_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ground_1.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ground_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ground_2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ground_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ground_3.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="guard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\guard.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="hunter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\hunter.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="jeep" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\jeep.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="large_d" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\large_d.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
