@@ -678,16 +678,11 @@ namespace SafariView.ViewModel
                 if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
-<<<<<<< Safari/SafariView/ViewModel/ViewModel.cs
-                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize+sizemodifier));
+                    RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY,e.EntitySize+sizemodifier, entityBrushes[e.GetType()]));
                 }
             }
-=======
-                    RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize, entityBrushes[e.GetType()]));
-                }
-            }
+
             FinishedEntityRender();
->>>>>>> Safari/SafariView/ViewModel/ViewModel.cs
         }
 
         private void ReDrawMinimap(Tile[,] tileMap)
