@@ -20,6 +20,7 @@ namespace SafariModel.Model.Tiles
         {
             if (x < 0 || x >= TileMap.MAPSIZE || y < 0 || y >= TileMap.MAPSIZE) return false;
             if(tileMap.Map[x, y] is PathTile) return true;
+            if (tileMap.Map[x, y].Type == TileType.FENCE) return false;
             return tileMap.Map[x, y] is PathTile p && p.PathType == PathTileType.ROAD;
 
            

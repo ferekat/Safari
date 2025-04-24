@@ -93,38 +93,46 @@ namespace SafariView.ViewModel
             { TileType.HIGH_HILL,new SolidColorBrush(Color.FromRgb(204, 0, 204))},
             { TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
-            { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))},
-           
+            { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
         };
-
-        private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()
-        {
-            {TileType.WATER, new byte[] {55,55,255} },
-            { TileType.GROUND, new byte[] {153,76,0}},
-            { TileType.EMPTY,new byte[] {0,0,0}},
-            { TileType.FENCE,new byte[] {30,30,30}},
-           // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
-            { TileType.ENTRANCE,new byte[] {255,0,0}},
-            { TileType.EXIT,new byte[] {0,255,0}}
-        };
-
-        private static Dictionary<TilePlaceable, byte[]> minimapConditionBrushes = new Dictionary<TilePlaceable, byte[]>()
-        {
-            {TilePlaceable.EMPTY,new byte[] {0,0,0} },
-            {TilePlaceable.IS_ROAD,new byte[] {235,125,52}},
-            {TilePlaceable.IS_LARGE_BRIDGE,new byte[] {125,37,37} },
-            {TilePlaceable.IS_SMALL_BRIDGE,new byte[] {140,136,136}}
-        };
-
-    
         private static Dictionary<PathTileType, Brush> pathBrushes = new Dictionary<PathTileType, Brush>()
         {
             {PathTileType.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
             {PathTileType.ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
             {PathTileType.LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
             {PathTileType.SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )},
-            {PathTileType.NODE,new SolidColorBrush(Color.FromRgb(100,100,0))},
+           
         };
+
+        private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()
+        {
+              {TileType.DEEP_WATER, new byte[]{0, 45, 179 }},
+            {TileType.SHALLOW_WATER,new byte[]{51, 204, 255 }},
+            { TileType.GROUND, new byte[]{0, 204, 0}},
+             { TileType.GROUND_SMALL, new byte[]{119, 255, 51}},
+            { TileType.SMALL_HILL, new byte[]{230, 230, 0 }},
+             { TileType.SMALL_MEDIUM, new byte[]{255, 153, 102 }},
+                { TileType.MEDIUM_HILL, new byte[]{255, 51, 0}},
+                 { TileType.MEDIUM_HIGH, new byte[]{255, 102, 153 }},
+            { TileType.HIGH_HILL,new byte[]{204, 0, 204 }},
+            { TileType.FENCE,new byte[]{30, 30, 30 }},
+            { TileType.ENTRANCE,new byte[]{255, 0, 0 }},
+            { TileType.EXIT,new byte[]{0, 255, 0 }},
+
+
+
+        };
+
+        private static Dictionary<PathTileType, byte[]> minimapPathBrushes = new Dictionary<PathTileType, byte[]>()
+        {
+            {PathTileType.EMPTY,new byte[] {0,0,0} },
+            {PathTileType.ROAD,new byte[] {235,125,52}},
+            {PathTileType.LARGE_BRIDGE,new byte[] {125,37,37} },
+            {PathTileType.SMALL_BRIDGE,new byte[] {140,136,136}}
+            
+        };
+
+    
         #endregion
 
         #region Entity brushes
@@ -138,18 +146,12 @@ namespace SafariView.ViewModel
             {typeof(Greasewood),new SolidColorBrush(Color.FromRgb(143,168,50)) },
             {typeof(PalmTree),new SolidColorBrush(Color.FromRgb(62,168,50)) },
             {typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            { typeof(Jeep),new SolidColorBrush(Color.FromRgb(226, 105, 240))}
+            { typeof(Jeep),new SolidColorBrush(Color.FromRgb(226, 105, 240))},
+            { typeof(Hunter),new SolidColorBrush(Color.FromRgb(100,100,100))},
+
         };
-        private static Brush HillBrush(Tile hill)
-        {
-            return new SolidColorBrush(Color.FromRgb(0, (byte)(102 + hill.H), 0));
-        }
-
-        private static byte[] HillBrushMinimap(Tile hill)
-        {
-            return new byte[] { 0, (byte)(102 + hill.Z), 0 };
-        }
-
+       
+      
         #endregion
 
         #region ClickAction enum
@@ -632,9 +634,11 @@ namespace SafariView.ViewModel
 
                 RenderedTiles.Clear();
 
-                for (int j = tileMapTop; j < Math.Min(tileMapTop + VERTICALTILECOUNT + 3, TileMap.MAPSIZE); j++)
+
+      
+                for (int j = tileMapTop; j < Math.Min(tileMapTop + VerticalTileCount + 3, TileMap.MAPSIZE); j++)
                 {
-                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HORIZONTALTILECOUNT + 2, TileMap.MAPSIZE); i++)
+                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HorizontalTileCount + 2, TileMap.MAPSIZE); i++)
                     {
                         Tile t = tileMap[i, j];
 
@@ -697,22 +701,16 @@ namespace SafariView.ViewModel
                     byte[]? b = null;
 
                     //Get type of tile
-                    if (t.HasPlaceable())
+                    if (t is PathTile pt)
                     {
-                        b = minimapConditionBrushes[t.Placeable];
+                        b = minimapPathBrushes[pt.PathType];
                     }
                     else
                     {
                         
-                        if (t.Type == TileType.HILL)
-                        {
-                            b = HillBrushMinimap(t);
-                        }
-                        else
-                        {
-                        
+                       
                         b = minimaptileBrushes[t.Type];
-                        }
+                       
                     }
                     Int32Rect rect = new Int32Rect(i, j, 1, 1);
                     minimapBitmap.WritePixels(rect, b, 3, 0);
@@ -729,22 +727,16 @@ namespace SafariView.ViewModel
             byte[]? b = null;
 
             //Get type of tile
-            if (t.HasPlaceable())
+            if (t is PathTile pt)
             {
-                b = minimapConditionBrushes[t.Placeable];
+                b = minimapPathBrushes[pt.PathType];
             }
             else
             {
 
-                if (t.Type == TileType.HILL)
-                {
-                    b = HillBrushMinimap(t);
-                }
-                else
-                {
-
+              
                     b = minimaptileBrushes[t.Type];
-                }
+              
             }
             Int32Rect rect = new Int32Rect(tileX, tileY, 1, 1);
             minimapBitmap.WritePixels(rect, b, 3, 0);

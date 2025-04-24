@@ -172,7 +172,7 @@ namespace SafariModel.Model.AbstractEntity
             this.x += wholeX;
             this.y += wholeY;
 
-            //hack
+           
 
             //entity is outside map
             //if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)

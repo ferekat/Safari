@@ -15,7 +15,7 @@ namespace SafariModel.Model.Tiles
         ROAD,
         SMALL_BRIDGE,
         LARGE_BRIDGE,
-       NODE,
+      
     }
     public class PathIntersectionNode
     {

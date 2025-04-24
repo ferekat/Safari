@@ -73,17 +73,17 @@ namespace SafariModel.Model
                     waitAtEndpointDuration = random.Next(100, 130);
                 }
             }
-            else
-            {
-                if (!atExit)
-                {
-                    BoardTourists();
-                }
-                else
-                {
+            //else
+            //{
+            //    if (!atExit)
+            //    {
+            //        BoardTourists();
+            //    }
+            //    else
+            //    {
 
-                }
-            }
+            //    }
+            //}
         }
 
         private void PathToEndpoint(List<PathTile> shortestPath)

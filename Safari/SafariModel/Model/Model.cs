@@ -23,7 +23,7 @@ namespace SafariModel.Model
         const int WEEKS_PER_MONTH = 4;
 
         public static readonly int MAPSIZE = 100;
-        private Tile[,] tileMap;
+        private TileMap tileMap;
         private GameData? data;
 
         private EntityHandler entityHandler;
@@ -163,6 +163,9 @@ namespace SafariModel.Model
                 }
             }
             touristHandler.TouristUpdateTick();
+
+
+
             InvokeTickPassed();
         }
         #endregion
@@ -180,7 +183,7 @@ namespace SafariModel.Model
         private void InvokeTickPassed()
         {
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
-            data!.tileMap = tileMap;
+            data!.tileMap = tileMap.Map;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
@@ -246,7 +249,7 @@ namespace SafariModel.Model
             {
                 if (economyHandler.BuyTile(tileToBuy))
                 {
-                    clickedTile.SetType(tiletype);
+                    clickedTile.SetType(tileToBuy);
                     OnTileMapUpdated(tileX,tileY);
                 }
                 return;

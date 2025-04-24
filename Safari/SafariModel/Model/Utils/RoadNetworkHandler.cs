@@ -132,7 +132,7 @@ namespace SafariModel.Model.Utils
 
                    //     pt.PathType = PathTileType.EMPTY;
                     }
-                    Debug.WriteLine(node.Distance);
+                  
                 }
             }
            
@@ -266,7 +266,7 @@ namespace SafariModel.Model.Utils
 
         public void ShortestPathAStar()
         {
-            Debug.WriteLine("A*");
+          
             shortestPathEntranceToExit.Clear();
             shortestPathExitToEntrance.Clear();
 
@@ -327,8 +327,7 @@ namespace SafariModel.Model.Utils
             {
                 if (tileMap.Map[current.PathI, current.PathJ] is PathTile pt)
                 {
-                    pt.SetType(PathTileType.NODE);
-                    Debug.WriteLine($"{pt.I},{pt.J}");
+                  
                     shortestPathEntranceToExit.Add(pt);
                     shortestPathExitToEntrance.Add(pt);
                 }
@@ -344,81 +343,10 @@ namespace SafariModel.Model.Utils
                 }
             }
             
-            // Optionally reverse the list if needed
+           
             shortestPathEntranceToExit.Reverse();
         }
 
-
-        //    public void ShortestPathAStar()
-        //    {
-        //        shortestPathExitToEntrance.Clear();
-
-        //        PriorityQueue<PathIntersectionNode, int> endPoints = new(); // pq <(végpont,végpont g távolsága),f összköltség>    A*: f = h + g
-        //        endPoints.Enqueue(entrance.IntersectionNode, TotalCost(entrance, 0));
-
-
-        //        bool foundExit = false;
-        //        while (endPoints.Count > 0)
-        //        {
-
-        //            PathIntersectionNode parentNode = endPoints.Dequeue();
-        //            PathTile parentTile = parentTileData.Item1;
-        //            PathIntersectionNode parentIntersection = parentTile.IntersectionNode!;
-        //            parentTile.IsVisited = true;
-        //            int parentTileDistance = parentTile.IntersectionNode!.Distance;
-
-
-
-        //            List<PathIntersectionNode> nextIntersections = NextIntersections(parentTile);
-
-
-
-        //            for (int i = 0; i < neighbourTiles.Count; i++)
-        //            {
-
-        //                Tile neighbour = neighbourTiles[i];
-        //                endPoints.Enqueue((neighbour, neighBourTileDistance), TotalCost(neighbour, neighBourTileDistance));
-        //                AddPathNode(neighbour, parentTile.NetworkNode);
-        //                if (neighbour == exit)
-        //                {
-        //                    foundExit = true;
-        //                    break;
-        //                }
-        //            }
-
-        //            if (foundExit)
-        //            {
-        //                foreach (Tile road in roadNetwork)
-        //                {
-        //                    road.SetPlaceable(PathTileType.ROAD);
-        //                }
-        //                BackTrackShortestPath(exit);
-        //                return;
-        //            }
-        //        }
-
-        //        foreach (Tile road in roadNetwork)
-        //        {
-        //            road.VisitedRoad!.IsVisited = false;
-        //        }
-        //    }
-        //    private void BackTrackShortestPath(Tile tile)
-        //    {
-
-        //        shortestPathExitToEntrance.Add(tile);
-        //        tile.SetPlaceable(PathTileType.S);
-        //        Tile next;
-        //        if (tile.NetworkNode!.parent != null)
-        //        {
-        //            next = tile.NetworkNode!.parent.tile;
-        //            BackTrackShortestPath(next);
-        //        }
-        //        else
-        //        {
-        //            return;
-        //        }
-
-        //    }
 
 
         }
