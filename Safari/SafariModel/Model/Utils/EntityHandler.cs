@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using SafariModel.Model.Tiles;
 
 namespace SafariModel.Model.Utils
 {
@@ -44,6 +45,7 @@ namespace SafariModel.Model.Utils
             entitiesByID.Add(entity.ID, entity);
             UpdateChunks((-1,-1),entity.GetChunkCoordinates(),entity);
             entity.ChunkCoordinateChanged += new EventHandler<((int, int), (int, int))>(EntityChunkChange);
+            if (entity is Animal a) a.BabyBorn += new EventHandler(AnimalBabyBorn);
         }
         public void RemoveEntity(Entity entity)
         {
@@ -88,6 +90,20 @@ namespace SafariModel.Model.Utils
             if(sender is Entity e && sender != null)
             {
                 UpdateChunks(chunkdata.Item1, chunkdata.Item2, e);
+            }
+        }
+
+        private void AnimalBabyBorn(object? sender, EventArgs e)
+        {
+            if(sender != null && sender is Animal a)
+            {
+                int randomX = Math.Clamp(a.X + random.Next(-100, 100), Tile.TILESIZE + 1, Model.MAPSIZE * Tile.TILESIZE - (Tile.TILESIZE + 1));
+                int randomY = Math.Clamp(a.Y + random.Next(-100, 100), Tile.TILESIZE + 1, Model.MAPSIZE * Tile.TILESIZE - (Tile.TILESIZE + 1));
+                Entity? baby = EntityFactory.CreateEntity(sender.GetType().Name, randomX, randomY);
+                if (baby != null)
+                {
+                    LoadEntity(baby);
+                }
             }
         }
 

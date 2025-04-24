@@ -46,6 +46,7 @@ namespace SafariModel.Model.AbstractEntity
         private int thirstLimit;
         private int healLimit;
         private int healTimer;
+        private int breedCooldown;
         #endregion
 
         #region Properties
@@ -58,6 +59,10 @@ namespace SafariModel.Model.AbstractEntity
         public AnimalActions Action { get; protected set; }
         public bool IsLeader { get { return leader == null && members != null; } }
         public bool InGroup { get { return leader != null || members != null; } }
+        public bool IsAdult { get { return Age > 20000 && !IsEldelry; } }
+        public bool IsEldelry { get { return Age > 50000; } }
+
+        public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
         //Debug
         public int ExploredFoodCount { get { return exploredFoodPlaces.Count; } }
@@ -66,6 +71,12 @@ namespace SafariModel.Model.AbstractEntity
 
         public int MemberCount { get { return members == null ? -2 : members.Count; } }
 
+        public int BreedCooldown { get { return breedCooldown; } }
+
+        #endregion
+
+        #region Event
+        public event EventHandler? BabyBorn; 
         #endregion
 
         #region Constructor
@@ -91,6 +102,8 @@ namespace SafariModel.Model.AbstractEntity
             exploredWaterPlaces = new List<Point>();
             exploredFoodChunks = new HashSet<(int, int)>();
             exploredWaterChunks = new HashSet<(int, int)>();
+
+            breedCooldown = 5000;
 
             CheckArea();
 
@@ -234,6 +247,8 @@ namespace SafariModel.Model.AbstractEntity
             if (++Hunger >= hungerLimit)
             {
                 Hunger = 0;
+                if (IsAdult) Food -= 1;
+                if (IsEldelry) Food -= 2;
                 if (--Food < 0) --Health;
             }
             if (++Thirst >= thirstLimit)
@@ -241,6 +256,9 @@ namespace SafariModel.Model.AbstractEntity
                 Thirst = 0;
                 if (--Water < 0) --Health;
             }
+            ++Age;
+            if (Age >= 60000) RemoveSelf();
+            if(IsAdult && breedCooldown > 0) breedCooldown--;
         }
 
         private AnimalActions SelectAction()
@@ -320,6 +338,17 @@ namespace SafariModel.Model.AbstractEntity
                     }
                 }
 
+                if(CanBreed)
+                {
+                    if(e.GetType().Equals(this.GetType()))
+                    {
+                        if(e is Animal a && a.CanBreed)
+                        {
+                            BreedWithOther(a);
+                        }
+                    }
+                }
+
                 if (IsPreferredFood(e))
                 {
                     //mark food's location (limited to 1 per chunk)
@@ -364,6 +393,13 @@ namespace SafariModel.Model.AbstractEntity
                 members.Remove(newLeader);
                 newLeader.members = this.members;
             }
+        }
+
+        private void BreedWithOther(Animal a)
+        {
+            a.breedCooldown = 20000;
+            breedCooldown = 20000;
+            BabyBorn?.Invoke(this,EventArgs.Empty);
         }
 
         #region Action methods

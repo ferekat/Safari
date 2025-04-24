@@ -585,9 +585,11 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
+                int sizemodifier = 0;
+                if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
-                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
+                    RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize+sizemodifier));
                 }
             }
         }
@@ -697,6 +699,10 @@ namespace SafariView.ViewModel
                 In Group? {a.InGroup}
                 Leader? {a.IsLeader}
                 Member count: {a.MemberCount}
+                Age: {a.Age}
+                Is adult? {a.IsAdult}
+                Can breed? {a.CanBreed}
+                Breed cooldown: {a.BreedCooldown}
                 """;
             }
             else
