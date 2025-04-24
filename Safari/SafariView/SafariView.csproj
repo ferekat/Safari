@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\bridge.png" />
     <None Remove="Resources\cactus.png" />
     <None Remove="Resources\fence.jpg" />
     <None Remove="Resources\gazelle.png" />
@@ -17,15 +18,15 @@
     <None Remove="Resources\ground.jpg" />
     <None Remove="Resources\guard.png" />
     <None Remove="Resources\hunter.png" />
+    <None Remove="Resources\large_d.png" />
+    <None Remove="Resources\large_hor.png" />
+    <None Remove="Resources\large_u.png" />
+    <None Remove="Resources\large_vert.png" />
     <None Remove="Resources\leopard.png" />
     <None Remove="Resources\lion.png" />
     <None Remove="Resources\palmtree.png" />
     <None Remove="Resources\road.jpg" />
-    <None Remove="Resources\small_down.png" />
-    <None Remove="Resources\small_down_r.png" />
     <None Remove="Resources\small_hor.png" />
-    <None Remove="Resources\small_up.png" />
-    <None Remove="Resources\small_up_r.png" />
     <None Remove="Resources\small_vert.png" />
     <None Remove="Resources\water.png" />
   </ItemGroup>
@@ -43,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\bridge.png" />
     <Resource Include="Resources\cactus.png" />
     <Resource Include="Resources\fence.jpg" />
     <Resource Include="Resources\gazelle.png">
@@ -55,17 +57,21 @@
     </Resource>
     <Resource Include="Resources\guard.png" />
     <Resource Include="Resources\hunter.png" />
+    <Resource Include="Resources\large_d.png" />
+    <Resource Include="Resources\large_hor.png" />
+    <Resource Include="Resources\large_u.png" />
+    <Resource Include="Resources\large_vert.png" />
     <Resource Include="Resources\leopard.png" />
     <Resource Include="Resources\lion.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\palmtree.png" />
     <Resource Include="Resources\road.jpg" />
-    <Resource Include="Resources\small_down.png" />
-    <Resource Include="Resources\small_down_r.png" />
+    <Resource Include="Resources\small_dl.png" />
+    <Resource Include="Resources\small_dr.png" />
     <Resource Include="Resources\small_hor.png" />
-    <Resource Include="Resources\small_up.png" />
-    <Resource Include="Resources\small_up_r.png" />
+    <Resource Include="Resources\small_ul.png" />
+    <Resource Include="Resources\small_ur.png" />
     <Resource Include="Resources\small_vert.png" />
     <Resource Include="Resources\water.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

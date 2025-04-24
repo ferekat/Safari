@@ -31,10 +31,34 @@ namespace SafariModel.Model.Utils
                 TilePlaceable.IS_ROAD,100
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE,500
+                TilePlaceable.IS_SMALL_BRIDGE_VERT,500
             },
             {
-                TilePlaceable.IS_LARGE_BRIDGE,1500
+                TilePlaceable.IS_SMALL_BRIDGE_HOR,500
+            },
+            {
+                TilePlaceable.IS_SMALL_BRIDGE_DR,500
+            },
+            {
+                TilePlaceable.IS_SMALL_BRIDGE_DL,500
+            },
+            {
+                TilePlaceable.IS_SMALL_BRIDGE_UR,500
+            },
+            {
+                TilePlaceable.IS_SMALL_BRIDGE_UL,500
+            },
+            {
+                TilePlaceable.IS_LARGE_BRIDGE_VERT,1500
+            },
+            {
+                TilePlaceable.IS_LARGE_BRIDGE_HOR,1500
+            },
+            {
+                TilePlaceable.IS_LARGE_BRIDGE_U,1500
+            },
+            {
+                TilePlaceable.IS_LARGE_BRIDGE_D,1500
             }
         };
         private Dictionary<TileType, int> tileTypeCosts = new Dictionary<TileType, int>

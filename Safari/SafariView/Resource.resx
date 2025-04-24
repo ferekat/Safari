@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="bridge_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\bridge.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="cactus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\cactus.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -142,6 +145,18 @@
   <data name="hunter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\hunter.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="large_d" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\large_d.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="large_hor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\large_hor.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="large_u" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\large_u.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="large_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\large_vert.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="leopard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\leopard.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -155,19 +170,19 @@
     <value>Resources\road.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="small_down" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\small_down.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Resources\small_dl.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="small_down_r" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\small_down_r.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Resources\small_dr.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="small_hor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\small_hor.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="small_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\small_up.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Resources\small_ul.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="small_up_r" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\small_up_r.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Resources\small_ur.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="small_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\small_vert.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

@@ -25,8 +25,16 @@ namespace SafariModel.Model.Tiles
         public readonly static Dictionary<TilePlaceable,TileType> placeableInteractionMap = new Dictionary<TilePlaceable, TileType>()
         {
             { TilePlaceable.IS_ROAD,TileType.GROUND},
-            { TilePlaceable.IS_SMALL_BRIDGE,TileType.WATER},
-            { TilePlaceable.IS_LARGE_BRIDGE,TileType.WATER}
+            { TilePlaceable.IS_SMALL_BRIDGE_VERT,TileType.WATER},
+            { TilePlaceable.IS_SMALL_BRIDGE_HOR,TileType.WATER},
+            { TilePlaceable.IS_SMALL_BRIDGE_DR,TileType.WATER},
+            { TilePlaceable.IS_SMALL_BRIDGE_DL,TileType.WATER},
+            { TilePlaceable.IS_SMALL_BRIDGE_UR,TileType.WATER},
+            { TilePlaceable.IS_SMALL_BRIDGE_UL,TileType.WATER},
+            { TilePlaceable.IS_LARGE_BRIDGE_VERT,TileType.WATER},
+            { TilePlaceable.IS_LARGE_BRIDGE_HOR,TileType.WATER},
+            { TilePlaceable.IS_LARGE_BRIDGE_U,TileType.WATER},
+            { TilePlaceable.IS_LARGE_BRIDGE_D,TileType.WATER}
         };
         public readonly static Dictionary<string, TileType> tileTypeMap = new Dictionary<string, TileType>()
         {
@@ -36,7 +44,17 @@ namespace SafariModel.Model.Tiles
         public readonly static Dictionary<string, TilePlaceable> placeableMap = new Dictionary<string, TilePlaceable>()
         {
             {"Road",TilePlaceable.IS_ROAD},
-            {"Bridge",TilePlaceable.IS_LARGE_BRIDGE}
+            {"SmallBridge_vert",TilePlaceable.IS_SMALL_BRIDGE_VERT},
+            {"SmallBridge_hor",TilePlaceable.IS_SMALL_BRIDGE_HOR},
+            {"SmallBridge_dl",TilePlaceable.IS_SMALL_BRIDGE_DL},
+            {"SmallBridge_dr",TilePlaceable.IS_SMALL_BRIDGE_DR},
+            {"SmallBridge_ul",TilePlaceable.IS_SMALL_BRIDGE_UL},
+            {"SmallBridge_ur",TilePlaceable.IS_SMALL_BRIDGE_UR},
+            {"LargeBridge_vert",TilePlaceable.IS_LARGE_BRIDGE_VERT},
+            {"LargeBridge_hor",TilePlaceable.IS_LARGE_BRIDGE_HOR},
+            {"LargeBridge_u",TilePlaceable.IS_LARGE_BRIDGE_U},
+            {"LargeBridge_d",TilePlaceable.IS_LARGE_BRIDGE_D},
+            //{"Bridge",TilePlaceable.IS_LARGE_BRIDGE}
         };
 
 

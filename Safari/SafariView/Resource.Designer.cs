@@ -63,6 +63,16 @@ namespace SafariView {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bridge_icon {
+            get {
+                object obj = ResourceManager.GetObject("bridge_icon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] cactus {
             get {
                 object obj = ResourceManager.GetObject("cactus", resourceCulture);
@@ -136,6 +146,46 @@ namespace SafariView {
         internal static byte[] hunter {
             get {
                 object obj = ResourceManager.GetObject("hunter", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] large_d {
+            get {
+                object obj = ResourceManager.GetObject("large_d", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] large_hor {
+            get {
+                object obj = ResourceManager.GetObject("large_hor", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] large_u {
+            get {
+                object obj = ResourceManager.GetObject("large_u", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] large_vert {
+            get {
+                object obj = ResourceManager.GetObject("large_vert", resourceCulture);
                 return ((byte[])(obj));
             }
         }

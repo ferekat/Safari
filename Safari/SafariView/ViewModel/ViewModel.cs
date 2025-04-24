@@ -48,6 +48,7 @@ namespace SafariView.ViewModel
         private int selectedEntityID;
         private ClickAction cAction;
         private string? bridges;
+        private string? shop;
         private string selectedShopName;
         private GameData? cachedGameData;
         //Mennyi tile lesz látható a képernyőn
@@ -128,8 +129,16 @@ namespace SafariView.ViewModel
         {
             {TilePlaceable.EMPTY,new byte[] {0,0,0} },
             {TilePlaceable.IS_ROAD,new byte[] {235,125,52}},
-            {TilePlaceable.IS_LARGE_BRIDGE,new byte[] {125,37,37} },
-            {TilePlaceable.IS_SMALL_BRIDGE,new byte[] {140,136,136}}
+            {TilePlaceable.IS_LARGE_BRIDGE_VERT,new byte[] {125,37,37} },
+            {TilePlaceable.IS_LARGE_BRIDGE_HOR,new byte[] {125,37,37} },
+            {TilePlaceable.IS_LARGE_BRIDGE_U,new byte[] {125,37,37} },
+            {TilePlaceable.IS_LARGE_BRIDGE_D,new byte[] {125,37,37} },
+            {TilePlaceable.IS_SMALL_BRIDGE_VERT,new byte[] {140,136,136}},
+            {TilePlaceable.IS_SMALL_BRIDGE_HOR,new byte[] {140,136,136}},
+            {TilePlaceable.IS_SMALL_BRIDGE_DR,new byte[] {140,136,136}},
+            {TilePlaceable.IS_SMALL_BRIDGE_DL,new byte[] {140,136,136}},
+            {TilePlaceable.IS_SMALL_BRIDGE_UR,new byte[] {140,136,136}},
+            {TilePlaceable.IS_SMALL_BRIDGE_UL,new byte[] {140,136,136}},
         };
 
         private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
@@ -140,14 +149,54 @@ namespace SafariView.ViewModel
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
                 }
             },
-             {TilePlaceable.IS_LARGE_BRIDGE, new ImageBrush
+             {TilePlaceable.IS_LARGE_BRIDGE_VERT, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_vert.png")),
+                }
+            },
+             {TilePlaceable.IS_LARGE_BRIDGE_HOR, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_hor.png")),
+                }
+            },
+             {TilePlaceable.IS_LARGE_BRIDGE_U, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_u.png")),
+                }
+            },
+             {TilePlaceable.IS_LARGE_BRIDGE_D, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_d.png")),
+                }
+            },
+             {TilePlaceable.IS_SMALL_BRIDGE_VERT, new ImageBrush
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
                 }
             },
-             {TilePlaceable.IS_SMALL_BRIDGE, new ImageBrush
+              {TilePlaceable.IS_SMALL_BRIDGE_HOR, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_hor.png")),
+                }
+            },
+               {TilePlaceable.IS_SMALL_BRIDGE_DR, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dr.png")),
+                }
+            },
+                {TilePlaceable.IS_SMALL_BRIDGE_DL, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dl.png")),
+                }
+            },
+                 {TilePlaceable.IS_SMALL_BRIDGE_UR, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ur.png")),
+                }
+            },
+                  {TilePlaceable.IS_SMALL_BRIDGE_UL, new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ul.png")),
                 }
             },
             //{TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
@@ -253,6 +302,7 @@ namespace SafariView.ViewModel
 
         public string SelectedShopName { get { return selectedShopName; } private set { selectedShopName = value; OnPropertyChanged(); } }
         public string? Bridges { get { return bridges; } private set { bridges = value; OnPropertyChanged(); } }
+        public string? Shop { get { return shop; } private set { shop = value; OnPropertyChanged(); } }
         #endregion
 
         #region Properties
@@ -381,6 +431,7 @@ namespace SafariView.ViewModel
             Week = "1";
             Month = "0/12";
             Bridges = "Hidden";
+            Shop = "Visible";
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
@@ -414,10 +465,12 @@ namespace SafariView.ViewModel
             if (Bridges == "Hidden")
             {
                 Bridges = "Visible";
+                Shop = "Hidden";
             }
             else
             {
                 Bridges = "Hidden";
+                Shop = "Visible";
             }
         }
         private void ClickShop(object? clickParam)
