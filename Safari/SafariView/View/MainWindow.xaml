@@ -10,6 +10,9 @@
         WindowStartupLocation="CenterScreen"
         Title="Safari" 
         FontFamily="Rockwell">
+    <Window.Resources>
+        <vm:OffsetMarginConverter x:Key="OffsetMarginConverter"/>
+    </Window.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -38,7 +41,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="{Binding TopRowHeightString}"  />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="{Binding BottomRowHeightString}"/>
                 </Grid.RowDefinitions>
                 
@@ -46,7 +49,8 @@
                 <vm:TileCanvas Panel.ZIndex="0" Background="{Binding BackgroundBrush,Mode=OneTime}" IsHitTestVisible="False" Grid.Row="1" x:Name="tileCanvas"/>
 
                 <!--Entityk megjelenítése/!-->
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding RenderedEntities}" Panel.ZIndex="1" >
+                <vm:TileCanvas Panel.ZIndex="1" Background="Transparent" IsHitTestVisible="False" Grid.Row="1" x:Name="entityCanvas"/>
+                <ItemsControl Grid.Row="1" Panel.ZIndex="1" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Background="Transparent" MouseDown="TileMapCanvas_MouseDown">
@@ -55,12 +59,45 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Rectangle Width="{Binding Size}" Height="{Binding Size}" Fill="{Binding Col}" Margin="{Binding Margin}" MouseDown="TileMapCanvas_MouseDown">
+                            <Rectangle MouseDown="TileMapCanvas_MouseDown">
                             </Rectangle>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
+                <!-- Floating texts -->
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding FloatingTexts}" Panel.ZIndex="2">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Text}"
+                                       Foreground="Red"
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Margin="{Binding Margin}"
+                                       Opacity="1"
+                                       >
+                                <TextBlock.Triggers>
+                                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                    From="{Binding Margin}"
+                                                                    To="{Binding Margin, Converter={StaticResource OffsetMarginConverter}, ConverterParameter=-20}"
+                                                                    Duration="0:0:0.6" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </TextBlock.Triggers>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                   
                 <Grid Panel.ZIndex="2" Background="#FF6C5200" Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
@@ -68,20 +105,53 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" BorderBrush="#FF1B5019" Background="#FFC3DBAD" Foreground="#FFA3963F" Margin="10,10,10,10" FontSize="30px" HorizontalAlignment="Left">MENU</Button>
-                    <TextBlock Grid.Column="1" FontSize="30px" Padding="30,5,30,5" Background="#FFFFD243" HorizontalAlignment="Center" Margin="0,10">0/12</TextBlock>
+                    <TextBlock Grid.Column="1" FontSize="30px" Padding="30,5,30,5" Background="#FFFFD243" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10" Text="{Binding Month}"></TextBlock>
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" Background="#FFC3DBAD" Margin="8">
                             <StackPanel Orientation="Vertical" Margin="5,0,20,0">
-                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">D</TextBlock>
-                                <TextBlock HorizontalAlignment="Left" FontSize="20px">▶</TextBlock>
+                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">H</TextBlock>
+                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px" Text="{Binding Hour}"/>
+                                <Button HorizontalAlignment="Left" FontSize="20px" Command="{Binding ChangedGameSpeed}" CommandParameter="Slow" BorderBrush="Transparent" Background="Transparent" Content="▶">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Gamespeed}" Value="Slow">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                             <StackPanel Orientation="Vertical" Margin="20,0,20,0">
-                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">W</TextBlock>
-                                <TextBlock HorizontalAlignment="Center" FontSize="20px">▶▶</TextBlock>
+                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">D</TextBlock>
+                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px" Text="{Binding Day}"/>
+                                <Button HorizontalAlignment="Left" FontSize="20px" Command="{Binding ChangedGameSpeed}" CommandParameter="Medium" BorderBrush="Transparent" Background="Transparent" Content="▶▶">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Gamespeed}" Value="Medium">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                             <StackPanel Orientation="Vertical" Margin="20,0,5,0">
-                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">M</TextBlock>
-                                <TextBlock HorizontalAlignment="Right" FontSize="20px">▶▶▶</TextBlock>
+                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">W</TextBlock>
+                                <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px" Text="{Binding Week}"/>
+                                <Button HorizontalAlignment="Left" FontSize="20px" Command="{Binding ChangedGameSpeed}" CommandParameter="Fast" BorderBrush="Transparent" Background="Transparent" Content="▶▶▶">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Gamespeed}" Value="Fast">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                         </StackPanel>
                         <TextBlock FontSize="30px" Margin="10" Padding="10" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFC3DBAD" Foreground="#FFAAA556" Text="{Binding MoneyString}"></TextBlock>
@@ -95,10 +165,11 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="0.05*"/>
+                            <ColumnDefinition Width="0.85*" />
                             <ColumnDefinition Width="0.1*"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1">
                            
                             <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Road" Margin="0,0,10,0" Content="Road">
                                 <Button.Style>
@@ -236,7 +307,7 @@
                                 </Button.Style>
                             </Button>
                         </StackPanel>
-                        <StackPanel Orientation="Vertical" Grid.Column="1">
+                        <StackPanel Orientation="Vertical" Grid.Column="2">
                             <Button Command="{Binding ClickedShopIcon}" CommandParameter="Sell" HorizontalAlignment="Right" Height="60" Width="60" FontSize="20px" FontWeight="Bold" Content="Sell">
                                 <Button.Style>
                                     <Style TargetType="Button">

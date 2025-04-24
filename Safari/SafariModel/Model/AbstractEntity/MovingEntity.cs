@@ -28,6 +28,7 @@ namespace SafariModel.Model.AbstractEntity
         protected bool isMoving;
 
         public float Speed { get { return speed; } protected set { speed = value; CalculateMovementVector(); } }
+        public float BaseSpeed { get; private set; }
         public int Range { get { return range; } }
         public bool IsMoving { get { return isMoving; } }
 
@@ -42,8 +43,9 @@ namespace SafariModel.Model.AbstractEntity
             subX = 0;
             subY = 0;
             isMoving = false;
-            speed = 5.5F;
-            range = Tile.TILESIZE*4;
+            //speed = 5.5F;
+            BaseSpeed = 5.5f;
+            Speed = BaseSpeed;
         }
 
         public static void RegisterTileCollision(TileCollision collision)
@@ -126,6 +128,10 @@ namespace SafariModel.Model.AbstractEntity
             return true;
         }
 
+        public void UpdateSpeedMultiplier(int multiplier)
+        {
+            Speed = BaseSpeed * multiplier;
+        }
         private static (int, int) GetTileCoords(int x, int y)
         {
             return (x / Tile.TILESIZE, y / Tile.TILESIZE);

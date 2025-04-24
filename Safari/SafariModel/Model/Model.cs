@@ -17,20 +17,66 @@ namespace SafariModel.Model
 {
     public class Model
     {
+        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
+        const int HOURS_PER_DAY = 24;
+        const int DAYS_PER_WEEK = 7;
+        const int WEEKS_PER_MONTH = 4;
 
         public static readonly int MAPSIZE = 100;
         private Tile[,] tileMap;
+        private GameData? data;
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
         private int tickCount;
+        private int tickPerGameSpeedCount;
         private int secondCounterHunter;
+
+        private GameSpeed gameSpeed;
+        private int speedBoost;
+
+        // entityk helyének térképen való eloszlására
+        private Dictionary<(int, int), List<Entity>> spatialMap = new();
+        #region Properites
+        public GameSpeed GameSpeed
+        {
+            get { return gameSpeed; }
+            set
+            {
+                gameSpeed = value;
+                speedBoost = gameSpeed switch
+                {
+                    GameSpeed.Slow => 1,
+                    GameSpeed.Medium => 3,
+                    GameSpeed.Fast => 9,
+                    _ => 1
+                };
+
+                foreach (Entity entity in entityHandler.GetEntities())
+                {
+                    if (entity is MovingEntity me)
+                    {
+                        me.UpdateSpeedMultiplier(speedBoost);
+                        if(me is Hunter h)
+                        {
+                            h.EnterField /= speedBoost;
+                            if(h.WaitingTime != 0)
+                            {
+                                h.WaitingTime /= speedBoost;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Events
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
         public event EventHandler<bool>? GameOver;
         public event EventHandler<(int,int)>? TileMapUpdated;
+        public event EventHandler? NewMessage;
         #endregion
 
         public Model()
@@ -59,7 +105,11 @@ namespace SafariModel.Model
             economyHandler = new EconomyHandler(9999);
 
             tickCount = 0;
+            tickPerGameSpeedCount = 0;
+            gameSpeed = GameSpeed.Slow;
+            speedBoost = 1;
 
+            data = new GameData();
         }
 
         #region Get tile and entity based on coordinates
@@ -82,22 +132,35 @@ namespace SafariModel.Model
         {
             //Ide jön gamelogic
             tickCount++;
+            tickPerGameSpeedCount++;
             if (tickCount % 120 == 0)
             {
                 secondCounterHunter++;
-                Hunter? hunter = entityHandler.GetNextHunter();
+                Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
                 if (hunter != null)
                 {
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
-                        entityHandler.SpawnHunter();
+                        hunter.TookDamage += OnNewMessage;
+                        entityHandler.SpawnHunter(speedBoost);
                         secondCounterHunter = 0;
                     }
                 }
             }
             entityHandler.TickEntities();
-
+            entityHandler.UpdateSpatialMap(spatialMap, Tile.TILESIZE);
+            foreach (Guard g in entityHandler.GetGuards())
+            {
+                g.NearbyHunters.Clear();
+                foreach (Entity f in GetNearbyEntities(g, g.HunterRange))
+                {
+                    if (f is Hunter h)
+                    {
+                        g.NearbyHunters.Add(h);
+                    }
+                }
+            }
             InvokeTickPassed();
         }
         #endregion
@@ -114,15 +177,54 @@ namespace SafariModel.Model
 
         private void InvokeTickPassed()
         {
-            GameData data = new GameData();
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
-            data.tileMap = tileMap;
+            data!.tileMap = tileMap;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
+            CountTimePassed(data);
             TickPassed?.Invoke(this, data);
         }
-
+        private void CountTimePassed(GameData data)
+        {
+            int divider = 1;
+            switch (gameSpeed)
+            {
+                case GameSpeed.Slow:
+                    divider = 1;
+                    break;
+                case GameSpeed.Medium:
+                    divider = HOURS_PER_DAY;
+                    break;
+                case GameSpeed.Fast:
+                    divider = HOURS_PER_DAY * DAYS_PER_WEEK;
+                    break;
+            }
+            if (tickPerGameSpeedCount >= TICK_PER_TIME_UNIT / divider)
+            {
+                tickPerGameSpeedCount = 0;
+                data.hour++;
+                if (data.hour >= HOURS_PER_DAY)
+                {
+                    data.hour = 0;
+                    data.day++;
+                    if (data.day > DAYS_PER_WEEK)
+                    {
+                        data.day = 1;
+                        data.week++;
+                        if (data.week > WEEKS_PER_MONTH)
+                        {
+                            data.week = 1;
+                            data.month++;
+                            if (data.month >= 12)
+                            {
+                                InvokeGameOver();
+                            }
+                        }
+                    }
+                }
+            }
+        }
         private void InvokeGameOver()
         {
             bool win = false;
@@ -161,9 +263,17 @@ namespace SafariModel.Model
 
             if (entity == null) return;
 
+            if(entity is MovingEntity me)
+            {
+                me.UpdateSpeedMultiplier(speedBoost);
+            }
+
             if (entity is Guard guardEntity)
             {
-                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
+                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
+                guardEntity.TookDamage += OnNewMessage;
+                guardEntity.LevelUp += OnNewMessage;
                 if (!economyHandler.PaySalary(guardEntity)) return;
             }
 
@@ -182,9 +292,34 @@ namespace SafariModel.Model
             economyHandler.SellEntity(e.GetType());
             entityHandler.RemoveEntity(e);
         }
-        public void KillAnimal(object? sender, KillAnimalEventArgs e)
+        public List<Entity> GetNearbyEntities(MovingEntity me, int range)
         {
-            entityHandler.RemoveEntity(e.Animal);
+            var rangeInCells = (range + Tile.TILESIZE - 1) / Tile.TILESIZE;
+            var (cx, cy) = entityHandler.GetCellCoords(me, Tile.TILESIZE);
+            List<Entity> nearbyEntities = new();
+
+            for (int dx = -rangeInCells; dx <= rangeInCells; dx++)
+            {
+                for (int dy = -rangeInCells; dy <= rangeInCells; dy++)
+                {
+                    var cell = (cx + dx, cy + dy);
+                    if (spatialMap.TryGetValue(cell, out var entitesInCell))
+                    {
+                        foreach (var e in entitesInCell)
+                        {
+                            if (e != me && Math.Abs(e.X - me.X) <= range && Math.Abs(e.Y - me.Y) <= range)
+                            {
+                                nearbyEntities.Add(e);
+                            }
+                        }
+                    }
+                }
+            }
+            return nearbyEntities;
+        }
+        private void OnNewMessage(object? sender, MessageEventArgs e)
+        {
+            NewMessage?.Invoke(sender, e);
         }
     }
 }

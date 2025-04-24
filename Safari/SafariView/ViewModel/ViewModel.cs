@@ -1,4 +1,4 @@
-﻿using SafariModel.Model;
+using SafariModel.Model;
 using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.Tiles;
 using SafariModel.Persistence;
@@ -23,15 +23,21 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Diagnostics.Contracts;
+using SafariModel.Model.EventArgsClasses;
 
 namespace SafariView.ViewModel
 {
     public class ViewModel : ViewModelBase
     {
         #region Private fields
-        private List<TileRender> RenderedTiles;
-        public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
+        private List<RenderObject> RenderedTiles;
+        private List<RenderObject> RenderedEntities;
+        public ObservableCollection<FloatingText> FloatingTexts { get; private set; }
         private int money;
+        private int hour;
+        private int day;
+        private int week;
+        private int month;
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
@@ -158,15 +164,6 @@ namespace SafariView.ViewModel
         }
         #endregion
 
-        #region GameSpeed enum
-        public enum GameSpeed
-        {
-            Slow,
-            Medium,
-            Fast
-        }
-        #endregion
-
         #region Window bindings
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
@@ -200,6 +197,54 @@ namespace SafariView.ViewModel
         #region Properties
         public float Mid { get { return mid; } set { mid = value; OnPropertyChanged(); } }
         public int Money { get { return money; } private set { money = value; MoneyString = $"Money : {money}$"; } }
+        public string? Hour
+        {
+            get { return hour.ToString("D2"); }
+            set
+            {
+                if (int.TryParse(value, out int parsedHour))
+                {
+                    hour = parsedHour;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string? Day
+        {
+            get { return day.ToString("D2"); }
+            set
+            {
+                if (int.TryParse(value, out int parsedDay))
+                {
+                    day = parsedDay;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string? Week
+        {
+            get { return week.ToString("D2"); }
+            set
+            {
+                if (int.TryParse(value, out int parsedWeek))
+                {
+                    week = parsedWeek;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public string? Month
+        {
+            get { return $"{month}/12"; }
+            set
+            {
+                if (int.TryParse(value!.Split('/')[0], out int parsedMonth))
+                {
+                    month = parsedMonth;
+                    OnPropertyChanged();
+                }
+            }
+        }
         public GameSpeed Gamespeed { get { return gameSpeed; } set { gameSpeed = value; OnPropertyChanged(); } }
         private float TopRowHeightRelative { get { return topRowHeightRelative!; } set { topRowHeightRelative = value; TopRowHeightString = topRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
         private float BottomRowHeightRelative { get { return bottomRowHeightRelative!; } set { bottomRowHeightRelative = value; BottomRowHeightString = bottomRowHeightRelative.ToString(CultureInfo.CreateSpecificCulture("C")) + "*"; } }
@@ -215,21 +260,23 @@ namespace SafariView.ViewModel
         public DelegateCommand StartCommand { get; private set; }
         public DelegateCommand CreditsCommand { get; private set; }
         public DelegateCommand ClickedShopIcon { get; private set; }
-        public DelegateCommand ChangedGameSpeed;
+        public DelegateCommand ChangedGameSpeed { get; private set; }
         #endregion
 
         #region EventHandlers
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
         public event EventHandler? FinishedRenderingTileMap;
+        public event EventHandler? FinishedRenderingEntities;
         public event EventHandler<(int, int)>? RequestCameraChange;
         #endregion
 
         #region Constructor
-        public ViewModel(Model model, List<TileRender> renderedTiles)
+        public ViewModel(Model model, List<RenderObject> renderedTiles, List<RenderObject> renderedEntities)
         {
             this.model = model;
-            RenderedEntities = new ObservableCollection<EntityRender>();
+            this.RenderedEntities = renderedEntities;
+            FloatingTexts = new ObservableCollection<FloatingText>();
             this.RenderedTiles = renderedTiles;
             minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE,96,96, PixelFormats.Rgb24, null);
             tickTimer = new DispatcherTimer(DispatcherPriority.Normal);
@@ -257,6 +304,7 @@ namespace SafariView.ViewModel
             model.GameOver += new EventHandler<bool>(Model_GameOver);
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
             model.TileMapUpdated += new EventHandler<(int,int)>(Model_TileMapUpdated);
+            model.NewMessage += OnMessage;
 
             //Set window bindings
             IndexPage = "Visible";
@@ -266,6 +314,11 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
             entityDataVisibility = Visibility.Hidden;
+            Gamespeed = GameSpeed.Slow;
+            Hour = "0";
+            Day = "1";
+            Week = "1";
+            Month = "0/12";
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
@@ -325,7 +378,24 @@ namespace SafariView.ViewModel
 
         private void ChangeGameSpeed(object? speedValue)
         {
-            throw new NotImplementedException();
+            if (speedValue is string speed)
+            {
+                switch (speed)
+                {
+                    case "Slow":
+                        Gamespeed = GameSpeed.Slow;
+                        model.GameSpeed = GameSpeed.Slow;
+                        break;
+                    case "Medium":
+                        Gamespeed = GameSpeed.Medium;
+                        model.GameSpeed = GameSpeed.Medium;
+                        break;
+                    case "Fast":
+                        Gamespeed = GameSpeed.Fast;
+                        model.GameSpeed = GameSpeed.Fast;
+                        break;
+                }
+            }
         }
 
         private void OnGameExit()
@@ -378,7 +448,26 @@ namespace SafariView.ViewModel
         private void Model_TickPassed(object? sender, GameData data)
         {
             cachedGameData = data;
-            Money = data.money;
+            if(Money != data.money)
+            {
+                Money = data.money;
+            }
+            if(hour != data.hour)
+            {
+                Hour = data.hour.ToString();
+            }
+            if (day != data.day)
+            {
+                Day = data.day.ToString();
+            }
+            if (week != data.week)
+            {
+                Week = data.week.ToString();
+            }
+            if (Month != $"{data.month}/12")
+            {
+                Month = $"{data.month}/12";
+            }
         }
 
         private void Model_GameOver(object? sender, bool playerWin)
@@ -571,7 +660,7 @@ namespace SafariView.ViewModel
                             }
                         }
 
-                        TileRender tile = new TileRender(realX, realY,Tile.TILESIZE, b!);
+                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!);
 
                         RenderedTiles.Add(tile);
                     }
@@ -589,9 +678,16 @@ namespace SafariView.ViewModel
                 if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
+<<<<<<< Safari/SafariView/ViewModel/ViewModel.cs
                     RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize+sizemodifier));
                 }
             }
+=======
+                    RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize, entityBrushes[e.GetType()]));
+                }
+            }
+            FinishedEntityRender();
+>>>>>>> Safari/SafariView/ViewModel/ViewModel.cs
         }
 
         private void ReDrawMinimap(Tile[,] tileMap)
@@ -716,9 +812,30 @@ namespace SafariView.ViewModel
             model.UpdatePerTick();
         }
 
+        private void FinishedEntityRender()
+        {
+            FinishedRenderingEntities?.Invoke(this, EventArgs.Empty);
+        }
         private void FinishedTileMapRender()
         {
             FinishedRenderingTileMap?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnMessage(object? sender, EventArgs e)
+        {
+            if (e is MessageEventArgs messageEvent)
+            {
+                var screenX = messageEvent.X - cameraX;
+                var screenY = messageEvent.Y - cameraY;
+                var text = new FloatingText($"{messageEvent.Message}", screenX, screenY);
+                FloatingTexts.Add(text);
+
+                Task.Run(async () =>
+                {
+                    await Task.Delay(600);
+                    App.Current.Dispatcher.Invoke(() => FloatingTexts.Remove(text));
+                });
+            }
         }
         #endregion
     }
