@@ -160,7 +160,7 @@ namespace SafariModel.Model.AbstractEntity
                 List<Tile> tilesInRange = GetTilesInRange();
                 foreach (Tile t in tilesInRange)
                 {
-                    if (t.Type == TileType.WATER)
+                    if (t.Type == TileType.SHALLOW_WATER)
                     {
                         //Only go to water tile if it has a walkable tile adjacent to it
                         if (IsAccessibleTile(t.I, t.J, out (int, int) target))
@@ -295,7 +295,7 @@ namespace SafariModel.Model.AbstractEntity
 
             foreach (Tile t in tilesInRange)
             {
-                if (t.Type == TileType.WATER)
+                if (t.Type == TileType.SHALLOW_WATER)
                 {
                     //mark water's location (limited to 1 per chunk)
                     if (!exploredWaterChunks.Contains(GetChunkCoordinates()))

@@ -96,7 +96,7 @@ namespace SafariModel.Model
             TileCollision tc = new TileCollision(tileMap);
             MovingEntity.RegisterTileCollision(tc);
             Entity.RegisterHandler(entityHandler);
-            Entity.RegisterTileMap(tileMap);
+            Entity.RegisterTileMap(tileMap.Map);
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Gazelle(100, 200,18000,300,45,45,0,0, 5000));
