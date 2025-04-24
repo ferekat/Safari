@@ -10,10 +10,22 @@ namespace SafariModel.Model.InstanceEntity
     public abstract class Carnivore : Animal
     {
         #region Constructor
-        protected Carnivore(int x, int y, int age, int health, int hunger, int thrist) : base(x, y, age, health, hunger, thrist)
+        protected Carnivore(int x, int y, int age, int health, int food, int water, int hunger, int thrist, int breedCooldown) : base(x, y, age, health, food, water, hunger, thrist, breedCooldown)
         {
             //Egyéb húsevő specifikus dolgok
         }
+
         #endregion
+
+        protected override bool IsPreferredFood(Entity e)
+        {
+            return e is Herbivore;
+        }
+
+        protected override void EatInteraction(Entity e)
+        {
+            Food = 100;
+            e.RemoveSelf();
+        }
     }
 }

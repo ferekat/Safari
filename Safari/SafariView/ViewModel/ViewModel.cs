@@ -1,4 +1,4 @@
-﻿using SafariModel.Model;
+using SafariModel.Model;
 using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
@@ -68,6 +68,10 @@ namespace SafariView.ViewModel
         private string? creditsPage;
         private string? loadGamePage;
         private string? optionName;
+
+        //Kiválasztott entitás adatai
+        private string selectedEntityData;
+        private Visibility entityDataVisibility;
 
         private string moneyString;
         private string topRowHeightString;
@@ -184,6 +188,8 @@ namespace SafariView.ViewModel
         public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
 
 
+        public string SelectedEntityData { get { return selectedEntityData; } private set { selectedEntityData = value; OnPropertyChanged(); } }
+        public Visibility EntityDataVisibility { get { return entityDataVisibility; } private set { entityDataVisibility = value; OnPropertyChanged(); } }
 
         public ClickAction CAction { get { return cAction; } private set { cAction = value; OnPropertyChanged(); } }
 
@@ -312,6 +318,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
+            entityDataVisibility = Visibility.Hidden;
             Gamespeed = GameSpeed.Slow;
             Hour = "0";
             Day = "1";
@@ -679,11 +686,14 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
+                int sizemodifier = 0;
+                if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
-                    RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize, entityBrushes[e.GetType()]));
+                    RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY,e.EntitySize+sizemodifier, entityBrushes[e.GetType()]));
                 }
             }
+
             FinishedEntityRender();
         }
 
@@ -753,6 +763,35 @@ namespace SafariView.ViewModel
             MinimapPosition = new Thickness(xPercent * (MINIMAPSIZE-(2*MINIMAPBORDERTHICKNESS)), yPercent * (MINIMAPSIZE-(2 * MINIMAPBORDERTHICKNESS)), 0,0);
         }
 
+        private void ShowSelectedEntityData()
+        {
+            Entity? selected = model.GetEntityByID(selectedEntityID);
+            if(selected == null)
+            {
+                EntityDataVisibility = Visibility.Hidden;
+                return;
+            }
+            if(selected is Animal a)
+            {
+                EntityDataVisibility = Visibility.Visible;
+                SelectedEntityData = $"""
+                {a.GetType().Name}
+                Health: {a.Health}
+                Age: {(a.IsEldelry ? "Elderly" : (a.IsAdult ? "Adult" : "Child"))}
+                Food: {a.Food}
+                Water: {a.Water}
+                Action: {a.Action}
+                Range: {a.Range}
+                
+                """;
+            }
+            else
+            {
+                EntityDataVisibility = Visibility.Hidden;
+                return;
+            }
+        }
+
         private void OnCameraChangeRequest()
         {
             RequestCameraChange?.Invoke(this, (HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
@@ -762,6 +801,7 @@ namespace SafariView.ViewModel
         {
             OnCameraChangeRequest();
             RenderGameArea();
+            ShowSelectedEntityData();
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)
