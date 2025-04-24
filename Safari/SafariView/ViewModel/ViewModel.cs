@@ -1,23 +1,13 @@
 ﻿using SafariModel.Model;
 using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
 using SafariModel.Persistence;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO.Packaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.CodeDom;
-using SafariModel.Model.InstanceEntity;
-using System.Diagnostics.Eventing.Reader;
-using System.Data.SqlTypes;
-using System.Globalization;
 
 namespace SafariView.ViewModel
 {
@@ -69,23 +59,28 @@ namespace SafariView.ViewModel
         #region Tile brushes
         private static Dictionary<TileType, Brush> tileBrushes = new Dictionary<TileType, Brush>()
         {
-            {TileType.WATER, new SolidColorBrush(Color.FromRgb(55, 55, 255))},
-            { TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
-            { TileType.EMPTY,new SolidColorBrush(Color.FromRgb(0, 0, 0))},
+            {TileType.DEEP_WATER, new SolidColorBrush(Color.FromRgb(0, 45, 179))},
+            {TileType.SHALLOW_WATER,new SolidColorBrush(Color.FromRgb(51, 204, 255))},
+            { TileType.GROUND, new SolidColorBrush(Color.FromRgb(0, 204, 0))},
+             { TileType.GROUND_SMALL, new SolidColorBrush(Color.FromRgb(119, 255, 51))},
+            { TileType.SMALL_HILL, new SolidColorBrush(Color.FromRgb(230, 230, 0))},
+             { TileType.SMALL_MEDIUM, new SolidColorBrush(Color.FromRgb(255, 153, 102))},
+                { TileType.MEDIUM_HILL, new SolidColorBrush(Color.FromRgb(255, 51, 0))},
+                 { TileType.MEDIUM_HIGH, new SolidColorBrush(Color.FromRgb(255, 102, 153))},
+            { TileType.HIGH_HILL,new SolidColorBrush(Color.FromRgb(204, 0, 204))},
             { TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
-            { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))},
            
         };
 
-        private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
+        private static Dictionary<PathTileType, Brush> pathBrushes = new Dictionary<PathTileType, Brush>()
         {
-            {TilePlaceable.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            {TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
-            {TilePlaceable.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
-            {TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )},
-            {TilePlaceable.S,new SolidColorBrush(Color.FromRgb(100,100,0))},
+            {PathTileType.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            {PathTileType.ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
+            {PathTileType.LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
+            {PathTileType.SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )},
+            {PathTileType.NODE,new SolidColorBrush(Color.FromRgb(100,100,0))},
         };
         #endregion
 
@@ -104,7 +99,7 @@ namespace SafariView.ViewModel
         };
         private static Brush HillBrush(Tile hill)
         {
-            return new SolidColorBrush(Color.FromRgb(0, (byte)(102 + hill.Z), 0));
+            return new SolidColorBrush(Color.FromRgb(0, (byte)(102 + hill.H), 0));
         }
 
         #endregion
@@ -442,21 +437,17 @@ namespace SafariView.ViewModel
                         Brush? b = null;
 
                         //Get type of tile
-                        if (t.HasPlaceable())
+                        if (t is PathTile p && p.HasPlaceable())
                         {
-                            b = conditionBrushes[t.Placeable];
+                            b = pathBrushes[p.PathType];
                         }
                         else
                         {
-                            if (t.Type == TileType.HILL)
-                            {
-                                b = HillBrush(t);
-                            }
-                            else
-                            {
+                           
+                           
                                 b = tileBrushes[t.Type];
 
-                            }
+                           
                         }
 
                         TileRender tile = new TileRender(realX, realY, b!);

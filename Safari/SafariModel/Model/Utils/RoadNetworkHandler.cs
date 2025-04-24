@@ -6,168 +6,420 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace SafariModel.Model.Utils
 {
+
     public class RoadNetworkHandler
     {
 
-        private Tile entrance;
-        private Tile exit;
+        private PathTile entrance;
+        private PathTile exit;
+        private static bool foundShortestPath;
 
-        private List<Tile> roadNetwork = new();
-        private static List<Tile> shortestPathExitToEntrance = new();
-        private static List<Tile> shortestPathEntranceToExit = new();
-        public static List<Tile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } }
 
-        public static List<Tile> ShortestPathEntranceToExit { get { return shortestPathEntranceToExit; } }
-        public Tile Entrance { get { return entrance; } }
-        public Tile Exit { get { return exit; } }
-        
+        private List<PathTile> roadNetwork = new();
+        private static List<PathTile> shortestPathExitToEntrance = new();
+        private static List<PathTile> shortestPathEntranceToExit = new();
+        public static List<PathTile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } }
+        public static bool FoundShortestPath { get { return foundShortestPath; } }
+        public static List<PathTile> ShortestPathEntranceToExit { get { return shortestPathEntranceToExit; } }
+
         private TileMap tileMap;
         public RoadNetworkHandler(TileMap tileMap)
         {
             this.tileMap = tileMap;
             entrance = tileMap.Entrance;
             exit = tileMap.Exit;
-            AddPathNode(entrance,null);
-            ShortestPathAStar();
+            entrance.IntersectionNode!.Distance = 0;
+            foundShortestPath = false;
         }
-        public void AddToRoadNetwork(Tile tile)
-        {
-            roadNetwork.Add(tile);
-            List<Tile> neighbours = GetTileNeighbours(tile);
-            if (neighbours.Count > 1)
-            {
-                ShortestPathAStar();
-            }
-        }
-        private void AddPathNode(Tile tile,TileNode? parent)
-        {
-            tile.NetworkNode = new TileNode(tile,parent);
-        }
-        private bool IsTileCoordInBounds(int i,int j)
-        {
-            return i >= 0 &&
-                   i < TileMap.MAPSIZE &&
-                   j >= 0 &&
-                   j < TileMap.MAPSIZE;
-        }
-        private bool IsValidNeighbour(Tile tile)
-        {
-            return tile.IsInRoadNetwork() &&
-                    !tile.VisitedRoad!.IsVisited;
-                    
-        }
-        private List<Tile> GetTileNeighbours(Tile tile)
-        {
-            List<Tile> ret = new List<Tile>();
 
-            if (IsTileCoordInBounds(tile.I, tile.J-1) && IsValidNeighbour(tileMap.Map[tile.I, tile.J - 1]))
+
+
+
+        public bool ConnectToNetwork(Tile tileToConnect, PathTileType pathToConnect)
+        {
+            if (tileToConnect is PathTile)
             {
-                ret.Add(tileMap.Map[tile.I, tile.J - 1]);
+                return false;
             }
-            if (IsTileCoordInBounds(tile.I, tile.J+1) && IsValidNeighbour(tileMap.Map[tile.I, tile.J + 1]))
+            int pathNeighbours = 0;
+            List<PathIntersectionNode> neighNodes = new();
+            PathTile connectedTile = new PathTile(tileToConnect, pathToConnect, new PathIntersectionNode(tileToConnect.I, tileToConnect.J));
+            PathIntersectionNode neighNode = null!;
+            PathIntersectionNode connectedTileNode = connectedTile.IntersectionNode!;
+            bool succ = false;
+            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK
             {
-                ret.Add(tileMap.Map[tile.I, tile.J + 1]);
+                if (neigh is PathTile neighPathTile)
+                {
+                    succ = true;
+                   
+                    switch (neighPathTile.PathType) //HIDAK
+                    {
+                        case PathTileType.SMALL_BRIDGE:
+                            if (pathToConnect != PathTileType.SMALL_BRIDGE) return false;
+                            break;
+                        case PathTileType.LARGE_BRIDGE:
+                            if (pathToConnect != PathTileType.LARGE_BRIDGE) return false;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    roadNetwork.Add(connectedTile);
+
+
+                   
+
+                    if (neighPathTile.IntersectionNode == null)
+                    {
+                      
+                        neighPathTile.IntersectionNode = new PathIntersectionNode(neighPathTile.I, neighPathTile.J);
+                        int deltaI = Math.Abs(connectedTile.I - neighPathTile.I);
+                        int deltaJ = Math.Abs(neighPathTile.J - neighPathTile.J);
+
+                        PathIntersectionNode[] closestNodes = ClosestNodesOnAxis(neighPathTile, deltaI, deltaJ);
+                      
+                        PathIntersectionNode.ConnectIntersections(neighPathTile.IntersectionNode, closestNodes[0]);
+                        PathIntersectionNode.ConnectIntersections(neighPathTile.IntersectionNode, closestNodes[1]);
+                        PathIntersectionNode.DisconnectIntersections(closestNodes[0], closestNodes[1]);
+
+                    }
+
+                    neighNode = neighPathTile.IntersectionNode;
+                    neighNodes.Add(neighNode);
+                    PathIntersectionNode.ConnectIntersections(connectedTileNode, neighNode);
+
+
+
+
+
+
+
+
+                    pathNeighbours++;
+                }
             }
-            if (IsTileCoordInBounds(tile.I-1, tile.J) && IsValidNeighbour(tileMap.Map[tile.I-1, tile.J ]))
+            if (succ)
             {
-                ret.Add(tileMap.Map[tile.I-1, tile.J ]);
+                tileMap.Map[tileToConnect.I, tileToConnect.J] = connectedTile;
+                neighNodes.Add(connectedTileNode);
+                foreach(PathIntersectionNode node in neighNodes)
+                {
+                    SimplifyStraightPath(node);
+                }
+                if (pathNeighbours >= 2)
+                {
+                    ShortestPathAStar();
+                }
+
+
+
+                ///debug
+                //foreach (PathTile pt in roadNetwork)
+                //{
+                //    pt.PathType = PathTileType.EMPTY;
+                //}
+                
+                foreach (PathIntersectionNode node in PathIntersectionNode.inst)
+                {
+                    
+                    if (tileMap.Map[node.PathI, node.PathJ] is PathTile pt)
+                    {
+
+                   //     pt.PathType = PathTileType.EMPTY;
+                    }
+                    Debug.WriteLine(node.Distance);
+                }
             }
-            if (IsTileCoordInBounds(tile.I+1, tile.J) && IsValidNeighbour(tileMap.Map[tile.I+1, tile.J ]))
+           
+           
+          
+            return pathNeighbours > 0;
+        }
+        private int CalculateDistance(PathIntersectionNode node)
+        {
+            if (node.NextIntersections.Count == 0)
             {
-                ret.Add(tileMap.Map[tile.I+1, tile.J ]);
+                return TileMap.MAPSIZE; 
             }
-         
+
+           
+            int minDistance = node.NextIntersections[0].Distance;
+
+        
+            foreach (PathIntersectionNode neigh in node.NextIntersections)
+            {
+                int distance;
+            
+                if (neigh.PathI != node.PathI)
+                {
+                    distance = Math.Abs(neigh.PathJ - node.PathJ); 
+                }
+                else
+                {
+                    distance = Math.Abs(neigh.PathI - node.PathI); 
+                }
+
+               
+                if (distance + neigh.Distance < minDistance)
+                {
+                    minDistance = distance + neigh.Distance;
+                }
+            }
+
+           
+            node.Distance = minDistance;
+
+            return minDistance; 
+        }
+
+        private PathIntersectionNode[] ClosestNodesOnAxis(PathTile neighPathTile, int axisI, int axisJ)
+        {
+            PathIntersectionNode[] ret = new PathIntersectionNode[2];
+            if (axisI != 0)
+            {
+                for (int j = neighPathTile.J + 1; j < TileMap.MAPSIZE; j++)
+                {
+                    if (tileMap.Map[neighPathTile.I, j] is PathTile pt && pt.IntersectionNode != null)
+                    {
+                        ret[0] = pt.IntersectionNode;
+                        break;
+                    }
+                }
+                for (int j = neighPathTile.J - 1; j >= 0; j--)
+                {
+                    if (tileMap.Map[neighPathTile.I, j] is PathTile pt && pt.IntersectionNode != null)
+                    {
+                        ret[1] = pt.IntersectionNode;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = neighPathTile.I + 1; i < TileMap.MAPSIZE; i++)
+                {
+                    if (tileMap.Map[i, neighPathTile.J] is PathTile pt && pt.IntersectionNode != null)
+                    {
+                        ret[0] = pt.IntersectionNode;
+                        break;
+                    }
+                }
+                for (int i = neighPathTile.I - 1; i >= 0; i--)
+                {
+                    if (tileMap.Map[i, neighPathTile.J] is PathTile pt && pt.IntersectionNode != null)
+                    {
+                        ret[1] = pt.IntersectionNode;
+                        break;
+                    }
+                }
+            }
+
             return ret;
         }
+        private void SimplifyStraightPath(PathIntersectionNode node) //node szomszédai egyenes utat alkotnak e 
+        {
+
+
+            List<PathIntersectionNode> neighs = node.NextIntersections;
+
+            if (neighs.Count != 2)
+            {
+                return;
+            }
+
+
+
+            if (neighs[0].PathI == neighs[1].PathI || neighs[0].PathJ == neighs[1].PathJ)
+            {
+
+                PathIntersectionNode neigh0 = neighs[0];
+                PathIntersectionNode neigh1 = neighs[1];
+                PathIntersectionNode.ConnectIntersections(neigh0, neigh1);
+                PathIntersectionNode.DisconnectIntersections(neigh0, node);
+                PathIntersectionNode.DisconnectIntersections(neigh1, node);
+                PathTile pt = (PathTile)tileMap.Map[node.PathI, node.PathJ];
+                pt.IntersectionNode = null;
+                SimplifyStraightPath(neigh1);
+                SimplifyStraightPath(neigh0);
+
+
+            }
+
+            return;
+
+
+        }
+      
+
+
+
         private int TotalCost(Tile tile, int distance)
         {
             //manhattan táv (h) + költség (g)       A*: f = h + g
             return Math.Abs(tile.I - exit.I) + Math.Abs(tile.J - exit.J) + distance;
         }
 
-        public void RandomPathToExit()
-        {
-            ShortestPathAStar();
-            
-        }
-
         public void ShortestPathAStar()
         {
+            Debug.WriteLine("A*");
+            shortestPathEntranceToExit.Clear();
             shortestPathExitToEntrance.Clear();
 
-            PriorityQueue<(Tile, int), int> endPoints = new(); // pq <(végpont,végpont g távolsága),f összköltség>    A*: f = h + g
-            endPoints.Enqueue((entrance, 0), TotalCost(entrance, 0));
-
-            
-            bool foundExit = false;
-            while (endPoints.Count > 0)
+            // Reset distances and visited flags
+            foreach (var node in PathIntersectionNode.inst)
             {
-                  
-                (Tile, int) parentTileData = endPoints.Dequeue();
-                Tile parentTile = parentTileData.Item1;
-                TileNode parentNode = parentTile.NetworkNode!;
-               
+                node.Distance = int.MaxValue;
+                node.IsVisited = false;
+            }
 
-                parentTile.VisitedRoad!.IsVisited = true;
-               
-          
-                int parentTileDistance = parentTileData.Item2;
+            entrance.IntersectionNode!.Distance = 0;
 
-                List<Tile> neighbourTiles = GetTileNeighbours(parentTile);
+            var priorityQueue = new PriorityQueue<PathIntersectionNode, int>();
+            priorityQueue.Enqueue(entrance.IntersectionNode, TotalCost(entrance, 0));
+            
+            Dictionary<PathIntersectionNode, PathIntersectionNode?> cameFrom = new();
+            cameFrom[entrance.IntersectionNode] = null;
+            while (priorityQueue.Count > 0)
+            {
+                PathIntersectionNode current = priorityQueue.Dequeue();
 
-                int neighBourTileDistance = parentTileDistance++;
-               
-                for (int i = 0; i < neighbourTiles.Count; i++)
+                if (current.IsVisited) continue;
+                current.IsVisited = true;
+
+                if (current.PathI == exit.I && current.PathJ == exit.J)
                 {
-                   
-                    Tile neighbour = neighbourTiles[i];
-                    endPoints.Enqueue((neighbour, neighBourTileDistance), TotalCost(neighbour, neighBourTileDistance));
-                    AddPathNode(neighbour,parentTile.NetworkNode);
-                    if (neighbour == exit)
-                    {
-                        foundExit = true;
-                        break;
-                    }
-                }
-
-                if (foundExit)
-                {
-                    foreach (Tile road in roadNetwork)
-                    {
-                        road.SetPlaceable(TilePlaceable.IS_ROAD);
-                    }
-                    BackTrackShortestPath(exit);
+                    ReconstructPath(current, cameFrom);
                     return;
                 }
+
+                foreach (PathIntersectionNode neighbor in current.NextIntersections)
+                {
+                    if (neighbor.IsVisited) continue;
+
+                    int moveCost = Math.Abs(neighbor.PathI - current.PathI) + Math.Abs(neighbor.PathJ - current.PathJ);
+                    int tentativeG = current.Distance + moveCost;
+
+                    if (tentativeG < neighbor.Distance)
+                    {
+                        neighbor.Distance = tentativeG;
+                        cameFrom[neighbor] = current;
+
+                        int fCost = TotalCost(tileMap.Map[neighbor.PathI, neighbor.PathJ], neighbor.Distance);
+                        priorityQueue.Enqueue(neighbor, fCost);
+                    }
+                }
             }
 
-            foreach (Tile road in roadNetwork)
-            {
-                road.VisitedRoad!.IsVisited = false;
-            }
+            // No path found
+            Debug.WriteLine("No path found from entrance to exit.");
         }
-        private void BackTrackShortestPath(Tile tile)
+
+        private void ReconstructPath(PathIntersectionNode endNode, Dictionary<PathIntersectionNode, PathIntersectionNode?> cameFrom)
         {
-           
-            shortestPathExitToEntrance.Add(tile);
-            tile.SetPlaceable(TilePlaceable.S);
-            Tile next;
-            if (tile.NetworkNode!.parent != null)
+            var current = endNode;
+            foundShortestPath = true;
+            while (true)
             {
-                next = tile.NetworkNode!.parent.tile;
-                BackTrackShortestPath(next);
-            }
-            else
-            {
-                return;
+                if (tileMap.Map[current.PathI, current.PathJ] is PathTile pt)
+                {
+                    pt.SetType(PathTileType.NODE);
+                    Debug.WriteLine($"{pt.I},{pt.J}");
+                    shortestPathEntranceToExit.Add(pt);
+                    shortestPathExitToEntrance.Add(pt);
+                }
+                if (cameFrom[current] != null)
+                {
+                    current = cameFrom[current];
+                }
+                else
+                {
+                    shortestPathEntranceToExit.Add(entrance);
+                    shortestPathExitToEntrance.Add(entrance);
+                    break;
+                }
             }
             
+            // Optionally reverse the list if needed
+            shortestPathEntranceToExit.Reverse();
         }
 
 
+        //    public void ShortestPathAStar()
+        //    {
+        //        shortestPathExitToEntrance.Clear();
+
+        //        PriorityQueue<PathIntersectionNode, int> endPoints = new(); // pq <(végpont,végpont g távolsága),f összköltség>    A*: f = h + g
+        //        endPoints.Enqueue(entrance.IntersectionNode, TotalCost(entrance, 0));
+
+
+        //        bool foundExit = false;
+        //        while (endPoints.Count > 0)
+        //        {
+
+        //            PathIntersectionNode parentNode = endPoints.Dequeue();
+        //            PathTile parentTile = parentTileData.Item1;
+        //            PathIntersectionNode parentIntersection = parentTile.IntersectionNode!;
+        //            parentTile.IsVisited = true;
+        //            int parentTileDistance = parentTile.IntersectionNode!.Distance;
+
+
+
+        //            List<PathIntersectionNode> nextIntersections = NextIntersections(parentTile);
+
+
+
+        //            for (int i = 0; i < neighbourTiles.Count; i++)
+        //            {
+
+        //                Tile neighbour = neighbourTiles[i];
+        //                endPoints.Enqueue((neighbour, neighBourTileDistance), TotalCost(neighbour, neighBourTileDistance));
+        //                AddPathNode(neighbour, parentTile.NetworkNode);
+        //                if (neighbour == exit)
+        //                {
+        //                    foundExit = true;
+        //                    break;
+        //                }
+        //            }
+
+        //            if (foundExit)
+        //            {
+        //                foreach (Tile road in roadNetwork)
+        //                {
+        //                    road.SetPlaceable(PathTileType.ROAD);
+        //                }
+        //                BackTrackShortestPath(exit);
+        //                return;
+        //            }
+        //        }
+
+        //        foreach (Tile road in roadNetwork)
+        //        {
+        //            road.VisitedRoad!.IsVisited = false;
+        //        }
+        //    }
+        //    private void BackTrackShortestPath(Tile tile)
+        //    {
+
+        //        shortestPathExitToEntrance.Add(tile);
+        //        tile.SetPlaceable(PathTileType.S);
+        //        Tile next;
+        //        if (tile.NetworkNode!.parent != null)
+        //        {
+        //            next = tile.NetworkNode!.parent.tile;
+        //            BackTrackShortestPath(next);
+        //        }
+        //        else
+        //        {
+        //            return;
+        //        }
+
+        //    }
+
+
+        }
     }
-}

@@ -10,4 +10,10 @@
 	<Folder Include="Model\InstanceEntity" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestMap.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

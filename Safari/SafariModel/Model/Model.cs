@@ -47,7 +47,7 @@ namespace SafariModel.Model
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Lion(100, 200));
 
-            economyHandler = new EconomyHandler(9999);
+            economyHandler = new EconomyHandler(99999);
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
         }
 
@@ -109,26 +109,21 @@ namespace SafariModel.Model
             int tileY = GetTileFromCoords(x, y).Item2;
             Tile clickedTile = tileMap.Map[tileX, tileY];
 
-            if (Tile.tileTypeMap.ContainsKey(itemName) && Tile.tileTypeMap[itemName] is TileType tiletype)
+            if (Tile.tileShopMap.ContainsKey(itemName) && Tile.tileShopMap[itemName] is TileType tileToBuy/* && Tile.tileShopMap[itemName] is TileType tileToBuy && Tile.tileInteractionMap[tileToBuy] == clickedTile.Type*/)
             {
-                if (economyHandler.BuyTile(clickedTile.Type, tiletype))
+                if (economyHandler.BuyTile(tileToBuy))
                 {
-                    clickedTile.SetType(tiletype);
+                    clickedTile.SetType(tileToBuy);
                     OnTileMapUpdated();
                 }
                 return;
             }
-            if (Tile.placeableMap.ContainsKey(itemName) && Tile.placeableMap[itemName] is TilePlaceable placeable)
+            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy && PathTile.CanPlacePath(pathToBuy,clickedTile.Type))
             {
-                if (economyHandler.BuyPlaceable(clickedTile.Type, placeable))
+                    //ha be lehet kötni a hálózatba és meg lehet venni
+                if (roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
                 {
-                    clickedTile.SetPlaceable(placeable);
-                    if (clickedTile.IsInRoadNetwork())
-                    {
-                        clickedTile.VisitedRoad = new VisitedRoad(false);
-                        roadNetworkHandler.AddToRoadNetwork(clickedTile);
-                        roadNetworkHandler.ShortestPathAStar();
-                    }
+                   
                     OnTileMapUpdated();
                 }
                 return;

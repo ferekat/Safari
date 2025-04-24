@@ -14,25 +14,23 @@ namespace SafariModel.Model
 {
     public class Jeep : MovingEntity
     {
-        bool atExit = false;
+        
+        private bool atExit;
         private static int MAX_CAPACITY = 4;
         private int touristCount;
         private double happiness;
-        private Tile entrance;
-        private Tile exit;
-        private bool waitingAtEntrance;
-        private bool waitingAtExit;
-        private int waitingTimer;
-        private int frameBlocker;
+        private int waitAtEndpointDuration;
+        private int waitTimer;
+        private Random random = new();
         public Jeep(int x,int y) : base(x,y) 
         {
          
             happiness = 0;
             touristCount = 0;
             entitySize = 20;
-            waitingAtEntrance = true;
-            waitingAtExit = false;
-            waitingTimer = 50;
+            waitTimer = 0;
+            atExit = false;
+            waitAtEndpointDuration = random.Next(100,130);
             //Queue<Point> path = new();
             //path.Enqueue(new Point(200, 200));
             //path.Enqueue(new Point(20, 0));
@@ -53,65 +51,44 @@ namespace SafariModel.Model
         protected override void EntityLogic()
         {
 
-            if (!isMoving)
+            if (!isMoving && RoadNetworkHandler.FoundShortestPath)
             {
-                Debug.WriteLine("exec");
-                if (!atExit)
+             //   Debug.WriteLine("ex");
+                waitTimer++;
+                if (waitTimer > waitAtEndpointDuration)
                 {
-                    atExit = true;
-                    SetTarget(entrance.TileCenterPoint(this));
-                    //isMoving = true;
-                    //PathToEntrance(true);
-                }
-                else
-                {
-                    atExit = false;
-                    SetTarget(exit.TileCenterPoint(this));
-                    //isMoving = true;
-                //    PathToEntrance(false);
-                   // ShortestPathToEntrance();
+                    if (!atExit)
+                    {
+                        atExit = true;
+                        PathToEndpoint(RoadNetworkHandler.ShortestPathEntranceToExit);
+                    }
+                    else
+                    {
+                        atExit = false;
+                        PathToEndpoint(RoadNetworkHandler.ShortestPathExitToEntrance);
+                  
+                    }
+                    waitTimer = 0;
+                    waitAtEndpointDuration = random.Next(100, 130);
                 }
             }
         }
 
-        private void PathToEntrance(bool reverse)
+        private void PathToEndpoint(List<PathTile> shortestPath)
         {
-           
-            List<Tile> sp = RoadNetworkHandler.ShortestPathExitToEntrance;
-            List<Tile> spCopy = new List<Tile>();
-
-            foreach (Tile t in sp)
-            {
-                spCopy.Add(t);
-            }
-
-            
-            if (reverse)
-            {
-                spCopy.Reverse();
-            }
-
             Queue<Point> path = new();
-            foreach(Tile tile in spCopy)
+            foreach(Tile tile in shortestPath)
             {
-                path.Enqueue(tile.TileCenterPoint(this));
+
+                Point point = tile.TileCenterPoint(this);
+                if (path.Count == 0 && x == point.X && y == point.Y)
+                {
+                    continue;
+                }
+                path.Enqueue(point);
             }
-            Debug.WriteLine("call ");
-            SetPath(path);
-
-        }
-        private void ShortestPathToEntrance()
-        {
-            List<Tile> sp = RoadNetworkHandler.ShortestPathExitToEntrance;
-
-
-            Queue<Point> path = new();
-            foreach (Tile tile in sp)
-            {
-                path.Enqueue(tile.TileCenterPoint(this));
-            }
-            Debug.WriteLine("call setpath toentr");
             SetPath(path);
         }
+       
     }
 }

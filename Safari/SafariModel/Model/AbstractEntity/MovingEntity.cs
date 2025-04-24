@@ -80,6 +80,7 @@ namespace SafariModel.Model.AbstractEntity
 
         public void SetPath(Queue<Point> points)
         {
+            targetPoints.Clear();
             targetPoints = points;
            
             if(targetPoints.Count > 0)

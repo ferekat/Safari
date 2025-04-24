@@ -11,20 +11,33 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.Tiles
 {
-
-    public class TileNode
+   
+    public enum TileType
     {
-        public readonly TileNode? parent;
-        public readonly Tile tile;
-       
-       
-        public TileNode(Tile tile,TileNode? parent)
-        {
-            this.tile = tile;
-            this.parent = parent; 
-            
-        }
+        EMPTY,
+
+
+        DEEP_WATER,
+        SHALLOW_WATER,
+        GROUND,
+        GROUND_SMALL,
+        SMALL_HILL,
+        SMALL_MEDIUM,
+        MEDIUM_HILL,
+        MEDIUM_HIGH,
+        HIGH_HILL,
+
+        ENTRANCE,
+        EXIT,
+        FENCE,
+
+
+
+
+        GRASS_GROUND
     }
+   
+   
 
     public class Tile
     {
@@ -32,91 +45,61 @@ namespace SafariModel.Model.Tiles
      
         private int i;
         private int j;
-        private TileZ? z;
-        private VisitedRoad? visitedRoad;
-        private TileType tileType;
-        private TilePlaceable placeable;
-        private TileNode? networkNode;
-       
-        //<Amire szeretném hogy változzon,Amit tipusu mezőt lehet megváltoztatni>
-        public readonly static Dictionary<TileType, TileType> tileInteractionMap = new Dictionary<TileType, TileType>()
-        {       
-            {TileType.GRASS_GROUND,TileType.GROUND},
-            {TileType.WATER,TileType.GROUND}
-        };
+        private int h;
 
-        //<Amit le akarok helyezni,Amilyen tipusu mezőre le lehet helyezni>
-        public readonly static Dictionary<TilePlaceable,TileType> placeableInteractionMap = new Dictionary<TilePlaceable, TileType>()
+
+        private TileType tileType;
+       
+        //<Amit szeretnék venni,Ahova le tudom tenni>
+        //public readonly static Dictionary<TileType, TileType> tileInteractionMap = new Dictionary<TileType, TileType>()
+        //{       
+        //    {TileType.GRASS_GROUND,TileType.GROUND},
+        //    {TileType.SHALLOW_WATER,TileType.GROUND}
+        //};
+
+        
+       
+
+
+        public readonly static Dictionary<string, TileType> tileShopMap = new Dictionary<string, TileType>()
         {
-            { TilePlaceable.IS_ROAD,TileType.GROUND},
-            { TilePlaceable.IS_SMALL_BRIDGE,TileType.WATER},
-            { TilePlaceable.IS_LARGE_BRIDGE,TileType.WATER}
-        };
-        public readonly static Dictionary<string, TileType> tileTypeMap = new Dictionary<string, TileType>()
-        {
-            {"Lake",TileType.WATER},
+            {"Lake",TileType.SHALLOW_WATER},
             {"Grass",TileType.GRASS_GROUND}
         };
-        public readonly static Dictionary<string, TilePlaceable> placeableMap = new Dictionary<string, TilePlaceable>()
-        {
-            {"Road",TilePlaceable.IS_ROAD},
-            {"Bridge",TilePlaceable.IS_LARGE_BRIDGE}
-            //TODO: smallbridge
-        };
-
 
    
 
         public int I { get { return i; } }
         public int J { get { return j; } }
-        public int Z { get { if (z == null) return 0;else return z.Z ; } }
-        public TilePlaceable Placeable { get { return placeable; } }
+        public int H { get { return  h; } }
+     
         public TileType Type { get { return tileType; } }
-        public TileNode? NetworkNode { get { return networkNode;} set { networkNode = value; } }
-
-        public VisitedRoad? VisitedRoad { get { return visitedRoad; } set { visitedRoad = value; } }
-        public Tile(int i, int j,TileZ? z)
+      
+        public Tile(int i, int j,int h,TileType type)
         {
             this.i = i;
             this.j = j;
-            tileType = TileType.GROUND;
-            //IDEIGLENES térkép példányosítás!!!
-            Random r = new Random();
-            tileType = r.Next(2) == 0 ? TileType.GROUND : TileType.HILL;
-            if (i == 0 || i == TileMap.MAPSIZE - 1 || j == 0 || j == TileMap.MAPSIZE - 1) tileType = TileType.FENCE;
-            if (tileType == TileType.HILL) z = new TileZ(r.Next(1,10));
-            //
-
-            placeable = TilePlaceable.EMPTY;
+            this.h = h;
+            this.tileType = type;
+           
+            
+            
+         
         }
         
         public bool HasPlaceable()
         {
-            return placeable != TilePlaceable.EMPTY;
+            //hack
+            return true;
+           
         }
         public void SetType(TileType tileType)
         {
             this.tileType = tileType;
         }
-        public void SetPlaceable(TilePlaceable placeable)
-        {
-            this.placeable = placeable;
-            if (placeable != TilePlaceable.IS_GRASS)
-            {
-                visitedRoad = new VisitedRoad(false);
-              // RoadNetworkHandler.AddRoadToNetwork(this);
-            }
-        }
-        public bool IsInRoadNetwork()
-        {
-            return placeable == TilePlaceable.IS_ROAD ||
-                   placeable == TilePlaceable.IS_SMALL_BRIDGE ||
-                   placeable == TilePlaceable.IS_LARGE_BRIDGE ||
-                   tileType == TileType.ENTRANCE ||
-                   tileType == TileType.EXIT ||
-                   placeable == TilePlaceable.S;
-        }
-
+      
+       
+        
         public Point TileCenterPoint(Entity entity)
         {
             return new Point((i * TILESIZE) + (TILESIZE / 2) - (entity.EntitySize / 2), (j * TILESIZE) + (TILESIZE / 2) - (entity.EntitySize / 2));

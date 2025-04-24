@@ -26,22 +26,22 @@ namespace SafariModel.Model.Utils
             { typeof(PalmTree),100 },
             { typeof(Guard),0 }
         };
-        private Dictionary<TilePlaceable, int> placeableCosts = new Dictionary<TilePlaceable, int>
+        private Dictionary<PathTileType, int> pathTileCosts = new Dictionary<PathTileType, int>
         {
             {
-                TilePlaceable.IS_ROAD,100
+                PathTileType.ROAD,100
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE,500
+                PathTileType.SMALL_BRIDGE,500
             },
             {
-                TilePlaceable.IS_LARGE_BRIDGE,1500
+                PathTileType.LARGE_BRIDGE,1500
             }
         };
-        private Dictionary<TileType, int> tileTypeCosts = new Dictionary<TileType, int>
+        private Dictionary<TileType, int> tileCosts = new Dictionary<TileType, int>
         {
             {
-                TileType.WATER,200
+                TileType.SHALLOW_WATER,200
             },
             {
                 TileType.GRASS_GROUND,200
@@ -72,18 +72,18 @@ namespace SafariModel.Model.Utils
         {
             money += entityCostTable[item];
         }
-        public bool BuyTile(TileType clickedType,TileType tileType)
+        public bool BuyTile(TileType tileType)
         {
             
-            int cost = tileTypeCosts[tileType];
-            if (money < cost || Tile.tileInteractionMap[tileType] != clickedType) return false;
+            int cost = tileCosts[tileType];
+            if (money < cost) return false;
             money -= cost;
             return true;
         }
-        public bool BuyPlaceable(TileType clickedType,TilePlaceable placeable)
+        public bool BuyPathTile(PathTileType pathType)
         {
-            int cost = placeableCosts[placeable];
-            if (money < cost || Tile.placeableInteractionMap[placeable] != clickedType) return false;
+            int cost = pathTileCosts[pathType];
+            if (money < cost ) return false;
             money -= cost;
             return true;
         }
