@@ -80,11 +80,6 @@ namespace SafariModel.Model.AbstractEntity
 
         protected virtual void RemoveEvent() {}
 
-        public int Debug_GetEntitySameChunkCount()
-        {
-            return GetEntitiesInChunk(this.GetChunkCoordinates()).Count;
-        }
-
         protected Entity(int x, int y)
         {
             this.x = x;

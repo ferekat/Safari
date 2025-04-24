@@ -684,25 +684,12 @@ namespace SafariView.ViewModel
             {
                 EntityDataVisibility = Visibility.Visible;
                 SelectedEntityData = $"""
+                {a.GetType().Name}
                 Health: {a.Health}
+                Age: {(a.IsEldelry ? "Elderly" : (a.IsAdult ? "Adult" : "Child"))}
                 Food: {a.Food}
                 Water: {a.Water}
                 Action: {a.Action}
-                Current target:
-                {a.CurrentTarget}
-                Current chunk:
-                {a.GetChunkCoordinates().ToString()}
-                Range: {a.Range}
-                Search timer : {a.SearchTimer}
-                Explored food count : {a.ExploredFoodCount}
-                Explored water count : {a.ExploredWaterCount}
-                In Group? {a.InGroup}
-                Leader? {a.IsLeader}
-                Member count: {a.MemberCount}
-                Age: {a.Age}
-                Is adult? {a.IsAdult}
-                Can breed? {a.CanBreed}
-                Breed cooldown: {a.BreedCooldown}
                 """;
             }
             else

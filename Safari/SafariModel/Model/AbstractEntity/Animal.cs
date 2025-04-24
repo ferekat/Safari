@@ -64,15 +64,6 @@ namespace SafariModel.Model.AbstractEntity
 
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
-        //Debug
-        public int ExploredFoodCount { get { return exploredFoodPlaces.Count; } }
-        public int ExploredWaterCount { get { return exploredWaterPlaces.Count; } }
-        public int SearchTimer { get { return searchTimer; } }
-
-        public int MemberCount { get { return members == null ? -2 : members.Count; } }
-
-        public int BreedCooldown { get { return breedCooldown; } }
-
         #endregion
 
         #region Event
