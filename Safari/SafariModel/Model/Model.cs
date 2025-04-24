@@ -91,7 +91,7 @@ namespace SafariModel.Model
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
             data.tileMap = tileMap.Map;
             data.entities = entityHandler.GetEntities();
-            data.money = EconomyHandler.Money;
+            data.money = economyHandler.Money;
             TickPassed?.Invoke(this, data);
         }
 
