@@ -293,7 +293,18 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button Height="60" Width="60" Margin="0,0,10,0" Background="#FFFFD243">Jeep</Button>
+                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Jeep" Margin="0,0,10,0" Content="Jeep">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#FFFFD243"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="Jeep">
+                                                <Setter Property="Background" Value="#FF2AA34B"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                             <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Guard" Margin="0,0,10,0" Content="Guard">
                                 <Button.Style>
                                     <Style TargetType="Button">

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -14,13 +15,17 @@ namespace SafariModel.Model.AbstractEntity
 {
     public abstract class MovingEntity : Entity
     {
-        private Queue<Point> targetPoints;
+        protected Queue<Point> targetPoints; 
         private Point currentTarget;
         private Vector2 movementVector;
         private float subX;
         private float subY;
 
+
+        
         private static TileCollision tileCollision;
+       
+        
         private static (int, int)[] coordSets = new (int, int)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
         protected float speed;
@@ -48,10 +53,12 @@ namespace SafariModel.Model.AbstractEntity
             Speed = BaseSpeed;
         }
 
+
         public static void RegisterTileCollision(TileCollision collision)
         {
-            tileCollision = collision;
+            tileCollision = collision;  
         }
+       
 
         public void SetTarget(Point p)
         {
@@ -83,6 +90,7 @@ namespace SafariModel.Model.AbstractEntity
         }
         public void SetPath(Queue<Point> points)
         {
+            targetPoints.Clear();
             targetPoints = points;
             if (targetPoints.Count > 0)
             {
@@ -141,11 +149,11 @@ namespace SafariModel.Model.AbstractEntity
         {
             return GetTileCoords(p.X, p.Y);
         }
-
+       
         private void CalculateMovementVector()
         {
-            currentTarget.X = Math.Clamp(currentTarget.X, 0, Model.MAPSIZE * Tile.TILESIZE);
-            currentTarget.Y = Math.Clamp(currentTarget.Y, 0, Model.MAPSIZE * Tile.TILESIZE);
+            currentTarget.X = Math.Clamp(currentTarget.X, 0, TileMap.MAPSIZE * Tile.TILESIZE);
+            currentTarget.Y = Math.Clamp(currentTarget.Y, 0, TileMap.MAPSIZE * Tile.TILESIZE);
 
             movementVector.X = currentTarget.X - this.X;
             movementVector.Y = currentTarget.Y - this.Y;
@@ -179,18 +187,18 @@ namespace SafariModel.Model.AbstractEntity
 
 
             //entity is outside map
-            if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
-            {
-                this.x += 1;
-                this.y += 1;
-                NextTargetPoint();
-            }
-            if (this.X > Model.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > Model.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
-            {
-                this.x -= 1;
-                this.y -= 1;
-                NextTargetPoint();
-            }
+            //if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
+            //{
+            //    this.x += 1;
+            //    this.y += 1;
+            //    NextTargetPoint();
+            //}
+            //if (this.X > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE || this.Y > TileMap.MAPSIZE * Tile.TILESIZE - entitySize - Tile.TILESIZE)
+            //{
+            //    this.x -= 1;
+            //    this.y -= 1;
+            //    NextTargetPoint();
+            //}
 
 
             if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) < movementVector.Length() * 1.5) //In range of target point

@@ -23,11 +23,13 @@ namespace SafariModel.Model
         const int WEEKS_PER_MONTH = 4;
 
         public static readonly int MAPSIZE = 100;
-        private Tile[,] tileMap;
+        private TileMap tileMap;
         private GameData? data;
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
+        private RoadNetworkHandler roadNetworkHandler;
+        private TouristHandler touristHandler;
         private int tickCount;
         private int tickPerGameSpeedCount;
         private int secondCounterHunter;
@@ -71,6 +73,7 @@ namespace SafariModel.Model
         }
         #endregion
 
+        public TileMap TileMap { get { return tileMap; } }
         #region Events
         public event EventHandler? NewGameStarted;
         public event EventHandler<GameData>? TickPassed;
@@ -84,14 +87,11 @@ namespace SafariModel.Model
             entityHandler = new EntityHandler();
             secondCounterHunter = 0;
 
-            tileMap = new Tile[MAPSIZE, MAPSIZE];
-            for (int i = 0; i < MAPSIZE; i++)
-            {
-                for (int j = 0; j < MAPSIZE; j++)
-                {
-                    tileMap[i, j] = new Tile(i, j, null);
-                }
-            }
+
+            //-------- !!IDEIGLENES!! térkép példányosítás
+            
+            tileMap = TileMap.CreateMapTmp();
+            //-------------
 
             TileCollision tc = new TileCollision(tileMap);
             MovingEntity.RegisterTileCollision(tc);
@@ -101,6 +101,9 @@ namespace SafariModel.Model
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Gazelle(100, 200,18000,300,45,45,0,0, 5000));
 
+            
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            touristHandler = new TouristHandler();
 
             economyHandler = new EconomyHandler(9999);
 
@@ -161,6 +164,10 @@ namespace SafariModel.Model
                     }
                 }
             }
+            touristHandler.TouristUpdateTick();
+
+
+
             InvokeTickPassed();
         }
         #endregion
@@ -178,7 +185,7 @@ namespace SafariModel.Model
         private void InvokeTickPassed()
         {
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
-            data!.tileMap = tileMap;
+            data!.tileMap = tileMap.Map;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
@@ -238,28 +245,32 @@ namespace SafariModel.Model
         {
             int tileX = GetTileFromCoords(x, y).Item1;
             int tileY = GetTileFromCoords(x, y).Item2;
-            Tile clickedTile = tileMap[tileX, tileY];
+            Tile clickedTile = tileMap.Map[tileX, tileY];
 
-            if (Tile.tileTypeMap.ContainsKey(itemName) && Tile.tileTypeMap[itemName] is TileType tiletype)
+            if (Tile.tileShopMap.ContainsKey(itemName) && Tile.tileShopMap[itemName] is TileType tileToBuy)
             {
-                if (economyHandler.BuyTile(clickedTile.Type, tiletype))
+                if (economyHandler.BuyTile(tileToBuy))
                 {
-                    clickedTile.SetType(tiletype);
+                    clickedTile.SetType(tileToBuy);
                     OnTileMapUpdated(tileX,tileY);
                 }
                 return;
             }
-            if (Tile.placeableMap.ContainsKey(itemName) && Tile.placeableMap[itemName] is TilePlaceable placeable)
+            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy && PathTile.CanPlacePath(pathToBuy,clickedTile.Type))
             {
-                if (economyHandler.BuyPlaceable(clickedTile.Type, placeable))
+                    //ha be lehet kötni a hálózatba és meg lehet venni
+                if (roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
                 {
-                    clickedTile.SetPlaceable(placeable);
+                    
                     OnTileMapUpdated(tileX, tileY);
                 }
                 return;
             }
             Entity? entity = EntityFactory.CreateEntity(itemName, x, y);
             Type? type = entity?.GetType();
+
+
+
 
             if (entity == null) return;
 
