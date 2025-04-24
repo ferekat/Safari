@@ -8,21 +8,22 @@ namespace SafariModel.Model.Tiles
 {
     public class TileCollision
     {
-        private Tile[,] tileMap;
+        private TileMap tileMap;
 
-        public TileCollision(Tile[,] tileMap)
+        public TileMap TileMap { get { return tileMap; } }
+        public TileCollision(TileMap tileMap)
         {
             this.tileMap = tileMap;
         }
 
         public bool IsPassable(int x, int y)
         {
-            if (x < 0 || x >= tileMap.GetLength(0) || y < 0 || y >= tileMap.GetLength(1)) return false;
-            if(tileMap[x, y].Placeable == TilePlaceable.IS_LARGE_BRIDGE_VERT) return true;
-            if (tileMap[x, y].Placeable == TilePlaceable.IS_LARGE_BRIDGE_HOR) return true;
-            if (tileMap[x, y].Placeable == TilePlaceable.IS_LARGE_BRIDGE_U) return true;
-            if (tileMap[x, y].Placeable == TilePlaceable.IS_LARGE_BRIDGE_D) return true;
-            return tileMap[x, y].Type != TileType.WATER && tileMap[x, y].Type != TileType.FENCE;
+            if (x < 0 || x >= TileMap.MAPSIZE || y < 0 || y >= TileMap.MAPSIZE) return false;
+            if(tileMap.Map[x, y] is PathTile) return true;
+            if (tileMap.Map[x, y].Type == TileType.FENCE) return false;
+            return tileMap.Map[x, y] is PathTile p && p.PathType == PathTileType.ROAD;
+
+           
         }
 
         public int GetTileWeight(int x, int y)

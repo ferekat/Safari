@@ -1,15 +1,10 @@
-﻿using SafariModel.Model;
+using SafariModel.Model;
 using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
 using SafariModel.Persistence;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO.Packaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -31,8 +26,8 @@ namespace SafariView.ViewModel
     public class ViewModel : ViewModelBase
     {
         #region Private fields
-        private List<TileRender> RenderedTiles;
-        public ObservableCollection<EntityRender> RenderedEntities { get; private set; }
+        private List<RenderObject> RenderedTiles;
+        private List<RenderObject> RenderedEntities;
         public ObservableCollection<FloatingText> FloatingTexts { get; private set; }
         private int money;
         private int hour;
@@ -77,6 +72,10 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? optionName;
 
+        //Kiválasztott entitás adatai
+        private string selectedEntityData;
+        private Visibility entityDataVisibility;
+
         private string moneyString;
         private string topRowHeightString;
         private string bottomRowHeightString;
@@ -90,119 +89,114 @@ namespace SafariView.ViewModel
         #region Tile brushes
         private static Dictionary<TileType, Brush> tileBrushes = new Dictionary<TileType, Brush>()
         {
-            //{TileType.WATER, new SolidColorBrush(Color.FromRgb(55, 55, 255))},
-            //{ TileType.GROUND, new SolidColorBrush(Color.FromRgb(153, 76, 0))},
-            //{ TileType.FENCE,new SolidColorBrush(Color.FromRgb(30, 30, 30))},
-            {TileType.WATER, new ImageBrush
+            {TileType.DEEP_WATER, new SolidColorBrush(Color.FromRgb(0, 45, 179))},
+            {TileType.SHALLOW_WATER,new ImageBrush
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/water.png")),
-                } 
-            },
-            {TileType.GROUND, new ImageBrush
+                } },
+            { TileType.GROUND, new ImageBrush
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.jpg")),
-                }
-            },
-            {TileType.FENCE, new ImageBrush
+                }},
+             { TileType.GROUND_SMALL, new SolidColorBrush(Color.FromRgb(119, 255, 51))},
+            { TileType.SMALL_HILL, new SolidColorBrush(Color.FromRgb(230, 230, 0))},
+             { TileType.SMALL_MEDIUM, new SolidColorBrush(Color.FromRgb(255, 153, 102))},
+                { TileType.MEDIUM_HILL, new SolidColorBrush(Color.FromRgb(255, 51, 0))},
+                 { TileType.MEDIUM_HIGH, new SolidColorBrush(Color.FromRgb(255, 102, 153))},
+            { TileType.HIGH_HILL,new SolidColorBrush(Color.FromRgb(204, 0, 204))},
+            { TileType.FENCE,new ImageBrush
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.jpg")),
-                }
-            },
-            { TileType.EMPTY,new SolidColorBrush(Color.FromRgb(0, 0, 0))},
-           // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
+                }},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
+        };
+        private static Dictionary<PathTileType, Brush> pathBrushes = new Dictionary<PathTileType, Brush>()
+        {
+            {PathTileType.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
+            {PathTileType.ROAD,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
+                }},
+            {PathTileType.LARGE_BRIDGE_HOR,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_hor.png")),
+                } },
+            {PathTileType.LARGE_BRIDGE_VERT,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_vert.png")),
+                } },
+            {PathTileType.LARGE_BRIDGE_D,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_d.png")),
+                } },
+            {PathTileType.LARGE_BRIDGE_U,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_u.png")),
+                } },
+            {PathTileType.SMALL_BRIDGE_HOR,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_hor.png")),
+                }},
+            {PathTileType.SMALL_BRIDGE_VERT,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
+                }},
+            {PathTileType.SMALL_BRIDGE_DR,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dr.png")),
+                }},
+            {PathTileType.SMALL_BRIDGE_DL,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dl.png")),
+                }},
+            {PathTileType.SMALL_BRIDGE_UR,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ur.png")),
+                }},
+            {PathTileType.SMALL_BRIDGE_UL,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ul.png")),
+                }},
+
         };
 
         private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()
         {
-            {TileType.WATER, new byte[] {55,55,255} },
-            { TileType.GROUND, new byte[] {153,76,0}},
-            { TileType.EMPTY,new byte[] {0,0,0}},
-            { TileType.FENCE,new byte[] {30,30,30}},
-           // { TileType.HILL,new SolidColorBrush(Color.FromRgb(0, 102, 0))},
-            { TileType.ENTRANCE,new byte[] {255,0,0}},
-            { TileType.EXIT,new byte[] {0,255,0}}
+              {TileType.DEEP_WATER, new byte[]{0, 45, 179 }},
+            {TileType.SHALLOW_WATER,new byte[]{51, 204, 255 }},
+            { TileType.GROUND, new byte[]{0, 204, 0}},
+             { TileType.GROUND_SMALL, new byte[]{119, 255, 51}},
+            { TileType.SMALL_HILL, new byte[]{230, 230, 0 }},
+             { TileType.SMALL_MEDIUM, new byte[]{255, 153, 102 }},
+                { TileType.MEDIUM_HILL, new byte[]{255, 51, 0}},
+                 { TileType.MEDIUM_HIGH, new byte[]{255, 102, 153 }},
+            { TileType.HIGH_HILL,new byte[]{204, 0, 204 }},
+            { TileType.FENCE,new byte[]{30, 30, 30 }},
+            { TileType.ENTRANCE,new byte[]{255, 0, 0 }},
+            { TileType.EXIT,new byte[]{0, 255, 0 }},
+
+
+
         };
 
-        private static Dictionary<TilePlaceable, byte[]> minimapConditionBrushes = new Dictionary<TilePlaceable, byte[]>()
+        private static Dictionary<PathTileType, byte[]> minimapPathBrushes = new Dictionary<PathTileType, byte[]>()
         {
-            {TilePlaceable.EMPTY,new byte[] {0,0,0} },
-            {TilePlaceable.IS_ROAD,new byte[] {235,125,52}},
-            {TilePlaceable.IS_LARGE_BRIDGE_VERT,new byte[] {125,37,37} },
-            {TilePlaceable.IS_LARGE_BRIDGE_HOR,new byte[] {125,37,37} },
-            {TilePlaceable.IS_LARGE_BRIDGE_U,new byte[] {125,37,37} },
-            {TilePlaceable.IS_LARGE_BRIDGE_D,new byte[] {125,37,37} },
-            {TilePlaceable.IS_SMALL_BRIDGE_VERT,new byte[] {140,136,136}},
-            {TilePlaceable.IS_SMALL_BRIDGE_HOR,new byte[] {140,136,136}},
-            {TilePlaceable.IS_SMALL_BRIDGE_DR,new byte[] {140,136,136}},
-            {TilePlaceable.IS_SMALL_BRIDGE_DL,new byte[] {140,136,136}},
-            {TilePlaceable.IS_SMALL_BRIDGE_UR,new byte[] {140,136,136}},
-            {TilePlaceable.IS_SMALL_BRIDGE_UL,new byte[] {140,136,136}},
+            {PathTileType.EMPTY,new byte[] {0,0,0} },
+            {PathTileType.ROAD,new byte[] {235,125,52}},
+            {PathTileType.LARGE_BRIDGE_HOR,new byte[] {125,37,37} },
+            {PathTileType.LARGE_BRIDGE_VERT,new byte[] {125,37,37} },
+            {PathTileType.LARGE_BRIDGE_D,new byte[] {125,37,37} },
+            {PathTileType.LARGE_BRIDGE_U,new byte[] {125,37,37} },
+            {PathTileType.SMALL_BRIDGE_HOR,new byte[] {140,136,136}},
+            {PathTileType.SMALL_BRIDGE_VERT,new byte[] {140,136,136}},
+            {PathTileType.SMALL_BRIDGE_DR,new byte[] {140,136,136}},
+            {PathTileType.SMALL_BRIDGE_DL,new byte[] {140,136,136}},
+            {PathTileType.SMALL_BRIDGE_UR,new byte[] {140,136,136}},
+            {PathTileType.SMALL_BRIDGE_UL,new byte[] {140,136,136}},
         };
 
-        private static Dictionary<TilePlaceable, Brush> conditionBrushes = new Dictionary<TilePlaceable, Brush>()
-        {
-            {TilePlaceable.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
-            {TilePlaceable.IS_ROAD, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
-                }
-            },
-             {TilePlaceable.IS_LARGE_BRIDGE_VERT, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_vert.png")),
-                }
-            },
-             {TilePlaceable.IS_LARGE_BRIDGE_HOR, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_hor.png")),
-                }
-            },
-             {TilePlaceable.IS_LARGE_BRIDGE_U, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_u.png")),
-                }
-            },
-             {TilePlaceable.IS_LARGE_BRIDGE_D, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_d.png")),
-                }
-            },
-             {TilePlaceable.IS_SMALL_BRIDGE_VERT, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
-                }
-            },
-              {TilePlaceable.IS_SMALL_BRIDGE_HOR, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_hor.png")),
-                }
-            },
-               {TilePlaceable.IS_SMALL_BRIDGE_DR, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dr.png")),
-                }
-            },
-                {TilePlaceable.IS_SMALL_BRIDGE_DL, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dl.png")),
-                }
-            },
-                 {TilePlaceable.IS_SMALL_BRIDGE_UR, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ur.png")),
-                }
-            },
-                  {TilePlaceable.IS_SMALL_BRIDGE_UL, new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ul.png")),
-                }
-            },
-            //{TilePlaceable.IS_ROAD,new SolidColorBrush(Color.FromRgb(235, 125, 52) )},
-            //{TilePlaceable.IS_LARGE_BRIDGE,new SolidColorBrush(Color.FromRgb(125, 37, 37)) },
-            //{TilePlaceable.IS_SMALL_BRIDGE,new SolidColorBrush(Color.FromRgb(140, 136, 136) )}
-        };
+    
         #endregion
 
         #region Entity brushes
@@ -253,16 +247,8 @@ namespace SafariView.ViewModel
             //{typeof(Guard),new SolidColorBrush(Color.FromRgb(0,0,0)) },
             //{typeof(Hunter),new SolidColorBrush(Color.FromRgb(150,150,150)) },
         };
-        private static Brush HillBrush(Tile hill)
-        {
-            return new SolidColorBrush(Color.FromRgb(0, (byte)(102 + hill.Z), 0));
-        }
-
-        private static byte[] HillBrushMinimap(Tile hill)
-        {
-            return new byte[] { 0, (byte)(102 + hill.Z), 0 };
-        }
-
+       
+      
         #endregion
 
         #region ClickAction enum
@@ -295,6 +281,8 @@ namespace SafariView.ViewModel
         public WriteableBitmap MinimapBitmap { get { return minimapBitmap; } private set { OnPropertyChanged(); } }
 
 
+        public string SelectedEntityData { get { return selectedEntityData; } private set { selectedEntityData = value; OnPropertyChanged(); } }
+        public Visibility EntityDataVisibility { get { return entityDataVisibility; } private set { entityDataVisibility = value; OnPropertyChanged(); } }
 
         public ClickAction CAction { get { return cAction; } private set { cAction = value; OnPropertyChanged(); } }
 
@@ -379,14 +367,15 @@ namespace SafariView.ViewModel
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
         public event EventHandler? FinishedRenderingTileMap;
+        public event EventHandler? FinishedRenderingEntities;
         public event EventHandler<(int, int)>? RequestCameraChange;
         #endregion
 
         #region Constructor
-        public ViewModel(Model model, List<TileRender> renderedTiles)
+        public ViewModel(Model model, List<RenderObject> renderedTiles, List<RenderObject> renderedEntities)
         {
             this.model = model;
-            RenderedEntities = new ObservableCollection<EntityRender>();
+            this.RenderedEntities = renderedEntities;
             FloatingTexts = new ObservableCollection<FloatingText>();
             this.RenderedTiles = renderedTiles;
             minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE,96,96, PixelFormats.Rgb24, null);
@@ -425,6 +414,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
+            entityDataVisibility = Visibility.Hidden;
             Gamespeed = GameSpeed.Slow;
             Hour = "0";
             Day = "1";
@@ -483,6 +473,14 @@ namespace SafariView.ViewModel
                 {
                     CAction = CAction == ClickAction.SELL ? ClickAction.NOTHING : ClickAction.SELL;
                     SelectedShopName = "";
+                    return;
+                }
+                if (shopString == "Jeep")
+                {
+                    Jeep dummy = new Jeep(0, 0);
+                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPoint(dummy); //a jeepet rárakjuk a bejárat tile közepére
+                    model.BuyItem("Jeep",p.X,p.Y);
+                  
                     return;
                 }
                 if (CAction != ClickAction.BUY)
@@ -644,6 +642,7 @@ namespace SafariView.ViewModel
             }
             if (CAction == ClickAction.BUY)
             {
+               
                 model.BuyItem(SelectedShopName, gameX, gameY);
             }
 
@@ -753,9 +752,11 @@ namespace SafariView.ViewModel
 
                 RenderedTiles.Clear();
 
-                for (int j = tileMapTop; j < Math.Min(tileMapTop + VerticalTileCount + 3, Model.MAPSIZE); j++)
+
+      
+                for (int j = tileMapTop; j < Math.Min(tileMapTop + VerticalTileCount + 3, TileMap.MAPSIZE); j++)
                 {
-                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HorizontalTileCount + 3, Model.MAPSIZE); i++)
+                    for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HorizontalTileCount + 2, TileMap.MAPSIZE); i++)
                     {
                         Tile t = tileMap[i, j];
 
@@ -769,24 +770,20 @@ namespace SafariView.ViewModel
                         Brush? b = null;
 
                         //Get type of tile
-                        if (t.HasPlaceable())
+                        if (t is PathTile p && p.HasPlaceable())
                         {
-                            b = conditionBrushes[t.Placeable];
+                            b = pathBrushes[p.PathType];
                         }
                         else
                         {
-                            if (t.Type == TileType.HILL)
-                            {
-                                b = HillBrush(t);
-                            }
-                            else
-                            {
+                           
+                           
                                 b = tileBrushes[t.Type];
 
-                            }
+                           
                         }
 
-                        TileRender tile = new TileRender(realX, realY,Tile.TILESIZE, b!);
+                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!);
 
                         RenderedTiles.Add(tile);
                     }
@@ -800,23 +797,25 @@ namespace SafariView.ViewModel
 
             foreach (Entity e in entities)
             {
+                int sizemodifier = 0;
+                if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
                     if (e is Hunter h)
                     {
                         if (h.IsVisible && h.HasEntered)
                         {
-                            RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()]));
                         }
                     }
                    else
                    {
-                        RenderedEntities.Add(new EntityRender(e.X - cameraX, e.Y - cameraY, entityBrushes[e.GetType()], e.EntitySize));
-                   }
+                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()]));
+                    }
                 }
             }
 
-            
+            FinishedEntityRender();
         }
 
         private void ReDrawMinimap(Tile[,] tileMap)
@@ -833,22 +832,16 @@ namespace SafariView.ViewModel
                     byte[]? b = null;
 
                     //Get type of tile
-                    if (t.HasPlaceable())
+                    if (t is PathTile pt)
                     {
-                        b = minimapConditionBrushes[t.Placeable];
+                        b = minimapPathBrushes[pt.PathType];
                     }
                     else
                     {
                         
-                        if (t.Type == TileType.HILL)
-                        {
-                            b = HillBrushMinimap(t);
-                        }
-                        else
-                        {
-                        
+                       
                         b = minimaptileBrushes[t.Type];
-                        }
+                       
                     }
                     Int32Rect rect = new Int32Rect(i, j, 1, 1);
                     minimapBitmap.WritePixels(rect, b, 3, 0);
@@ -865,22 +858,16 @@ namespace SafariView.ViewModel
             byte[]? b = null;
 
             //Get type of tile
-            if (t.HasPlaceable())
+            if (t is PathTile pt)
             {
-                b = minimapConditionBrushes[t.Placeable];
+                b = minimapPathBrushes[pt.PathType];
             }
             else
             {
 
-                if (t.Type == TileType.HILL)
-                {
-                    b = HillBrushMinimap(t);
-                }
-                else
-                {
-
+              
                     b = minimaptileBrushes[t.Type];
-                }
+              
             }
             Int32Rect rect = new Int32Rect(tileX, tileY, 1, 1);
             minimapBitmap.WritePixels(rect, b, 3, 0);
@@ -897,6 +884,35 @@ namespace SafariView.ViewModel
             MinimapPosition = new Thickness(xPercent * (MINIMAPSIZE-(2*MINIMAPBORDERTHICKNESS)), yPercent * (MINIMAPSIZE-(2 * MINIMAPBORDERTHICKNESS)), 0,0);
         }
 
+        private void ShowSelectedEntityData()
+        {
+            Entity? selected = model.GetEntityByID(selectedEntityID);
+            if(selected == null)
+            {
+                EntityDataVisibility = Visibility.Hidden;
+                return;
+            }
+            if(selected is Animal a)
+            {
+                EntityDataVisibility = Visibility.Visible;
+                SelectedEntityData = $"""
+                {a.GetType().Name}
+                Health: {a.Health}
+                Age: {(a.IsEldelry ? "Elderly" : (a.IsAdult ? "Adult" : "Child"))}
+                Food: {a.Food}
+                Water: {a.Water}
+                Action: {a.Action}
+                Range: {a.Range}
+                
+                """;
+            }
+            else
+            {
+                EntityDataVisibility = Visibility.Hidden;
+                return;
+            }
+        }
+
         private void OnCameraChangeRequest()
         {
             RequestCameraChange?.Invoke(this, (HORIZONTALCAMERACHANGERANGE, VERTICALCAMERACHANGERANGE));
@@ -906,6 +922,7 @@ namespace SafariView.ViewModel
         {
             OnCameraChangeRequest();
             RenderGameArea();
+            ShowSelectedEntityData();
         }
 
         private void OnGameTimerTick(object? sender, EventArgs e)
@@ -913,6 +930,10 @@ namespace SafariView.ViewModel
             model.UpdatePerTick();
         }
 
+        private void FinishedEntityRender()
+        {
+            FinishedRenderingEntities?.Invoke(this, EventArgs.Empty);
+        }
         private void FinishedTileMapRender()
         {
             FinishedRenderingTileMap?.Invoke(this, EventArgs.Empty);

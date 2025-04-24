@@ -14,7 +14,7 @@ namespace SafariModel.Model.Utils
 
         }
         
-        public void GenerateRandomMap(Tile[,] tileMap)
+        public void GenerateRandomMap(TileMap tileMap)
         {
 
         }

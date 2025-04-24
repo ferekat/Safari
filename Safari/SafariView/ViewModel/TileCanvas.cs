@@ -12,13 +12,13 @@ namespace SafariView.ViewModel
     public class TileCanvas : Canvas
     {
         
-        public List<TileRender>? tiles;
+        public List<RenderObject>? tiles;
 
         protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
             if (tiles == null) return;
-            foreach (TileRender tr in tiles!)
+            foreach (RenderObject tr in tiles!)
             {
                 dc.DrawRectangle(tr.Texture, null, tr.Rectangle);
             }

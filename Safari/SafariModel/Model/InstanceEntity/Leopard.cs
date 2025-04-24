@@ -9,9 +9,13 @@ namespace SafariModel.Model.InstanceEntity
     public class Leopard : Carnivore
     {
         #region Constructor
-        public Leopard(int x, int y) : base(x, y, 0, 200, 250, 200)
+        public Leopard(int x, int y) : base(x, y, 0, 200,80,80, 0, 0, 5000)
         {
-            entitySize = 60;
+            entitySize = 50;
+        }
+        public Leopard(int x, int y, int age, int health, int food, int water, int hunger, int thirst, int breedingCooldown) : base(x, y, age, health, food, water, hunger, thirst, breedingCooldown)
+        {
+            entitySize = 50;
         }
         #endregion
 

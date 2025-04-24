@@ -16,6 +16,7 @@ namespace SafariModel.Model.Utils
 
         private Dictionary<Type, int> entityCostTable = new Dictionary<Type, int>
         {
+            { typeof(Jeep),300},
             { typeof(Lion),200},
             { typeof(Leopard),300},
             { typeof(Gazelle),150},
@@ -25,46 +26,46 @@ namespace SafariModel.Model.Utils
             { typeof(PalmTree),100 },
             { typeof(Guard),0 }
         };
-        private Dictionary<TilePlaceable, int> placeableCosts = new Dictionary<TilePlaceable, int>
+        private Dictionary<PathTileType, int> pathTileCosts = new Dictionary<PathTileType, int>
         {
             {
-                TilePlaceable.IS_ROAD,100
+                PathTileType.ROAD,100
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE_VERT,500
+                PathTileType.SMALL_BRIDGE_VERT,500
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE_HOR,500
+                PathTileType.SMALL_BRIDGE_HOR,500
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE_DR,500
+                PathTileType.SMALL_BRIDGE_DR,500
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE_DL,500
+                PathTileType.SMALL_BRIDGE_DL,500
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE_UR,500
+                PathTileType.SMALL_BRIDGE_UR,500
             },
             {
-                TilePlaceable.IS_SMALL_BRIDGE_UL,500
+                PathTileType.SMALL_BRIDGE_UL,500
             },
             {
-                TilePlaceable.IS_LARGE_BRIDGE_VERT,1500
+                PathTileType.LARGE_BRIDGE_VERT,1500
             },
             {
-                TilePlaceable.IS_LARGE_BRIDGE_HOR,1500
+                PathTileType.LARGE_BRIDGE_HOR,1500
             },
             {
-                TilePlaceable.IS_LARGE_BRIDGE_U,1500
+                PathTileType.LARGE_BRIDGE_U,1500
             },
             {
-                TilePlaceable.IS_LARGE_BRIDGE_D,1500
+                PathTileType.LARGE_BRIDGE_D,1500
             }
         };
-        private Dictionary<TileType, int> tileTypeCosts = new Dictionary<TileType, int>
+        private Dictionary<TileType, int> tileCosts = new Dictionary<TileType, int>
         {
             {
-                TileType.WATER,200
+                TileType.SHALLOW_WATER,200
             },
             {
                 TileType.GRASS_GROUND,200
@@ -95,18 +96,18 @@ namespace SafariModel.Model.Utils
         {
             money += entityCostTable[item];
         }
-        public bool BuyTile(TileType clickedType,TileType tileType)
+        public bool BuyTile(TileType tileType)
         {
             
-            int cost = tileTypeCosts[tileType];
-            if (money < cost || Tile.tileInteractionMap[tileType] != clickedType) return false;
+            int cost = tileCosts[tileType];
+            if (money < cost) return false;
             money -= cost;
             return true;
         }
-        public bool BuyPlaceable(TileType clickedType,TilePlaceable placeable)
+        public bool BuyPathTile(PathTileType pathType)
         {
-            int cost = placeableCosts[placeable];
-            if (money < cost || Tile.placeableInteractionMap[placeable] != clickedType) return false;
+            int cost = pathTileCosts[pathType];
+            if (money < cost ) return false;
             money -= cost;
             return true;
         }
