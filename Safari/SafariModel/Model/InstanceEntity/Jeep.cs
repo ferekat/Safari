@@ -10,11 +10,12 @@ using SafariModel.Model.Utils;
 using System.Collections;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.ComponentModel;
 namespace SafariModel.Model
 {
     public class Jeep : MovingEntity
     {
-        
+       
         private bool atExit;
         private static int MAX_CAPACITY = 4;
         private int touristCount;
@@ -72,6 +73,17 @@ namespace SafariModel.Model
                     waitAtEndpointDuration = random.Next(100, 130);
                 }
             }
+            else
+            {
+                if (!atExit)
+                {
+                    BoardTourists();
+                }
+                else
+                {
+
+                }
+            }
         }
 
         private void PathToEndpoint(List<PathTile> shortestPath)
@@ -89,6 +101,29 @@ namespace SafariModel.Model
             }
             SetPath(path);
         }
-       
+        private void BoardTourists()
+        {
+            if (touristCount < MAX_CAPACITY)
+            {
+
+                int touristsWaiting = TouristHandler.TouristsAtGate;
+                if (touristsWaiting > 4)
+                {
+                    touristCount = 4;
+                }
+                else
+                {
+                    touristCount = touristsWaiting;
+                }
+                TouristHandler.TouristsEnter(touristCount);
+            }
+
+        }
+        private void LeaveTourists()
+        {
+            touristCount = 0;
+            TouristHandler.TouristLeave(happiness);
+            happiness = 0;
+        }
     }
 }

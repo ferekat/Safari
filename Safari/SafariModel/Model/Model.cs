@@ -21,7 +21,7 @@ namespace SafariModel.Model
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
         private RoadNetworkHandler roadNetworkHandler;
-
+        private TouristHandler touristHandler;
 
         public TileMap TileMap { get { return tileMap; } }
         #region Events
@@ -49,6 +49,7 @@ namespace SafariModel.Model
 
             economyHandler = new EconomyHandler(99999);
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            touristHandler = new TouristHandler();
         }
 
         #region Get tile and entity based on coordinates
@@ -69,7 +70,7 @@ namespace SafariModel.Model
         {
             //Ide jön gamelogic
             entityHandler.TickEntities();
-
+            touristHandler.TouristUpdateTick();
             InvokeTickPassed();
         }
         #endregion
@@ -90,7 +91,7 @@ namespace SafariModel.Model
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
             data.tileMap = tileMap.Map;
             data.entities = entityHandler.GetEntities();
-            data.money = economyHandler.Money;
+            data.money = EconomyHandler.Money;
             TickPassed?.Invoke(this, data);
         }
 
