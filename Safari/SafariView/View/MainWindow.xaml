@@ -22,6 +22,10 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <!--Kiválasztott entity adatai-->
+            <TextBlock Text="{Binding SelectedEntityData}" Visibility="{Binding EntityDataVisibility}" Panel.ZIndex="4" Background="White" Width="120" Height="100" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <!--Kiválasztott entity adatai-->
+
             <!--Minimap -->
             <Border Panel.ZIndex="3" BorderBrush="#FF6C5200" BorderThickness="{Binding MINIMAPBORDERTHICKNESS}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="{Binding MINIMAPSIZE, Mode=OneTime}" Height="{Binding MINIMAPSIZE, Mode=OneTime}">
                 <Image Source="{Binding MinimapBitmap}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>

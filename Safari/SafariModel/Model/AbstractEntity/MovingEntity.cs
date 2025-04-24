@@ -32,7 +32,9 @@ namespace SafariModel.Model.AbstractEntity
         public int Range { get { return range; } }
         public bool IsMoving { get { return isMoving; } }
 
-        private Point CurrentTarget { get { return currentTarget; } set { currentTarget = value; CalculateMovementVector(); } }
+        public bool ReachedTarget { get { return targetPoints.Count == 0; } }
+
+        public Point CurrentTarget { get { return currentTarget; } private set { currentTarget = value; CalculateMovementVector(); } }
         protected MovingEntity(int x, int y) : base(x, y)
 
         {
@@ -74,10 +76,15 @@ namespace SafariModel.Model.AbstractEntity
             isMoving = true;
         }
 
+        public void CancelMovement()
+        {
+            targetPoints.Clear();
+            isMoving = false;
+        }
         public void SetPath(Queue<Point> points)
         {
             targetPoints = points;
-            if(targetPoints.Count > 0)
+            if (targetPoints.Count > 0)
             {
                 CurrentTarget = targetPoints.Dequeue();
                 isMoving = true;
@@ -130,7 +137,7 @@ namespace SafariModel.Model.AbstractEntity
             return (x / Tile.TILESIZE, y / Tile.TILESIZE);
         }
 
-        private static (int,int) GetTileCoords(Point p)
+        private static (int, int) GetTileCoords(Point p)
         {
             return GetTileCoords(p.X, p.Y);
         }
@@ -154,6 +161,9 @@ namespace SafariModel.Model.AbstractEntity
 
         private void MoveTowardsTarget()
         {
+            //store previous chunk coordinate
+            (int, int) prevChunkCoords = GetChunkCoordinates();
+
             subX += movementVector.X;
             subY += movementVector.Y;
             int wholeX = (int)float.Floor(subX);
@@ -162,6 +172,11 @@ namespace SafariModel.Model.AbstractEntity
             subY -= float.Floor(subY);
             this.x += wholeX;
             this.y += wholeY;
+
+            //check if chunk coordinate changed
+            (int, int) currentChunkCoords = GetChunkCoordinates();
+            if (!prevChunkCoords.Equals(currentChunkCoords)) OnChunkCoordinatesChanged(prevChunkCoords, currentChunkCoords);
+
 
             //entity is outside map
             if (this.X < Tile.TILESIZE || this.Y < Tile.TILESIZE)
@@ -273,7 +288,7 @@ namespace SafariModel.Model.AbstractEntity
             PriorityQueue<PathNode, int> openList = new PriorityQueue<PathNode, int>();
             HashSet<(int, int)> openListCoords = new HashSet<(int, int)>();
             HashSet<(int, int)> closedList = new HashSet<(int, int)>();
-            
+
 
             //Elindítjuk a keresést a start node megadásával
             PathNode startingNode = new PathNode(null, startX, startY, 0, HeuristicFunction(startX, startY, finishX, finishY));
@@ -313,7 +328,7 @@ namespace SafariModel.Model.AbstractEntity
 
                 //node feldolgozásának vége
                 closedList.Add((nodeX, nodeY));
-                
+
             }
 
             //A pont nem elérhető innen
@@ -346,6 +361,82 @@ namespace SafariModel.Model.AbstractEntity
         {
             if (isMoving) MoveTowardsTarget();
             EntityLogic();
+        }
+
+        public List<Entity> GetEntitiesInRange()
+        {
+            int startX;
+            int startY;
+            (startX, startY) = Entity.GetChunkCoordinates(this.X - Range, this.Y - Range);
+            int endX;
+            int endY;
+            (endX, endY) = Entity.GetChunkCoordinates(this.X + Range, this.Y + Range);
+
+            List<Entity> entities = new List<Entity>();
+            List<Entity> entitiesInChunks = new List<Entity>();
+
+            for (int i = startX; i <= endX; i++)
+            {
+                for (int j = startY; j <= endY; j++)
+                {
+                    entitiesInChunks.AddRange(Entity.GetEntitiesInChunk((i, j)));
+                }
+            }
+            foreach(Entity e in entitiesInChunks)
+            {
+                double dist = this.DistanceToEntity(e);
+                if (dist < Range && dist != 0) entities.Add(e);
+            }
+            return entities;
+        }
+
+        public List<Tile> GetTilesInRange()
+        {
+
+            if (tileMap == null) return new List<Tile>();
+
+            int entityX;
+            int entityY;
+            (entityX, entityY) = GetTileCoords(this.X, this.Y);
+            int startX;
+            int startY;
+            (startX, startY) = GetTileCoords(this.X - Range, this.Y - Range);
+            int endX;
+            int endY;
+            (endX, endY) = GetTileCoords(this.X + Range, this.Y + Range);
+
+            List<Tile> tilesInRange = new List<Tile>();
+
+            for(int i = startX; i <= endX; i++ )
+            {
+                for (int j = startY; j <= endY; j++)
+                {
+                    if (i < 0 || j < 0 || i >= Model.MAPSIZE || j >= Model.MAPSIZE) continue;
+
+                    int xCorrection = (i < entityX) ? 1 : 0;
+                    int yCorrection = (j < entityY) ? 1 : 0;
+
+                    if (Math.Sqrt(Math.Pow(((i+xCorrection)*Tile.TILESIZE) - this.X,2)+ Math.Pow(((j+yCorrection) * Tile.TILESIZE) - this.Y, 2)) < Range) tilesInRange.Add(tileMap![i, j]);
+                }
+            }
+
+            return tilesInRange;
+        }
+
+        protected bool IsAccessibleTile(int i, int j, out (int,int) walkableNeighbor)
+        {
+            foreach((int, int) possibleCoords in coordSets)
+            {
+                int xChange = possibleCoords.Item1;
+                int yChange = possibleCoords.Item2;
+                if (tileCollision.IsPassable(i+xChange,j+yChange))
+                {
+                    walkableNeighbor = (i + xChange, j + yChange);
+                    return true;
+                }
+            }
+            walkableNeighbor = (-1, -1);
+            return false;
         }
 
         protected abstract void EntityLogic();
