@@ -14,7 +14,13 @@ namespace SafariModel.Model.AbstractEntity
         public Queue<double?> doubles;
         public Queue<Point?> points;
 
-        public EntityData()
+        private static EntityData? data;
+        public static EntityData GetInstance()
+        {
+            if (data == null) data = new EntityData();
+            return data;
+        }
+        private EntityData()
         {
             bools = new Queue<bool?>();
             ints = new Queue<int?>();
