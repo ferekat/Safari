@@ -25,7 +25,7 @@ namespace SafariTest
             TileMap tilemap = model.TileMap;
             model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[1, 5], PathTileType.ROAD);
             Assert.AreEqual(PathIntersectionNode.inst.Count, 3);
-            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[2, 5], PathTileType.SMALL_BRIDGE);
+            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[2, 5], PathTileType.SMALL_BRIDGE_DR);
             Assert.AreEqual(PathIntersectionNode.inst.Count, 3);
         }
 
