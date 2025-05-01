@@ -26,6 +26,8 @@ namespace SafariModel.Model
         private TileMap tileMap;
         private GameData? data;
 
+        private IDataAccess? dataAccess;
+
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
         private RoadNetworkHandler roadNetworkHandler;
@@ -85,8 +87,11 @@ namespace SafariModel.Model
         public event EventHandler? NewMessage;
         #endregion
 
-        public Model()
+        public Model(IDataAccess? dataAccess)
         {
+
+            this.dataAccess = dataAccess;
+
             entityHandler = new EntityHandler();
             secondCounterHunter = 0;
 
@@ -191,13 +196,20 @@ namespace SafariModel.Model
 
         private void InvokeTickPassed()
         {
+            UpdateGameData();
+            TickPassed?.Invoke(this, data);
+        }
+
+        private void UpdateGameData()
+        {
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
             data!.tileMap = tileMap.Map;
+            data!.entrance = tileMap.Entrance;
+            data!.exit = tileMap.Exit;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
             CountTimePassed(data);
-            TickPassed?.Invoke(this, data);
         }
         private void CountTimePassed(GameData data)
         {
@@ -268,7 +280,6 @@ namespace SafariModel.Model
                     //ha be lehet kötni a hálózatba és meg lehet venni
                 if (roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
                 {
-                    
                     OnTileMapUpdated(tileX, tileY);
                 }
                 return;
@@ -339,6 +350,42 @@ namespace SafariModel.Model
         private void OnNewMessage(object? sender, MessageEventArgs e)
         {
             NewMessage?.Invoke(sender, e);
+        }
+
+        public async Task SaveGameAsync(string filePath)
+        {
+            if (dataAccess == null) return;
+            if (data == null) return;
+            UpdateGameData();
+
+            await dataAccess.SaveAsync(filePath, data);
+        }
+
+        public async Task LoadGameAsync(string filePath)
+        {
+            if (dataAccess == null) return;
+            if (data == null) return;
+
+            data = await dataAccess.LoadAsync(filePath);
+
+            //statok visszatöltése
+            this.economyHandler = new EconomyHandler(data.money);
+
+            //tileok visszatöltése
+            this.tileMap = new TileMap(data.tileMap, data.entrance, data.exit);
+            MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+
+            //entityk visszatöltése (még nem működik)
+            foreach (Entity e in data.entities)
+            {
+                entityHandler.LoadEntity(e);
+            }
+        }
+
+        public bool Debug_FoundShortestPath()
+        {
+            return RoadNetworkHandler.FoundShortestPath;
         }
     }
 }

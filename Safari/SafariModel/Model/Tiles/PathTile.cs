@@ -72,8 +72,6 @@ namespace SafariModel.Model.Tiles
     }
     public class PathTile : Tile
     {
- 
-
         private PathTileType pathType;
         private PathTileType cachedType;
         private PathIntersectionNode? intersectionNode;

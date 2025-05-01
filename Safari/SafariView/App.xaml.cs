@@ -1,4 +1,5 @@
 ﻿using SafariModel.Model;
+using SafariModel.Persistence;
 using SafariView.View;
 using SafariView.ViewModel;
 using System.Configuration;
@@ -31,7 +32,7 @@ namespace SafariView
         #region Startup method
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
-            model = new Model();
+            model = new Model(new FileDataAccess());
             List<RenderObject> renderedTiles = new List<RenderObject>();
             List<RenderObject> renderedEntities = new List<RenderObject>();
 

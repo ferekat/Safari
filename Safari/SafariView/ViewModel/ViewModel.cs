@@ -20,6 +20,7 @@ using System.Windows.Data;
 using System.Diagnostics.Contracts;
 using SafariModel.Model.EventArgsClasses;
 using System.Windows.Controls;
+using System.IO;
 
 namespace SafariView.ViewModel
 {
@@ -367,8 +368,8 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Commands
-        public DelegateCommand SaveGameCommand;
-        public DelegateCommand LoadGameCommand;
+        public DelegateCommand SaveGameCommand { get; private set; }
+        public DelegateCommand LoadGameCommand { get; private set; }
         public DelegateCommand ExitGameCommand { get; private set; }
         public DelegateCommand NewGamePageCommand { get; private set; }
         public DelegateCommand LoadGamePageCommand { get; private set; }
@@ -457,14 +458,17 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Command methods
-        private void SaveGame()
+        private async Task SaveGame()
         {
-            throw new NotImplementedException();
+            await model.SaveGameAsync("./0.safarigame");
         }
 
-        private void LoadGame()
+        private async Task LoadGame()
         {
-            throw new NotImplementedException();
+            if (!File.Exists("./0.safarigame")) return;
+            await model.LoadGameAsync("./0.safarigame");
+            redrawMinimap = true;
+            force_render_next_frame = true;
         }
 
         private void BuyBridges(object? param)
@@ -921,6 +925,8 @@ namespace SafariView.ViewModel
                 Action: {a.Action}
                 Range: {a.Range}
                 
+                Debug_FoundShortestPath:
+                {model.Debug_FoundShortestPath()}
                 """;
             }
             else
