@@ -113,7 +113,11 @@ namespace SafariModel.Model.AbstractEntity
                 y = (int)readData;
             readData = dataholder.ints.Dequeue();
             if (readData != null)
+            {
                 id = (int)readData;
+                if (id >= CurrentID)
+                    CurrentID = id + 1;
+            }
         }
 
         public abstract void EntityTick();

@@ -61,6 +61,14 @@ namespace SafariModel.Model.Utils
             entitiesByChunks[entity.GetChunkCoordinates()].Remove(entity);
         }
 
+        public void ClearAll()
+        {
+            foreach(Entity e in entities)
+            {
+                RemoveEntity(e);
+            }
+        }
+
         public Entity? GetEntityByID(int id)
         {
             Entity? e = null;

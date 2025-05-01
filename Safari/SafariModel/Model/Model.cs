@@ -376,7 +376,8 @@ namespace SafariModel.Model
             MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
 
-            //entityk visszatöltése (még nem működik)
+            //entityk visszatöltése
+            entityHandler.ClearAll();
             foreach (Entity e in data.entities)
             {
                 entityHandler.LoadEntity(e);

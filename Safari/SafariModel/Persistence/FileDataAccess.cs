@@ -1,8 +1,10 @@
 ﻿using SafariModel.Model;
+using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +13,6 @@ namespace SafariModel.Persistence
 {
     public class FileDataAccess : IDataAccess
     {
-        //entityk mentése/betöltése nem működik!
 
         public async Task<GameData> LoadAsync(string filepath)
         {
@@ -51,7 +52,16 @@ namespace SafariModel.Persistence
 
                 data.tileMap = tileMap;
 
-                data.entities = new List<Model.AbstractEntity.Entity>();
+                //Entityk
+                List<Entity> entities = new List<Entity>();
+
+                while(!reader.EndOfStream)
+                {
+                    Entity? e = DataSerializer.DeSerializeEntity(await reader.ReadLineAsync() + "");
+                    if (e != null)
+                        entities.Add(e);
+                }
+                data.entities = entities;
 
                 return data;
             }
@@ -95,6 +105,15 @@ namespace SafariModel.Persistence
                             builder.AppendLine(DataSerializer.SerializeTile(data.tileMap[i, j]));
                         }
                     }
+                    await writer.WriteAsync(builder.ToString());
+
+                    builder.Clear();
+                    //Entityk
+                    foreach (Entity e in data.entities)
+                    {
+                        builder.AppendLine(DataSerializer.SerializeEntity(e));
+                    }
+
                     await writer.WriteAsync(builder.ToString());
                 }
             }
