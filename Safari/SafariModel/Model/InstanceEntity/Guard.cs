@@ -22,6 +22,10 @@ namespace SafariModel.Model.InstanceEntity
         private int baseDamage;
         private Hunter? targetHunter;
         private int timeShots;
+
+        #region Loading helpers
+        int? targetID;
+        #endregion
         #endregion
         public int Salary { get { return salary; } }
         public List<Hunter> NearbyHunters { get { return nearbyHunters; } }
@@ -56,6 +60,16 @@ namespace SafariModel.Model.InstanceEntity
         #endregion
         protected override void EntityLogic()
         {
+            #region Betöltés után idk kiértékelése
+            if(targetID != null)
+            {
+                Entity? e = GetEntityByID((int)targetID);
+                if (e != null && e is Hunter h)
+                    targetHunter = h;
+                targetID = null;
+            }
+            #endregion
+
             SetTargetHunter();
             if (targetHunter != null)
             {
@@ -121,6 +135,34 @@ namespace SafariModel.Model.InstanceEntity
                 LevelUp?.Invoke(this, new MessageEventArgs($"Level {level}!", X, Y));
             }
         }
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+            dataholder.ints.Enqueue(salary);
+            dataholder.ints.Enqueue(level);
+            dataholder.ints.Enqueue(shotWeight);
+            //A nearbyHunters futási idő alatt van kiszámolva(?) úgyhogy az nem kell
+            dataholder.ints.Enqueue(hunterRange);
+            dataholder.ints.Enqueue(tickBeforeFire);
+            dataholder.ints.Enqueue(baseDamage);
+            dataholder.ints.Enqueue(targetHunter == null ? null : targetHunter.ID);
+            dataholder.ints.Enqueue(timeShots);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+            salary = dataholder.ints.Dequeue() ?? salary;
+            level = dataholder.ints.Dequeue() ?? level;
+            shotWeight = dataholder.ints.Dequeue() ?? shotWeight;
+            hunterRange = dataholder.ints.Dequeue() ?? hunterRange;
+            tickBeforeFire = dataholder.ints.Dequeue() ?? tickBeforeFire;
+            baseDamage = dataholder.ints.Dequeue() ?? baseDamage;
+            targetID = dataholder.ints.Dequeue();
+            timeShots = dataholder.ints.Dequeue() ?? timeShots;
+        }
+
         #endregion
     }
 }

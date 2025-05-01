@@ -1,5 +1,6 @@
 ﻿using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
+using SafariModel.Model.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -47,6 +48,13 @@ namespace SafariModel.Model.AbstractEntity
         private int healLimit;
         private int healTimer;
         private int breedCooldown;
+
+        #region Loading helpers
+        List<int>? memberIDs;
+        int? leaderID;
+        int? targetEntityID;
+        #endregion
+
         #endregion
 
         #region Properties
@@ -218,6 +226,33 @@ namespace SafariModel.Model.AbstractEntity
 
         protected override void EntityLogic()
         {
+
+            #region Betöltés után idk kiértékelése
+            if(memberIDs != null)
+            {
+                if (members == null) members = new List<Animal>();
+                foreach(int id in memberIDs)
+                {
+                    Entity? e = GetEntityByID(id);
+                    if (e != null && e is Animal a)
+                        members.Add(a);
+                }
+                memberIDs = null;
+            }
+            if(leaderID != null)
+            {
+                Entity? e = GetEntityByID((int)leaderID);
+                if (e != null && e is Animal a)
+                    leader = a;
+                leaderID = null;
+            }
+            if(targetEntityID != null)
+            {
+                targetedFood = GetEntityByID((int)targetEntityID);
+                targetEntityID = null;
+            }
+            #endregion
+
             PassTick();
             if (!searchingForLeader && leader != null && DistanceToEntity(leader) > LEADER_FOLLOW_RANGE) 
             {
@@ -438,6 +473,111 @@ namespace SafariModel.Model.AbstractEntity
             }
         }
         #endregion
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+
+            //felfedezett élelemhelyek
+            foreach (Point p in exploredFoodPlaces)
+            {
+                dataholder.points.Enqueue(p);
+            }
+            dataholder.points.Enqueue(null);
+
+            //felfedezett vízlelő helyek
+            foreach (Point p in exploredWaterPlaces)
+            {
+                dataholder.points.Enqueue(p);
+            }
+            dataholder.points.Enqueue(null);
+
+            //Csoport tagjai
+            if(members != null)
+            {
+                foreach(Animal a in members)
+                {
+                    dataholder.ints.Enqueue(a.ID);
+                }
+            }
+            dataholder.ints.Enqueue(null);
+
+            //vezető
+            dataholder.ints.Enqueue(leader == null ? null : leader.ID);
+
+            //Célbavett entity
+            dataholder.ints.Enqueue(targetedFood == null ? null : targetedFood.ID);
+
+            //Célbavett tile
+            dataholder.points.Enqueue(targetedWater);
+
+            //Egyéb adatok
+            dataholder.ints.Enqueue(wanderTimer);
+            dataholder.ints.Enqueue(searchTimer);
+            dataholder.ints.Enqueue(Age);
+            dataholder.ints.Enqueue(Hunger);
+            dataholder.ints.Enqueue(Thirst);
+            dataholder.ints.Enqueue(Food);
+            dataholder.ints.Enqueue(Water);
+            dataholder.ints.Enqueue(Health);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            Point? readPoint;
+            //felfedezett élelemhelyek
+            exploredFoodPlaces.Clear();
+            readPoint = dataholder.points.Dequeue();
+            while(readPoint != null)
+            {
+                Point actualPoint = (Point)readPoint;
+                exploredFoodPlaces.Add(actualPoint);
+                exploredFoodChunks.Add(GetChunkCoordinates(actualPoint.X, actualPoint.Y));
+                readPoint = dataholder.points.Dequeue();
+            }
+
+            //felfedezett vízlelő helyek
+            exploredWaterPlaces.Clear();
+            readPoint = dataholder.points.Dequeue();
+            while (readPoint != null)
+            {
+                Point actualPoint = (Point)readPoint;
+                exploredWaterPlaces.Add(actualPoint);
+                exploredWaterChunks.Add(GetChunkCoordinates(actualPoint.X, actualPoint.Y));
+                readPoint = dataholder.points.Dequeue();
+            }
+
+            //Csoport tagjai
+
+            int? readInt;
+            readInt = dataholder.ints.Dequeue();
+            if (readInt != null) memberIDs = new List<int>();
+            while(readInt != null)
+            {
+                int actualInt = (int)readInt;
+                memberIDs!.Add(actualInt);
+                readInt = dataholder.ints.Dequeue();
+            }
+
+            //vezető
+            leaderID = dataholder.ints.Dequeue();
+
+            //Célbavett entity
+            targetEntityID = dataholder.ints.Dequeue();
+
+            //Célbavett tile
+            targetedWater = dataholder.points.Dequeue() ?? new Point(-1, -1);
+
+            //Egyéb adatok
+            wanderTimer = dataholder.ints.Dequeue() ?? wanderTimer;
+            searchTimer = dataholder.ints.Dequeue() ?? searchTimer;
+            Age = dataholder.ints.Dequeue() ?? Age;
+            Hunger = dataholder.ints.Dequeue() ?? Hunger;
+            Thirst = dataholder.ints.Dequeue() ?? Thirst;
+            Food = dataholder.ints.Dequeue() ?? Food;
+            Water = dataholder.ints.Dequeue() ?? Water;
+            Health = dataholder.ints.Dequeue() ?? Health;
+        }
 
         protected abstract void AnimalLogic();
 

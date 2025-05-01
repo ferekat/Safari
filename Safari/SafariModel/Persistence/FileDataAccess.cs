@@ -33,10 +33,10 @@ namespace SafariModel.Persistence
                 Tile[,] tileMap = new Tile[Model.Model.MAPSIZE, Model.Model.MAPSIZE];
 
                 //Entrance, exit pathtileok
-                Tile t = DeSerializeTile(await reader.ReadLineAsync() + "");
+                Tile t = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
                 if (t is PathTile ent)
                     data.entrance = ent;
-                t = DeSerializeTile(await reader.ReadLineAsync() + "");
+                t = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
                 if (t is PathTile ex)
                     data.exit = ex;
                 //
@@ -45,7 +45,7 @@ namespace SafariModel.Persistence
                 {
                     for (int j = 0; j < tileMap.GetLength(1); j++)
                     {
-                        tileMap[i, j] = DeSerializeTile(await reader.ReadLineAsync() + "");
+                        tileMap[i, j] = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
                     }
                 }
 
@@ -84,15 +84,15 @@ namespace SafariModel.Persistence
                     builder.Clear();
 
                     //Entrance, exit pathtileok
-                    builder.AppendLine(SerializeTile(data.entrance));
-                    builder.AppendLine(SerializeTile(data.exit));
+                    builder.AppendLine(DataSerializer.SerializeTile(data.entrance));
+                    builder.AppendLine(DataSerializer.SerializeTile(data.exit));
                     //
 
                     for (int i = 0; i < data.tileMap.GetLength(0); i++)
                     {
                         for (int j = 0; j < data.tileMap.GetLength(1); j++)
                         {
-                            builder.AppendLine(SerializeTile(data.tileMap[i, j]));
+                            builder.AppendLine(DataSerializer.SerializeTile(data.tileMap[i, j]));
                         }
                     }
                     await writer.WriteAsync(builder.ToString());
@@ -102,49 +102,6 @@ namespace SafariModel.Persistence
             {
                 throw new GameDataException("Couldn't save to file");
             }
-        }
-
-        private string SerializeTile(Tile t)
-        {
-            if (t is PathTile pt)
-            {
-                //pt PathIntersectionNode-ja : new PathIntersectionNode(pt.I,pt.J);
-                return string.Format("PT,{0},{1},{2},{3},{4}", pt.I, pt.J, pt.H, t.Type, pt.PathType);
-            }
-            else return string.Format("T,{0},{1},{2},{3}", t.I, t.J, t.H, t.Type);
-        }
-
-        private Tile DeSerializeTile(string serializedTile)
-        {
-            string[] values = serializedTile.Split(',');
-            if (values[0].Equals("PT"))
-            {
-                //pathTile
-
-                int i = int.Parse(values[1]);
-                int j = int.Parse(values[2]);
-                int h = int.Parse(values[3]);
-                TileType type = TileType.EMPTY;
-                Enum.TryParse(values[4], out type);
-                PathTileType pathType = PathTileType.EMPTY;
-                Enum.TryParse(values[5], out pathType);
-
-                //PathTile PathIntersectionNode-ja : new PathIntersectionNode(pt.I,pt.J);
-                return new PathTile(new Tile(i, j, h, type), pathType, new PathIntersectionNode(i, j));
-            }
-            else if (values[0].Equals("T"))
-            {
-                //Tile
-                int i = int.Parse(values[1]);
-                int j = int.Parse(values[2]);
-                int h = int.Parse(values[3]);
-                TileType type = TileType.EMPTY;
-                Enum.TryParse(values[4], out type);
-
-                return new Tile(i, j, h, type);
-            }
-            //Valami baj van
-            else return null;
         }
     }
 }

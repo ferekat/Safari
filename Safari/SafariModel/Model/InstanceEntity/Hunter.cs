@@ -24,6 +24,10 @@ namespace SafariModel.Model.InstanceEntity
         private int mapSizeConvert;
         private bool duel;
 
+        #region Loading helpers
+        int? caughtAnimalID;
+        #endregion
+
         public bool IsVisible { get { return isVisible; } set { isVisible = value; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
         public int EnterField { get { return enterField / Multiplier; } set { enterField = value; } }
@@ -93,6 +97,17 @@ namespace SafariModel.Model.InstanceEntity
         }
         protected override void EntityLogic()
         {
+
+            #region Betöltés után idk kiértékelése
+            if(caughtAnimalID != null)
+            {
+                Entity? e = GetEntityByID((int)caughtAnimalID);
+                if (e != null && e is Animal a)
+                    caughtAnimal = a;
+                caughtAnimalID = null;
+            }
+            #endregion
+
             if (!duel)
             {
                 if (!leavingMap)
@@ -142,6 +157,36 @@ namespace SafariModel.Model.InstanceEntity
         {
             int x = random.Next(1200, 7200);
             return x;
+        }
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+            
+            dataholder.bools.Enqueue(isVisible);
+            dataholder.ints.Enqueue(caughtAnimal == null ? null : caughtAnimal.ID);
+            dataholder.ints.Enqueue(enterField);
+            dataholder.bools.Enqueue(hasEntered);
+            dataholder.ints.Enqueue(waitingTime);
+            dataholder.ints.Enqueue(tickBeforeTarget);
+            dataholder.bools.Enqueue(leavingMap);
+            dataholder.ints.Enqueue(mapSizeConvert);
+            dataholder.bools.Enqueue(duel);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+
+            isVisible = dataholder.bools.Dequeue() ?? isVisible;
+            caughtAnimalID = dataholder.ints.Dequeue();
+            enterField = dataholder.ints.Dequeue() ?? enterField;
+            hasEntered = dataholder.bools.Dequeue() ?? hasEntered;
+            waitingTime = dataholder.ints.Dequeue() ?? waitingTime;
+            tickBeforeTarget = dataholder.ints.Dequeue() ?? tickBeforeTarget;
+            leavingMap = dataholder.bools.Dequeue() ?? leavingMap;
+            mapSizeConvert = dataholder.ints.Dequeue() ?? mapSizeConvert;
+            duel = dataholder.bools.Dequeue() ?? duel;
         }
 
         protected override TileType[] ImPassableTileTypes()
