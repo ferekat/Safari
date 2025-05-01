@@ -12,6 +12,8 @@ namespace SafariModel.Persistence
     {
         public List<Entity> entities;
         public Tile[,] tileMap;
+        public PathTile entrance;
+        public PathTile exit;
         public int money;
         public int touristAtGate;
         public double happiness;
