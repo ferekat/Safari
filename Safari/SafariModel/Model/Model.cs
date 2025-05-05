@@ -30,6 +30,8 @@ namespace SafariModel.Model
         private EconomyHandler economyHandler;
         private RoadNetworkHandler roadNetworkHandler;
         private TouristHandler touristHandler;
+        private WorldGenerationHandler worldGenerationHandler;
+
         private int tickCount;
         private int tickPerGameSpeedCount;
         private int secondCounterHunter;
@@ -89,12 +91,11 @@ namespace SafariModel.Model
         {
             entityHandler = new EntityHandler();
             secondCounterHunter = 0;
+            worldGenerationHandler = new WorldGenerationHandler("zjcdmtheqgjcvjm",entityHandler);
 
-
-            //-------- !!IDEIGLENES!! térkép példányosítás
+           
+            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
             
-            tileMap = TileMap.CreateMapTmp();
-            //-------------
 
             TileCollision tc = new TileCollision(tileMap);
             MovingEntity.RegisterTileCollision(tc);
@@ -110,7 +111,7 @@ namespace SafariModel.Model
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
             touristHandler = new TouristHandler();
 
-            economyHandler = new EconomyHandler(9999);
+            economyHandler = new EconomyHandler(99999);
 
             tickCount = 0;
             tickPerGameSpeedCount = 0;

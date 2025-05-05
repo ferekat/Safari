@@ -47,7 +47,7 @@ namespace SafariModel.Model.Utils
             }
             int pathNeighbours = 0;
             List<PathIntersectionNode> neighNodes = new();
-            PathTile connectedTile = new PathTile(tileToConnect, pathToConnect, new PathIntersectionNode(tileToConnect.I, tileToConnect.J));
+            PathTile connectedTile = new PathTile(tileToConnect, pathToConnect);
             PathIntersectionNode neighNode = null!;
             PathIntersectionNode connectedTileNode = connectedTile.IntersectionNode!;
             bool succ = false;

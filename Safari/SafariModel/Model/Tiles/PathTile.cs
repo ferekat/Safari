@@ -84,11 +84,11 @@ namespace SafariModel.Model.Tiles
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
 
         //akkor jön létre a PathTile amikor leteszünk egy utat/hidat
-        public PathTile(Tile t,PathTileType pathType,PathIntersectionNode intersectionNode) : base(t.I, t.J, t.H,TileType.EMPTY)
+        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H,TileType.EMPTY)
         {
             this.pathType = pathType;
             cachedType = pathType;
-            this.intersectionNode = intersectionNode;
+            this.intersectionNode = new PathIntersectionNode(t.I, t.J);
             
         }
         public void SetType(PathTileType pathType)

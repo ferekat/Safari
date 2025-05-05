@@ -1,17 +1,11 @@
 ﻿using SafariModel.Model.AbstractEntity;
-using SafariModel.Model.Utils;
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace SafariModel.Model.Tiles
 {
-   
+
     public enum TileType
     {
         EMPTY,
@@ -47,6 +41,8 @@ namespace SafariModel.Model.Tiles
         private int j;
         private int h;
 
+        private int[] heightBounds = {-200,-100,0,120,250,300};
+
 
         private TileType tileType;
        
@@ -71,7 +67,7 @@ namespace SafariModel.Model.Tiles
 
         public int I { get { return i; } }
         public int J { get { return j; } }
-        public int H { get { return  h; } }
+        public int H { get { return  h; } set { h = value; SetHeightType(h); } }
      
         public TileType Type { get { return tileType; } }
       
@@ -93,16 +89,67 @@ namespace SafariModel.Model.Tiles
             return true;
            
         }
+        private bool IsBetween(int num, int min,in int max)
+        {
+            return num >= min && num < max;
+        }
+        private void SetHeightType(int h)
+        {
+            if (IsBetween(h, int.MinValue, -100))
+            {
+                SetType(TileType.DEEP_WATER);
+            }
+            else if (IsBetween(h, -100, 0))
+            {
+                SetType(TileType.SHALLOW_WATER);
+            }
+            else if (IsBetween(h, 0, 100))
+            {
+                SetType(TileType.GROUND);
+            }
+            else if (IsBetween(h, 100, 250))
+            {
+                SetType(TileType.GROUND_SMALL);
+            }
+            else if (IsBetween(h, 250, 300))
+            {
+                SetType(TileType.SMALL_HILL);
+            }
+            else if (IsBetween(h, 300,350))
+            {
+                SetType(TileType.SMALL_MEDIUM);
+            }
+            else if (IsBetween(h, 350,400))
+            {
+                SetType(TileType.MEDIUM_HILL);
+            }
+            else if (IsBetween(h, 400,450))
+            {
+                SetType(TileType.MEDIUM_HIGH);
+            }
+            else
+            {
+                SetType(TileType.HIGH_HILL);
+            }
+        }
         public void SetType(TileType tileType)
         {
             this.tileType = tileType;
         }
       
-       
+        public Point TileCenterPoint()
+        {
+            return new Point((i * TILESIZE) + (TILESIZE / 2), (j * TILESIZE) + (TILESIZE / 2) );
+        }
         
-        public Point TileCenterPoint(Entity entity)
+        public Point TileCenterPointForEntity(Entity entity)
         {
             return new Point((i * TILESIZE) + (TILESIZE / 2) - (entity.EntitySize / 2), (j * TILESIZE) + (TILESIZE / 2) - (entity.EntitySize / 2));
+        }
+        public bool InTileCenterArea(Point point)
+        {
+            return point.X < i * TILESIZE - 10 && point.X > (i - 1) * TILESIZE + 10 &&
+                   point.Y < j * TILESIZE - 10 && point.Y > (j - 1) * TILESIZE + 10;
         }
     }
 }

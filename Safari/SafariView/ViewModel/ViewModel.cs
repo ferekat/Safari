@@ -495,7 +495,7 @@ namespace SafariView.ViewModel
                 if (shopString == "Jeep")
                 {
                     Jeep dummy = new Jeep(0, 0);
-                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPoint(dummy); //a jeepet rárakjuk a bejárat tile közepére
+                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPointForEntity(dummy); //a jeepet rárakjuk a bejárat tile közepére
                     model.BuyItem("Jeep",p.X,p.Y);
                   
                     return;
@@ -800,7 +800,7 @@ namespace SafariView.ViewModel
                            
                         }
 
-                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!);
+                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!,t.H);
 
                         RenderedTiles.Add(tile);
                     }
@@ -822,12 +822,12 @@ namespace SafariView.ViewModel
                     {
                         if (h.IsVisible && h.HasEntered)
                         {
-                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()]));
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                         }
                     }
                    else
                    {
-                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()]));
+                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
             }
