@@ -104,6 +104,7 @@ namespace SafariModel.Persistence
             string[] strvalues = strings[1].Split(' ');
             foreach (string strvalue in strvalues)
             {
+                if (strvalue.Equals(string.Empty)) continue;
                 if (strvalue.Equals("null")) data.bools.Enqueue(null);
                 else data.bools.Enqueue(Boolean.Parse(strvalue));
             }
@@ -111,6 +112,7 @@ namespace SafariModel.Persistence
             strvalues = strings[2].Split(' ');
             foreach (string strvalue in strvalues)
             {
+                if (strvalue.Equals(string.Empty)) continue;
                 if (strvalue.Equals("null")) data.ints.Enqueue(null);
                 else data.ints.Enqueue(int.Parse(strvalue));
             }
@@ -118,6 +120,7 @@ namespace SafariModel.Persistence
             strvalues = strings[3].Split(' ');
             foreach (string strvalue in strvalues)
             {
+                if (strvalue.Equals(string.Empty)) continue;
                 if (strvalue.Equals("null")) data.doubles.Enqueue(null);
                 else data.doubles.Enqueue(double.Parse(strvalue));
             }
@@ -125,6 +128,7 @@ namespace SafariModel.Persistence
             strvalues = strings[4].Split(' ');
             foreach (string strvalue in strvalues)
             {
+                if (strvalue.Equals(string.Empty)) continue;
                 if (strvalue.Equals("null")) data.points.Enqueue(null);
                 else
                 {

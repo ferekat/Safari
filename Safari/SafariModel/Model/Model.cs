@@ -17,6 +17,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
+
         const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
@@ -377,7 +378,9 @@ namespace SafariModel.Model
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
 
             //entityk visszatöltése
+            
             entityHandler.ClearAll();
+
             foreach (Entity e in data.entities)
             {
                 entityHandler.LoadEntity(e);

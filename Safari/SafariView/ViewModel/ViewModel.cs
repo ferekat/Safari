@@ -466,7 +466,13 @@ namespace SafariView.ViewModel
         private async Task LoadGame()
         {
             if (!File.Exists("./0.safarigame")) return;
+            try { 
             await model.LoadGameAsync("./0.safarigame");
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.StackTrace,"Exception!");
+            }
             redrawMinimap = true;
             force_render_next_frame = true;
         }

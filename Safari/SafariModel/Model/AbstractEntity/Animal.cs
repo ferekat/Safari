@@ -523,7 +523,9 @@ namespace SafariModel.Model.AbstractEntity
         }
 
         public override void LoadData(EntityData dataholder)
-        {
+        
+        {   
+            base.LoadData(dataholder);
             Point? readPoint;
             //felfedezett élelemhelyek
             exploredFoodPlaces.Clear();

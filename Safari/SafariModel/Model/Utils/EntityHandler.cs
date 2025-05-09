@@ -20,19 +20,19 @@ namespace SafariModel.Model.Utils
         private List<Plant> plants = new();
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
-        
+
 
         private Dictionary<int, Entity> entitiesByID = new();
-        private Dictionary<(int,int),List<Entity>> entitiesByChunks = new();
+        private Dictionary<(int, int), List<Entity>> entitiesByChunks = new();
 
         private Random random;
 
-        public EntityHandler() 
+        public EntityHandler()
         {
             random = new Random();
         }
 
-        public List<Entity> Entities { get { return entities; } }   
+        public List<Entity> Entities { get { return entities; } }
         public void LoadEntity(Entity entity)
         {
             entities.Add(entity);
@@ -40,11 +40,11 @@ namespace SafariModel.Model.Utils
             if (entity is Carnivore c) carnivores.Add(c);
             if (entity is Herbivore h) herbivores.Add(h);
             if (entity is Hunter hu) hunters.Add(hu);
-            if(entity is Guard g) guards.Add(g);
+            if (entity is Guard g) guards.Add(g);
             if (entity is Plant p) plants.Add(p);
 
             entitiesByID.Add(entity.ID, entity);
-            UpdateChunks((-1,-1),entity.GetChunkCoordinates(),entity);
+            UpdateChunks((-1, -1), entity.GetChunkCoordinates(), entity);
             entity.ChunkCoordinateChanged += new EventHandler<((int, int), (int, int))>(EntityChunkChange);
             if (entity is Animal a) a.BabyBorn += new EventHandler(AnimalBabyBorn);
         }
@@ -63,10 +63,15 @@ namespace SafariModel.Model.Utils
 
         public void ClearAll()
         {
-            foreach(Entity e in entities)
-            {
-                RemoveEntity(e);
-            }
+            entities.Clear();
+            carnivores.Clear();
+            herbivores.Clear();
+            plants.Clear();
+            hunters.Clear();
+            guards.Clear();
+
+            entitiesByID.Clear();
+            entitiesByChunks.Clear();
         }
 
         public Entity? GetEntityByID(int id)
@@ -77,14 +82,14 @@ namespace SafariModel.Model.Utils
         }
         public int GetEntityIDFromCoords(int x, int y)
         {
-            foreach(Entity entity in entities) 
+            foreach (Entity entity in entities)
             {
                 if (x >= entity.X && x <= (entity.X + entity.EntitySize) && y >= entity.Y && y <= (entity.Y + entity.EntitySize)) return entity.ID;
             }
             return -1;
         }
 
-        public List<Entity>? GetEntitiesInChunk((int,int) chunk)
+        public List<Entity>? GetEntitiesInChunk((int, int) chunk)
         {
             List<Entity>? entities;
             if (entitiesByChunks.TryGetValue(chunk, out entities))
@@ -96,7 +101,7 @@ namespace SafariModel.Model.Utils
 
         private void EntityChunkChange(object? sender, ((int, int), (int, int)) chunkdata)
         {
-            if(sender is Entity e && sender != null)
+            if (sender is Entity e && sender != null)
             {
                 UpdateChunks(chunkdata.Item1, chunkdata.Item2, e);
             }
@@ -104,7 +109,7 @@ namespace SafariModel.Model.Utils
 
         private void AnimalBabyBorn(object? sender, EventArgs e)
         {
-            if(sender != null && sender is Animal a)
+            if (sender != null && sender is Animal a)
             {
                 int randomX = Math.Clamp(a.X + random.Next(-100, 100), Tile.TILESIZE + 1, Model.MAPSIZE * Tile.TILESIZE - (Tile.TILESIZE + 1));
                 int randomY = Math.Clamp(a.Y + random.Next(-100, 100), Tile.TILESIZE + 1, Model.MAPSIZE * Tile.TILESIZE - (Tile.TILESIZE + 1));
@@ -116,14 +121,14 @@ namespace SafariModel.Model.Utils
             }
         }
 
-        private void UpdateChunks((int,int) prev, (int,int) current, Entity e)
+        private void UpdateChunks((int, int) prev, (int, int) current, Entity e)
         {
             List<Entity>? prevChunk;
-            if(entitiesByChunks.TryGetValue(prev,out prevChunk))
+            if (entitiesByChunks.TryGetValue(prev, out prevChunk))
             {
                 prevChunk.Remove(e);
             }
-            if(!entitiesByChunks.ContainsKey(current))
+            if (!entitiesByChunks.ContainsKey(current))
             {
                 entitiesByChunks[current] = new List<Entity>();
             }
