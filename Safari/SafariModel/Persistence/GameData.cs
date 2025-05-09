@@ -23,6 +23,7 @@ namespace SafariModel.Persistence
         public int month;
         public int gameTime;
         public int winningMonths;
+        public List<PathIntersectionNode> intersections;
 
         public GameData()
         {

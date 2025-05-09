@@ -128,7 +128,7 @@ namespace SafariModel.Model.Utils
                 //    pt.PathType = PathTileType.EMPTY;
                 //}
                 
-                foreach (PathIntersectionNode node in PathIntersectionNode.inst)
+                foreach (PathIntersectionNode node in PathIntersectionNode.intersections)
                 {
                     
                     if (tileMap.Map[node.PathI, node.PathJ] is PathTile pt)
@@ -275,7 +275,7 @@ namespace SafariModel.Model.Utils
             shortestPathExitToEntrance.Clear();
 
             // Reset distances and visited flags
-            foreach (var node in PathIntersectionNode.inst)
+            foreach (var node in PathIntersectionNode.intersections)
             {
                 node.Distance = int.MaxValue;
                 node.IsVisited = false;

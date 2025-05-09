@@ -933,6 +933,8 @@ namespace SafariView.ViewModel
                 
                 Debug_FoundShortestPath:
                 {model.Debug_FoundShortestPath()}
+                model.Debug_InterSectionNodeCount:
+                {model.Debug_InterSectionNodeCount()}
                 """;
             }
             else

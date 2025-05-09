@@ -12,6 +12,7 @@ using SafariModel.Model.AbstractEntity;
 using System.Drawing;
 using System.Diagnostics;
 using SafariModel.Model.EventArgsClasses;
+using System.Xml.XPath;
 
 namespace SafariModel.Model
 {
@@ -210,6 +211,7 @@ namespace SafariModel.Model
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
+            data.intersections = PathIntersectionNode.intersections;
             CountTimePassed(data);
         }
         private void CountTimePassed(GameData data)
@@ -372,13 +374,34 @@ namespace SafariModel.Model
             //statok visszatöltése
             this.economyHandler = new EconomyHandler(data.money);
 
+
+            //Intersectionök visszatöltése
+            PathIntersectionNode.intersections.Clear();
+            PathIntersectionNode.intersections.AddRange(data.intersections);
+
             //tileok visszatöltése
             this.tileMap = new TileMap(data.tileMap, data.entrance, data.exit);
             MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
+
+            //intersectionök tileokhoz kötése
+            foreach(PathIntersectionNode node in PathIntersectionNode.intersections)
+            {
+                Tile t = tileMap.Map[node.PathI, node.PathJ];
+                if(t is PathTile pt)
+                {
+                    if (tileMap.Entrance.I == node.PathI && tileMap.Entrance.J == node.PathJ)
+                        tileMap.Entrance.SetIntersection(node);
+                    else if (tileMap.Exit.I == node.PathI && tileMap.Exit.J == node.PathJ)
+                        tileMap.Exit.SetIntersection(node);
+                    else
+                        pt.SetIntersection(node);
+                }
+            }
+
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
 
             //entityk visszatöltése
-            
+
             entityHandler.ClearAll();
 
             foreach (Entity e in data.entities)
@@ -390,6 +413,11 @@ namespace SafariModel.Model
         public bool Debug_FoundShortestPath()
         {
             return RoadNetworkHandler.FoundShortestPath;
+        }
+
+        public int Debug_InterSectionNodeCount()
+        {
+            return PathIntersectionNode.intersections.Count;
         }
     }
 }

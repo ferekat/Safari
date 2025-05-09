@@ -27,12 +27,18 @@ namespace SafariModel.Model.Tiles
     }
     public class PathIntersectionNode
     {
+        private int id;
         private bool isVisited;
         private int pathI;
         private int pathJ;
         private List<PathIntersectionNode> nextIntersections = new();
         private int distance;
-        public readonly static List<PathIntersectionNode> inst = new List<PathIntersectionNode>();
+        public readonly static List<PathIntersectionNode> intersections = new List<PathIntersectionNode>();
+        //^^ ezek kellenek mentéshez
+
+        private static int CurrentID = 0;
+
+        public int ID { get { return id; } }
         public int PathI { get { return pathI; } }
         public bool IsVisited { get { return isVisited; } set { isVisited = value; } }
         public int PathJ { get { return pathJ; } }
@@ -52,22 +58,38 @@ namespace SafariModel.Model.Tiles
             if (intersect1.NextIntersections.Count == 0)
             {
                
-                inst.Remove(intersect1);
+                intersections.Remove(intersect1);
             }
             if (intersect2.NextIntersections.Count == 0)
             {
-                inst.Remove(intersect2);
+                intersections.Remove(intersect2);
             }
         }
-       
+        public void ConnectIntersection(PathIntersectionNode other)
+        {
+            nextIntersections.Add(other);
+        }
+
         public PathIntersectionNode(int pathI, int pathJ)
         {
+            this.id = CurrentID++;
             this.pathI = pathI;
             this.pathJ = pathJ;
-            inst.Add(this);
+            intersections.Add(this);
             isVisited = false;
         }
-      
+
+        public PathIntersectionNode(int id,int pathI, int pathJ, int distance, bool isVisited)
+        {
+            this.id = id;
+            if (id >= CurrentID)
+                CurrentID = id + 1;
+            this.pathI = pathI;
+            this.pathJ = pathJ;
+            this.distance = distance;
+            this.isVisited = isVisited;
+            nextIntersections = new List<PathIntersectionNode>();
+        }
 
     }
     public class PathTile : Tile
@@ -82,7 +104,7 @@ namespace SafariModel.Model.Tiles
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
 
         //akkor jön létre a PathTile amikor leteszünk egy utat/hidat
-        public PathTile(Tile t,PathTileType pathType,PathIntersectionNode intersectionNode) : base(t.I, t.J, t.H,TileType.EMPTY)
+        public PathTile(Tile t,PathTileType pathType,PathIntersectionNode? intersectionNode) : base(t.I, t.J, t.H,TileType.EMPTY)
         {
             this.pathType = pathType;
             cachedType = pathType;
@@ -92,6 +114,10 @@ namespace SafariModel.Model.Tiles
         public void SetType(PathTileType pathType)
         {
             this.pathType = pathType;
+        }
+        public void SetIntersection(PathIntersectionNode node)
+        {
+            this.intersectionNode = node;
         }
         public static bool CanPlacePath(PathTileType pathType,TileType on)
         {
@@ -110,6 +136,9 @@ namespace SafariModel.Model.Tiles
                     return false;
             }
         }
+
+       
+
         public readonly static Dictionary<PathTileType, TileType> pathTileInteractionMap = new Dictionary<PathTileType, TileType>()
         {
             { PathTileType.ROAD,TileType.GROUND},

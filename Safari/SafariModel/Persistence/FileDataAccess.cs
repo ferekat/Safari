@@ -18,54 +18,58 @@ namespace SafariModel.Persistence
 
         public async Task<GameData> LoadAsync(string filepath)
         {
-                using (StreamReader reader = new StreamReader(filepath))
+            using (StreamReader reader = new StreamReader(filepath))
+            {
+                GameData data = new GameData();
+
+                data.money = int.Parse(await reader.ReadLineAsync() + "");
+                data.touristAtGate = int.Parse(await reader.ReadLineAsync() + "");
+                data.happiness = int.Parse(await reader.ReadLineAsync() + "");
+                data.hour = int.Parse(await reader.ReadLineAsync() + "");
+                data.day = int.Parse(await reader.ReadLineAsync() + "");
+                data.week = int.Parse(await reader.ReadLineAsync() + "");
+                data.month = int.Parse(await reader.ReadLineAsync() + "");
+                data.gameTime = int.Parse(await reader.ReadLineAsync() + "");
+                data.winningMonths = int.Parse(await reader.ReadLineAsync() + "");
+
+                Tile[,] tileMap = new Tile[Model.Model.MAPSIZE, Model.Model.MAPSIZE];
+
+                //Intersection node-ok
+                data.intersections = DataSerializer.DeSerializePathIntersections(await reader.ReadLineAsync() + "");
+                //
+
+                //Entrance, exit pathtileok
+                Tile t = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
+                if (t is PathTile ent)
+                    data.entrance = ent;
+                t = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
+                if (t is PathTile ex)
+                    data.exit = ex;
+                //
+
+                for (int i = 0; i < tileMap.GetLength(0); i++)
                 {
-                    GameData data = new GameData();
-
-                    data.money = int.Parse(await reader.ReadLineAsync() + "");
-                    data.touristAtGate = int.Parse(await reader.ReadLineAsync() + "");
-                    data.happiness = int.Parse(await reader.ReadLineAsync() + "");
-                    data.hour = int.Parse(await reader.ReadLineAsync() + "");
-                    data.day = int.Parse(await reader.ReadLineAsync() + "");
-                    data.week = int.Parse(await reader.ReadLineAsync() + "");
-                    data.month = int.Parse(await reader.ReadLineAsync() + "");
-                    data.gameTime = int.Parse(await reader.ReadLineAsync() + "");
-                    data.winningMonths = int.Parse(await reader.ReadLineAsync() + "");
-
-                    Tile[,] tileMap = new Tile[Model.Model.MAPSIZE, Model.Model.MAPSIZE];
-
-                    //Entrance, exit pathtileok
-                    Tile t = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
-                    if (t is PathTile ent)
-                        data.entrance = ent;
-                    t = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
-                    if (t is PathTile ex)
-                        data.exit = ex;
-                    //
-
-                    for (int i = 0; i < tileMap.GetLength(0); i++)
+                    for (int j = 0; j < tileMap.GetLength(1); j++)
                     {
-                        for (int j = 0; j < tileMap.GetLength(1); j++)
-                        {
-                            tileMap[i, j] = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
-                        }
+                        tileMap[i, j] = DataSerializer.DeSerializeTile(await reader.ReadLineAsync() + "");
                     }
-
-                    data.tileMap = tileMap;
-
-                    //Entityk
-                    List<Entity> entities = new List<Entity>();
-
-                    while (!reader.EndOfStream)
-                    {
-                        Entity? e = DataSerializer.DeSerializeEntity(await reader.ReadLineAsync() + "");
-                        if (e != null)
-                            entities.Add(e);
-                    }
-                    data.entities = entities;
-
-                    return data;
                 }
+
+                data.tileMap = tileMap;
+
+                //Entityk
+                List<Entity> entities = new List<Entity>();
+
+                while (!reader.EndOfStream)
+                {
+                    Entity? e = DataSerializer.DeSerializeEntity(await reader.ReadLineAsync() + "");
+                    if (e != null)
+                        entities.Add(e);
+                }
+                data.entities = entities;
+
+                return data;
+            }
         }
 
         public async Task SaveAsync(string filepath, GameData data)
@@ -90,6 +94,13 @@ namespace SafariModel.Persistence
                     builder.AppendLine(data.winningMonths.ToString());
 
                     await writer.WriteAsync(builder.ToString());
+
+                    //Intersection node-ok
+                    builder.Clear();
+                    builder.AppendLine(DataSerializer.SerializePathIntersections(data.intersections));
+
+                    await writer.WriteAsync(builder.ToString());
+                    //
 
                     //tileok
                     builder.Clear();
