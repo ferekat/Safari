@@ -86,7 +86,7 @@ namespace SafariModel.Persistence
                 else
                 {
                     Point p = (Point)val;
-                    sb.Append($"{p.X};{p.Y}");
+                    sb.Append($"{p.X};{p.Y} ");
                 }
             }
 
