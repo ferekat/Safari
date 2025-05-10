@@ -18,9 +18,9 @@ namespace SafariModel.Model.Utils
         private List<Tile> riverSources = new();
         private EntityHandler entityHandler;
 
-        private static int MIN_TERRAIN_DIFF = 100;
-        private static int MAX_TERRAIN_DIFF = 200;
-        private static int MAX_APEX_HEIGHT = 600;
+        private static int MIN_TERRAIN_DIFF = 100;  //100
+        private static int MAX_TERRAIN_DIFF = 200; //200
+        private static int MAX_APEX_HEIGHT = 600; //600
 
         private static int CHANCE_INC_PER_ITER = 50;   //jól be van állítva
         private static int MOUNTAIN_APEX_GEN_CHANCE = 2400; //jól be van állítva
@@ -80,7 +80,7 @@ namespace SafariModel.Model.Utils
 
             foreach (Tile neigh in tileMap.GetNeighbourTiles(tile))
             {
-                if (neigh.Type == TileType.GROUND)
+                if (neigh.TileType == TileType.GROUND)
                 {
                     validGatePos = true;
                 }
@@ -162,7 +162,7 @@ namespace SafariModel.Model.Utils
                 foreach (Tile tile in chunk)
                 {
                     chunkChance += random.Next(CHANCE_INC_PER_ITER);
-                    if (chunkChance > MOUNTAIN_APEX_GEN_CHANCE && tile.Type != TileType.FENCE && tile.Type != TileType.ENTRANCE && tile.Type != TileType.EXIT)
+                    if (chunkChance > MOUNTAIN_APEX_GEN_CHANCE && tile.TileType != TileType.FENCE && tile.TileType != TileType.ENTRANCE && tile.TileType != TileType.EXIT)
                     {
                         apexTiles.Add(tile);
                         break;
@@ -182,7 +182,7 @@ namespace SafariModel.Model.Utils
                 foreach (Tile tile in chunk)
                 {
                     chunkChance += random.Next(CHANCE_INC_PER_ITER);
-                    if (chunkChance > RIVER_SOURCE_GEN_CHANCE && tile.Type == TileType.GROUND)
+                    if (chunkChance > RIVER_SOURCE_GEN_CHANCE && tile.TileType == TileType.GROUND)
                     {
                         riverSources.Add(tile);
                         break;
@@ -204,7 +204,7 @@ namespace SafariModel.Model.Utils
                 wetTiles = 0;
                 foreach (Tile tile in tileMap.Map)
                 {
-                    int waterTileCount = tileMap.GetNeighbourTiles(tile).Count((t) => (t.Type == TileType.SHALLOW_WATER || t.Type == TileType.DEEP_WATER));
+                    int waterTileCount = tileMap.GetNeighbourTiles(tile).Count((t) => (t.IsWater()));
                     if (waterTileCount == 0)
                     {
                         tile.H = tile.H;
@@ -223,14 +223,14 @@ namespace SafariModel.Model.Utils
             foreach (Tile tile in tileMap.Map)
             {
                 bool deepWater = true;
-                List<Tile> farNeighours = new List<Tile>();
+                List<Tile> farNeighours = new List<Tile>(); //szomszédok szomszédai
                 foreach (Tile neigh in tileMap.GetNeighbourTiles(tile))
                 {
                     farNeighours = farNeighours.Concat(tileMap.GetNeighbourTiles(neigh)).ToList();
                 }
                 foreach (Tile farNeigh in farNeighours)
                 {
-                    if (farNeigh.Type != TileType.SHALLOW_WATER && farNeigh.Type != TileType.DEEP_WATER)
+                    if (!farNeigh.IsWater())
                     {
                         deepWater = false;
                         break;
@@ -243,7 +243,7 @@ namespace SafariModel.Model.Utils
             }
             foreach (Tile tile in tileMap.Map)
             {
-                if (tile.Type == TileType.DEEP_WATER && tileMap.GetNeighbourTiles(tile).Count((t) => (t.Type == TileType.DEEP_WATER)) == 0)
+                if (tile.TileType == TileType.DEEP_WATER && tileMap.GetNeighbourTiles(tile).Count((t) => (t.TileType == TileType.DEEP_WATER)) == 0)
                 {
                     tile.SetType(TileType.SHALLOW_WATER);
                 }
@@ -303,7 +303,7 @@ namespace SafariModel.Model.Utils
 
             foreach (Tile n in neighs)
             {
-                if (n.Type == TileType.GROUND)
+                if (n.TileType == TileType.GROUND)
                 {
                     n.SetType(TileType.SHALLOW_WATER);
                 }
@@ -374,11 +374,11 @@ namespace SafariModel.Model.Utils
         }
         private bool BlockedForRiver(Tile tile)
         {
-            return tile.Type != TileType.GROUND || tile.Type != TileType.GROUND_SMALL;
+            return tile.TileType != TileType.GROUND || tile.TileType != TileType.GROUND_SMALL;
         }
         private bool BlockedForMountain(Tile tile)
         {
-            return tile.Type != TileType.GROUND;
+            return tile.TileType != TileType.GROUND;
         }
         private void BranchTerrain(Tile startingTile, Predicate<Tile> blockingCondition, Action<Tile> actionPerTile, int maxAttempts)
         {

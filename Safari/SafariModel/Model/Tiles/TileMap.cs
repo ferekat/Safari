@@ -52,6 +52,7 @@ namespace SafariModel.Model.Tiles
                 }
             }
         }
+        
         public static bool IsTileCoordInBounds(int i, int j)
         {
             return i >= 0 &&

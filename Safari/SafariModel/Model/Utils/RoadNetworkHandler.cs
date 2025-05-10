@@ -29,15 +29,13 @@ namespace SafariModel.Model.Utils
         private TileMap tileMap;
         public RoadNetworkHandler(TileMap tileMap)
         {
+            
             this.tileMap = tileMap;
             entrance = tileMap.Entrance;
             exit = tileMap.Exit;
             entrance.IntersectionNode!.Distance = 0;
             foundShortestPath = false;
         }
-
-
-
 
         public bool ConnectToNetwork(Tile tileToConnect, PathTileType pathToConnect)
         {
@@ -51,10 +49,19 @@ namespace SafariModel.Model.Utils
             PathIntersectionNode neighNode = null!;
             PathIntersectionNode connectedTileNode = connectedTile.IntersectionNode!;
             bool succ = false;
-            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK
+            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK HIDAK
             {
                 if (neigh is PathTile neighPathTile)
                 {
+                    if (tileToConnect.IsWater())
+                    {
+                     //   ConnectBridge();
+                    }
+                    else
+                    {
+                       // ConnectRoad();
+                    }
+
                     succ = true;
                    
                     switch (neighPathTile.PathType) //HIDAK
@@ -100,17 +107,10 @@ namespace SafariModel.Model.Utils
                     neighNode = neighPathTile.IntersectionNode;
                     neighNodes.Add(neighNode);
                     PathIntersectionNode.ConnectIntersections(connectedTileNode, neighNode);
-
-
-
-
-
-
-
-
                     pathNeighbours++;
                 }
             }
+
             if (succ)
             {
                 tileMap.Map[tileToConnect.I, tileToConnect.J] = connectedTile;
@@ -132,7 +132,7 @@ namespace SafariModel.Model.Utils
                 //    pt.PathType = PathTileType.EMPTY;
                 //}
                 
-                foreach (PathIntersectionNode node in PathIntersectionNode.inst)
+                foreach (PathIntersectionNode node in PathIntersectionNode.allNodes)
                 {
                     
                     if (tileMap.Map[node.PathI, node.PathJ] is PathTile pt)
@@ -279,7 +279,7 @@ namespace SafariModel.Model.Utils
             shortestPathExitToEntrance.Clear();
 
             // Reset distances and visited flags
-            foreach (var node in PathIntersectionNode.inst)
+            foreach (var node in PathIntersectionNode.allNodes)
             {
                 node.Distance = int.MaxValue;
                 node.IsVisited = false;

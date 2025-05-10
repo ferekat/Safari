@@ -787,7 +787,7 @@ namespace SafariView.ViewModel
                         Brush? b = null;
 
                         //Get type of tile
-                        if (t is PathTile p && p.HasPlaceable())
+                        if (t is PathTile p)
                         {
                             b = pathBrushes[p.PathType];
                         }
@@ -795,7 +795,7 @@ namespace SafariView.ViewModel
                         {
                            
                            
-                                b = tileBrushes[t.Type];
+                                b = tileBrushes[t.TileType];
 
                            
                         }
@@ -857,7 +857,7 @@ namespace SafariView.ViewModel
                     {
                         
                        
-                        b = minimaptileBrushes[t.Type];
+                        b = minimaptileBrushes[t.TileType];
                        
                     }
                     Int32Rect rect = new Int32Rect(i, j, 1, 1);
@@ -883,7 +883,7 @@ namespace SafariView.ViewModel
             {
 
               
-                    b = minimaptileBrushes[t.Type];
+                    b = minimaptileBrushes[t.TileType];
               
             }
             Int32Rect rect = new Int32Rect(tileX, tileY, 1, 1);

@@ -4,6 +4,7 @@ using SafariModel.Model.Utils;
 
 using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.InstanceEntity;
+using System.Diagnostics;
 
 
 namespace SafariTest
@@ -17,6 +18,7 @@ namespace SafariTest
         public void Init()
         {
             model = new Model();
+            Debug.WriteLine("test");
         }
 
         [TestMethod]
@@ -24,9 +26,9 @@ namespace SafariTest
         {
             TileMap tilemap = model.TileMap;
             model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[1, 5], PathTileType.ROAD);
-            Assert.AreEqual(PathIntersectionNode.inst.Count, 3);
-            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[2, 5], PathTileType.SMALL_BRIDGE);
-            Assert.AreEqual(PathIntersectionNode.inst.Count, 3);
+            Assert.AreEqual(PathIntersectionNode.allNodes.Count, 3);
+            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[2, 5], PathTileType.SMALL_BRIDGE_UL);
+            Assert.AreEqual(PathIntersectionNode.allNodes.Count, 3);
         }
 
         [TestMethod]
@@ -38,7 +40,7 @@ namespace SafariTest
             Assert.AreEqual(model.EntityHandler.Entities.Count, initEntities);
             model.BuyItem("Lion", 40, 40);
             Assert.AreEqual(model.EntityHandler.Entities.Count, initEntities + 1);
-            Assert.AreEqual(model.EconomyHandler.Money, 9999 - 200);
+            Assert.AreEqual(model.EconomyHandler.Money, 99999 - 200);
         }
         [TestMethod]
         public void TestEntityRange()

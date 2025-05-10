@@ -264,7 +264,7 @@ namespace SafariModel.Model
                 }
                 return;
             }
-            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy && PathTile.CanPlacePath(pathToBuy,clickedTile.Type))
+            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy && PathTile.CanPlacePath(pathToBuy,clickedTile.TileType))
             {
                     //ha be lehet kötni a hálózatba és meg lehet venni
                 if (roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))

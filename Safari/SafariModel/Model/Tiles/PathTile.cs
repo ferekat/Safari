@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 
 namespace SafariModel.Model.Tiles
 {
-    public enum PathFlowDirection { UP, DOWN, LEFT, RIGHT }
+  
     public enum PathTileType
     {
         EMPTY,
         ROAD,
+        BRIDGE,
+
+        
+        SMALL_BRIDGE,
         SMALL_BRIDGE_VERT,
         SMALL_BRIDGE_HOR,
         SMALL_BRIDGE_DR,
@@ -32,7 +36,8 @@ namespace SafariModel.Model.Tiles
         private int pathJ;
         private List<PathIntersectionNode> nextIntersections = new();
         private int distance;
-        public readonly static List<PathIntersectionNode> inst = new List<PathIntersectionNode>();
+       
+        public readonly static List<PathIntersectionNode> allNodes = new List<PathIntersectionNode>();
         public int PathI { get { return pathI; } }
         public bool IsVisited { get { return isVisited; } set { isVisited = value; } }
         public int PathJ { get { return pathJ; } }
@@ -52,20 +57,22 @@ namespace SafariModel.Model.Tiles
             if (intersect1.NextIntersections.Count == 0)
             {
                
-                inst.Remove(intersect1);
+                allNodes.Remove(intersect1);
             }
             if (intersect2.NextIntersections.Count == 0)
             {
-                inst.Remove(intersect2);
+                allNodes.Remove(intersect2);
             }
         }
        
         public PathIntersectionNode(int pathI, int pathJ)
         {
+         
             this.pathI = pathI;
             this.pathJ = pathJ;
-            inst.Add(this);
+            allNodes.Add(this);
             isVisited = false;
+          
         }
       
 
@@ -73,7 +80,6 @@ namespace SafariModel.Model.Tiles
     public class PathTile : Tile
     {
  
-
         private PathTileType pathType;
         private PathTileType cachedType;
         private PathIntersectionNode? intersectionNode;
@@ -84,7 +90,7 @@ namespace SafariModel.Model.Tiles
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
 
         //akkor jön létre a PathTile amikor leteszünk egy utat/hidat
-        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H,TileType.EMPTY)
+        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H,t.TileType)
         {
             this.pathType = pathType;
             cachedType = pathType;

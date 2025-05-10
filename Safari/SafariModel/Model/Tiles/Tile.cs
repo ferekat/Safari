@@ -31,8 +31,6 @@ namespace SafariModel.Model.Tiles
         GRASS_GROUND
     }
    
-   
-
     public class Tile
     {
         public static readonly int TILESIZE = 50;
@@ -45,7 +43,7 @@ namespace SafariModel.Model.Tiles
 
 
         private TileType tileType;
-       
+
         //<Amit szeretnék venni,Ahova le tudom tenni>
         //public readonly static Dictionary<TileType, TileType> tileInteractionMap = new Dictionary<TileType, TileType>()
         //{       
@@ -53,8 +51,24 @@ namespace SafariModel.Model.Tiles
         //    {TileType.SHALLOW_WATER,TileType.GROUND}
         //};
 
-        
-       
+        public readonly static List<TileType> OrderedHeights = new List<TileType>()
+    {
+        TileType.DEEP_WATER,
+        TileType.SHALLOW_WATER,
+        TileType.GROUND,
+        TileType.GROUND_SMALL,
+        TileType.SMALL_HILL,
+        TileType.SMALL_MEDIUM,
+        TileType.MEDIUM_HILL,
+        TileType.MEDIUM_HIGH,
+        TileType.HIGH_HILL
+    };
+
+        public readonly static Dictionary<TileType, int> maxHeightMap = new()
+    {
+        {TileType.DEEP_WATER,0},
+        { TileType.SHALLOW_WATER,0},
+    };
 
 
         public readonly static Dictionary<string, TileType> tileShopMap = new Dictionary<string, TileType>()
@@ -63,13 +77,11 @@ namespace SafariModel.Model.Tiles
             {"Grass",TileType.GRASS_GROUND}
         };
 
-   
-
         public int I { get { return i; } }
         public int J { get { return j; } }
         public int H { get { return  h; } set { h = value; SetHeightType(h); } }
      
-        public TileType Type { get { return tileType; } }
+        public TileType TileType { get { return tileType; } }
       
         public Tile(int i, int j,int h,TileType type)
         {
@@ -82,13 +94,11 @@ namespace SafariModel.Model.Tiles
             
          
         }
-        
-        public bool HasPlaceable()
+        public bool IsWater()
         {
-            //hack
-            return true;
-           
+            return tileType == TileType.SHALLOW_WATER || tileType == TileType.DEEP_WATER;
         }
+       
         private bool IsBetween(int num, int min,in int max)
         {
             return num >= min && num < max;
@@ -107,23 +117,23 @@ namespace SafariModel.Model.Tiles
             {
                 SetType(TileType.GROUND);
             }
-            else if (IsBetween(h, 100, 250))
+            else if (IsBetween(h, 100, 200))
             {
                 SetType(TileType.GROUND_SMALL);
             }
-            else if (IsBetween(h, 250, 300))
+            else if (IsBetween(h, 200, 300))
             {
                 SetType(TileType.SMALL_HILL);
             }
-            else if (IsBetween(h, 300,350))
+            else if (IsBetween(h, 300,350)) //300-350
             {
                 SetType(TileType.SMALL_MEDIUM);
             }
-            else if (IsBetween(h, 350,400))
+            else if (IsBetween(h, 350,400))  //350-400
             {
                 SetType(TileType.MEDIUM_HILL);
             }
-            else if (IsBetween(h, 400,450))
+            else if (IsBetween(h, 400,450))   ///400-450
             {
                 SetType(TileType.MEDIUM_HIGH);
             }
