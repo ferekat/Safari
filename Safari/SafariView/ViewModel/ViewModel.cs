@@ -388,6 +388,8 @@ namespace SafariView.ViewModel
         #region Commands
         public DelegateCommand SaveGameCommand { get; private set; }
         public DelegateCommand LoadGameCommand { get; private set; }
+
+        public DelegateCommand SaveAndQuitCommand { get; private set; }
         public DelegateCommand ExitGameCommand { get; private set; }
         public DelegateCommand NewGamePageCommand { get; private set; }
         public DelegateCommand SlotPickerPageCommand { get; private set; }
@@ -403,6 +405,7 @@ namespace SafariView.ViewModel
         #region EventHandlers
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
+        public event EventHandler? EndGame;
         public event EventHandler? FinishedRenderingTileMap;
         public event EventHandler? FinishedRenderingEntities;
         public event EventHandler<(int, int)>? RequestCameraChange;
@@ -427,6 +430,7 @@ namespace SafariView.ViewModel
             //Initialize commands
             SaveGameCommand = new DelegateCommand(async (param) => await SaveGame());
             LoadGameCommand = new DelegateCommand(async (param) => await LoadGame(param));
+            SaveAndQuitCommand = new DelegateCommand((param) => SaveAndQuit());
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             BuyBridge = new DelegateCommand((param) => BuyBridges(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
@@ -517,6 +521,23 @@ namespace SafariView.ViewModel
                     MessageBox.Show(e.StackTrace, "Loading exception!");
                 }
             }
+        }
+
+        private async void SaveAndQuit()
+        {
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            LoadGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            SlotPickerPage = "Hidden";
+            OptionName = "SAFARI";
+
+            await SaveGame();
+
+            tickTimer.Stop();
+            renderTimer.Stop();
+
+            EndGame?.Invoke(this, EventArgs.Empty);
         }
 
         private void BuyBridges(object? param)
@@ -624,7 +645,7 @@ namespace SafariView.ViewModel
             SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
         }
-        private void OnStartClicked()
+        private async void OnStartClicked()
         {
             IndexPage = "Visible";
             NewGamePage = "Hidden";
@@ -632,6 +653,9 @@ namespace SafariView.ViewModel
             LoadGamePage = "Hidden";
             SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
+
+            model.NewGame();
+            await SaveGame();
 
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();

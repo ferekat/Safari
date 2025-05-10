@@ -39,6 +39,7 @@ namespace SafariView
             viewModel = new ViewModel.ViewModel(model,renderedTiles,renderedEntities);
             viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
             viewModel.StartGame += new EventHandler(ViewModel_GameStart);
+            viewModel.EndGame += new EventHandler(ViewModel_GameEnd);
             viewModel.FinishedRenderingTileMap += new EventHandler(ViewModel_FinishedTileMapRendering);
             viewModel.FinishedRenderingEntities += new EventHandler(ViewModel_FinishedEntityRendering);
 
@@ -74,8 +75,14 @@ namespace SafariView
         }
         private void ViewModel_GameStart(object? sender, System.EventArgs e)
         {
-            lobbyWindow!.Close();
+            lobbyWindow!.Hide();
             mainWindow!.Show();
+        }
+
+        private void ViewModel_GameEnd(object? sender, System.EventArgs e)
+        {
+            lobbyWindow!.Show();
+            mainWindow!.Hide();
         }
         #endregion
     }

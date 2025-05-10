@@ -186,6 +186,47 @@ namespace SafariModel.Model
         }
         #endregion
 
+        public void NewGame()
+        {
+
+            //egyenlőre csak kimásolva a konstruktorból
+
+            entityHandler = new EntityHandler();
+            secondCounterHunter = 0;
+
+
+            //-------- !!IDEIGLENES!! térkép példányosítás
+
+            tileMap = TileMap.CreateMapTmp();
+            //-------------
+
+            TileCollision tc = new TileCollision(tileMap);
+            MovingEntity.RegisterTileCollision(tc);
+            Entity.RegisterHandler(entityHandler);
+            Entity.RegisterTileMap(tileMap.Map);
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
+
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            entityHandler.LoadEntity(h);
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            touristHandler = new TouristHandler();
+
+            economyHandler = new EconomyHandler(9999);
+
+            tickCount = 0;
+            tickPerGameSpeedCount = 0;
+            gameSpeed = GameSpeed.Slow;
+            speedBoost = 1;
+
+
+            data = new GameData();
+
+            OnNewGameStarted();
+        }
+
         private void OnNewGameStarted()
         {
             NewGameStarted?.Invoke(this, EventArgs.Empty);
