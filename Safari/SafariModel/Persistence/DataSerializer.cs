@@ -121,7 +121,7 @@ namespace SafariModel.Persistence
             {
                 if (strvalue.Equals(string.Empty)) continue;
                 if (strvalue.Equals("null")) data.doubles.Enqueue(null);
-                else data.doubles.Enqueue(double.Parse(strvalue));
+                else data.doubles.Enqueue(double.Parse(strvalue, CultureInfo.CreateSpecificCulture("C").NumberFormat));
             }
             //pontok
             strvalues = strings[4].Split(' ');

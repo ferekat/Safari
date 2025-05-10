@@ -127,11 +127,189 @@
             </StackPanel>
         </Viewbox>
         <Border Grid.Row="3" BorderBrush="#FF262626" BorderThickness="10" Background="#FF6C5200" CornerRadius="5" Grid.ColumnSpan="3" Margin="176,0,176,0" Visibility="{Binding LoadGamePage}">
-            <Viewbox>
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF6C5200" Width="130">
-                    <TextBlock HorizontalAlignment="Center" Foreground="White">Coming soon...</TextBlock>
-                </StackPanel>
-            </Viewbox>
+            <!-->Betöltés felület</!-->
+            <Grid Width="Auto">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <!--1. mentés-->
+                <Button Grid.Row="0" Command="{Binding LoadGameCommand}" CommandParameter="0" Panel.ZIndex="0" Background="Transparent">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save1Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save1Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                    <Grid Grid.Row="0" Panel.ZIndex="1" IsHitTestVisible="False">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock DataContext="{Binding Save1data}" Grid.Row="1" Grid.Column="0" FontSize="20" Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save1data}" Grid.Row="1" Grid.Column="1" FontSize="20" Text="{Binding Money}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save1data}" Grid.Row="2" Grid.Column="2" FontSize="12" Text="{Binding Time}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save1data}" Grid.Row="0" Grid.Column="2" FontSize="12" Text="{Binding Difficulty}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save1Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save1Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                </Grid>
+                <Label Content="No save data found" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Grid.Row="0">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save1Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save1Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+                <!--1. mentés-->
+                <!--2. mentés-->
+                <Button Grid.Row="1" Command="{Binding LoadGameCommand}" CommandParameter="1" Panel.ZIndex="0" Background="Transparent">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save2Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save2Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Grid Grid.Row="1" Panel.ZIndex="1" IsHitTestVisible="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock DataContext="{Binding Save2data}" Grid.Row="1" Grid.Column="0" FontSize="20" Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save2data}" Grid.Row="1" Grid.Column="1" FontSize="20" Text="{Binding Money}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save2data}" Grid.Row="2" Grid.Column="2" FontSize="12" Text="{Binding Time}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save2data}" Grid.Row="0" Grid.Column="2" FontSize="12" Text="{Binding Difficulty}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save2Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save2Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                </Grid>
+                <Label Content="No save data found" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Grid.Row="1">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save2Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save2Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+                <!--2. mentés-->
+                <!--3. mentés-->
+                <Button Grid.Row="2" Command="{Binding LoadGameCommand}" CommandParameter="2" Panel.ZIndex="0" Background="Transparent">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save3Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save3Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Grid Grid.Row="2" Panel.ZIndex="1" IsHitTestVisible="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock DataContext="{Binding Save3data}" Grid.Row="1" Grid.Column="0" FontSize="20" Text="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save3data}" Grid.Row="1" Grid.Column="1" FontSize="20" Text="{Binding Money}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save3data}" Grid.Row="2" Grid.Column="2" FontSize="12" Text="{Binding Time}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <TextBlock DataContext="{Binding Save3data}" Grid.Row="0" Grid.Column="2" FontSize="12" Text="{Binding Difficulty}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save3Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save3Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                </Grid>
+                <Label Content="No save data found" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Grid.Row="2">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Save3Exists}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Save3Exists}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+                <!--3. mentés-->
+            </Grid>
+            <!-->Betöltés felület</!-->
         </Border>
         <Viewbox Grid.Row="4" Grid.Column="1" Visibility="{Binding LoadGamePage}">
             <StackPanel Orientation="Vertical">

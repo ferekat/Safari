@@ -73,6 +73,14 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? optionName;
 
+        private bool save1exists;
+        private bool save2exists;
+        private bool save3exists;
+        private SaveData save1data;
+        private SaveData save2data;
+        private SaveData save3data;
+
+
         //Kiválasztott entitás adatai
         private string selectedEntityData;
         private Visibility entityDataVisibility;
@@ -287,6 +295,13 @@ namespace SafariView.ViewModel
         public string LoadGamePage { get { return loadGamePage!; } private set { loadGamePage = value; OnPropertyChanged(); } }
         public string OptionName { get { return optionName!; } private set { optionName = value; OnPropertyChanged(); } }
 
+        public bool Save1Exists { get { return save1exists; } private set { save1exists = value; OnPropertyChanged(); } }
+        public bool Save2Exists { get { return save2exists; } private set { save2exists = value; OnPropertyChanged(); } }
+        public bool Save3Exists { get { return save3exists; } private set { save3exists = value; OnPropertyChanged(); } }
+        public SaveData Save1data { get { return save1data; } private set { save1data = value; OnPropertyChanged(); } }
+        public SaveData Save2data { get { return save2data; } private set { save2data = value; OnPropertyChanged(); } }
+        public SaveData Save3data { get { return save3data; } private set { save3data = value; OnPropertyChanged(); } }
+
         public Brush BackgroundBrush { get { return tileBrushes[TileType.GROUND]; } }
         public string TopRowHeightString { get { return topRowHeightString; } private set { topRowHeightString = value; OnPropertyChanged(); } }
         public string BottomRowHeightString { get { return bottomRowHeightString; } private set { bottomRowHeightString = value; OnPropertyChanged(); } }
@@ -406,8 +421,8 @@ namespace SafariView.ViewModel
             renderTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
 
             //Initialize commands
-            SaveGameCommand = new DelegateCommand((param) => SaveGame());
-            LoadGameCommand = new DelegateCommand((param) => LoadGame());
+            SaveGameCommand = new DelegateCommand( async (param) => await SaveGame(param));
+            LoadGameCommand = new DelegateCommand( async (param) => await LoadGame(param));
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             BuyBridge = new DelegateCommand((param) => BuyBridges(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
@@ -458,23 +473,42 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Command methods
-        private async Task SaveGame()
+        private async Task SaveGame(object? param)
         {
-            await model.SaveGameAsync("./0.safarigame");
+            if (param != null && param is string slot)
+            {
+                await model.SaveGameAsync($"./{slot}.safarigame");
+            }
         }
 
-        private async Task LoadGame()
+        private async Task LoadGame(object? param)
         {
-            if (!File.Exists("./0.safarigame")) return;
-            try { 
-            await model.LoadGameAsync("./0.safarigame");
-            }
-            catch(Exception e)
+            if(param != null && param is string slot)
             {
-                MessageBox.Show(e.StackTrace,"Exception!");
+                if (!File.Exists($"./{slot}.safarigame")) return;
+                try
+                {
+                    await model.LoadGameAsync($"./{slot}.safarigame");
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.StackTrace, "Exception!");
+                }
+
+                IndexPage = "Visible";
+                NewGamePage = "Hidden";
+                CreditsPage = "Hidden";
+                LoadGamePage = "Hidden";
+                OptionName = "SAFARI";
+
+                StartGame?.Invoke(this, EventArgs.Empty);
+
+                tickTimer.Start();
+                renderTimer.Start();
+
+                redrawMinimap = true;
+                force_render_next_frame = true;
             }
-            redrawMinimap = true;
-            force_render_next_frame = true;
         }
 
         private void BuyBridges(object? param)
@@ -592,6 +626,8 @@ namespace SafariView.ViewModel
             IndexPage = "Hidden";
             LoadGamePage = "Visible";
             OptionName = "Load Game";
+
+            GetSaveDatas();
         }
         #endregion
 
@@ -985,6 +1021,12 @@ namespace SafariView.ViewModel
                     App.Current.Dispatcher.Invoke(() => FloatingTexts.Remove(text));
                 });
             }
+        }
+        private void GetSaveDatas()
+        {
+            (Save1data, Save1Exists) = SaveData.GetSaveData("./0.safarigame");
+            (Save2data, Save2Exists) = SaveData.GetSaveData("./1.safarigame");
+            (Save3data, Save3Exists) = SaveData.GetSaveData("./2.safarigame");
         }
         #endregion
     }
