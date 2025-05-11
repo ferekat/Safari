@@ -27,16 +27,13 @@ namespace SafariModel.Persistence
 
             using (StreamReader reader = new StreamReader(filePath))
             {
+                save.Name = reader.ReadLine() + "";
                 save.Money = reader.ReadLine() + "$";
-                reader.ReadLine();
-                reader.ReadLine();
-                reader.ReadLine();
                 string day = reader.ReadLine() + "";
                 string week = reader.ReadLine() + "";
                 string month = reader.ReadLine() + "";
                 save.Time = $"{month}. month/{week}. week/{day}.day";
-                //TODO név és nehézség
-                save.Name = "TempName";
+                //TODO nehézség
                 save.Difficulty = "TempDifficulty";
 
                 return (save, true);

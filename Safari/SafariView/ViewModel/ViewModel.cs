@@ -439,7 +439,7 @@ namespace SafariView.ViewModel
             SlotPickerPageCommand = new DelegateCommand((param) => OnSlotPickerPageClicked());
             LoadGamePageCommand = new DelegateCommand((param) => OnLoadPageClicked());
             BackCommand = new DelegateCommand((param) => OnBackClicked());
-            StartCommand = new DelegateCommand((param) => OnStartClicked());
+            StartCommand = new DelegateCommand((param) => OnStartClicked(param));
             CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
 
             //Subscribe to model's events
@@ -645,8 +645,9 @@ namespace SafariView.ViewModel
             SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
         }
-        private async void OnStartClicked()
+        private async void OnStartClicked(object? param)
         {
+            if(param is string name) { 
             IndexPage = "Visible";
             NewGamePage = "Hidden";
             CreditsPage = "Hidden";
@@ -654,12 +655,16 @@ namespace SafariView.ViewModel
             SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
 
-            model.NewGame();
+            model.NewGame(name);
             await SaveGame();
 
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();
             renderTimer.Start();
+
+            redrawMinimap = true;
+            force_render_next_frame = true;
+            }
 
         }
         private void OnCreditsClicked()

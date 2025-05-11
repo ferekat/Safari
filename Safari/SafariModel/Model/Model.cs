@@ -18,6 +18,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
+        public string ParkName { get; private set; }
 
         const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
@@ -91,6 +92,7 @@ namespace SafariModel.Model
 
         public Model(IDataAccess? dataAccess)
         {
+            ParkName = "";
 
             this.dataAccess = dataAccess;
 
@@ -186,8 +188,10 @@ namespace SafariModel.Model
         }
         #endregion
 
-        public void NewGame()
+        public void NewGame(string parkName)
         {
+
+            ParkName = parkName;
 
             //egyenlőre csak kimásolva a konstruktorból
 
@@ -246,6 +250,7 @@ namespace SafariModel.Model
         private void UpdateGameData()
         {
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
+            data!.parkName = ParkName;
             data!.tileMap = tileMap.Map;
             data!.entrance = tileMap.Entrance;
             data!.exit = tileMap.Exit;
@@ -411,6 +416,8 @@ namespace SafariModel.Model
             if (data == null) return;
 
             data = await dataAccess.LoadAsync(filePath);
+
+            ParkName = data.parkName;
 
             //statok visszatöltése
             this.economyHandler = new EconomyHandler(data.money);

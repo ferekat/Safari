@@ -10,6 +10,7 @@ namespace SafariModel.Persistence
 {
     public class GameData
     {
+        public string parkName;
         public List<Entity> entities;
         public Tile[,] tileMap;
         public PathTile entrance;

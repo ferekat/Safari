@@ -43,7 +43,7 @@
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF6C5200" Width="130">
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock FontSize="5.5" Width="45" VerticalAlignment="Center" Foreground="White" FontWeight="Bold">Name your park:</TextBlock>
-                        <TextBox Width="85" BorderBrush="#FF13501B"></TextBox>
+                        <TextBox x:Name="NameField" Width="85" BorderBrush="#FF13501B"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock FontSize="8" Width="45" VerticalAlignment="Center" Foreground="White" FontWeight="Bold">Seed:</TextBlock>
@@ -90,7 +90,7 @@
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button FontSize="30px" Background="#FF6C5200" Foreground="White" BorderThickness="8" BorderBrush="#FF262626" Margin="95,0,0,0" Command="{Binding StartCommand}">Start
+                    <Button FontSize="30px" Background="#FF6C5200" Foreground="White" BorderThickness="8" BorderBrush="#FF262626" Margin="95,0,0,0" Command="{Binding StartCommand}" CommandParameter="{Binding Text, ElementName=NameField}">Start
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="5" />
