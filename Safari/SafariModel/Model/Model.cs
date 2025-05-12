@@ -1,4 +1,4 @@
-﻿using SafariModel.Model.Tiles;
+using SafariModel.Model.Tiles;
 using SafariModel.Model.Utils;
 using SafariModel.Persistence;
 using SafariModel.Model.InstanceEntity;
@@ -17,7 +17,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
-        const int TICK_PER_TIME_UNIT = 168;//25200; //teszt -> 168;
+        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
         const int WEEKS_PER_MONTH = 4;
