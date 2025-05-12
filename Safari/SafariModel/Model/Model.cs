@@ -17,7 +17,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
-        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
+        const int TICK_PER_TIME_UNIT = 168;//25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
         const int WEEKS_PER_MONTH = 4;
@@ -230,6 +230,14 @@ namespace SafariModel.Model
                         {
                             data.week = 1;
                             data.month++;
+                            //guard salary
+                            foreach(Guard g in entityHandler.GetGuards())
+                            {
+                                if (!economyHandler.PaySalary(g))
+                                {
+                                    g.LeavePark();
+                                }
+                            }
                             if (data.month >= 12)
                             {
                                 InvokeGameOver();
