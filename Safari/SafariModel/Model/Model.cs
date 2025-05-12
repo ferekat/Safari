@@ -148,6 +148,8 @@ namespace SafariModel.Model
                 Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
                 if (hunter != null)
                 {
+                    hunter.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+                    hunter.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
@@ -297,8 +299,8 @@ namespace SafariModel.Model
             if (entity is Guard guardEntity)
             {
                 guardEntity.Multiplier = speedBoost;
-                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
-                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                 guardEntity.TookDamage += OnNewMessage;
                 guardEntity.LevelUp += OnNewMessage;
                 if (!economyHandler.PaySalary(guardEntity)) return;
@@ -343,6 +345,22 @@ namespace SafariModel.Model
                 }
             }
             return nearbyEntities;
+        }
+        private void HandleAnimalKill(object? sender, KillAnimalEventArgs e)
+        {
+            if (e.Killer is Guard g)
+            {
+                economyHandler.GetBounty(e.Animal);
+            }
+            entityHandler.KillAnimal(e.Animal);
+        }
+        private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)
+        {
+            if (e.Gunman is Hunter h)
+            {
+                economyHandler.GetBounty(e.Gunman);
+            }
+            entityHandler.RemoveGunman(e.Gunman);
         }
         private void OnNewMessage(object? sender, MessageEventArgs e)
         {

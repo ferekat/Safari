@@ -1,4 +1,5 @@
-﻿using SafariModel.Model.InstanceEntity;
+﻿using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,8 @@ namespace SafariModel.Model.Utils
             { typeof(Cactus),80 },
             { typeof(Greasewood),50 },
             { typeof(PalmTree),100 },
-            { typeof(Guard),0 }
+            { typeof(Guard),0 },
+            { typeof(Hunter), 350 }
         };
         private Dictionary<PathTileType, int> pathTileCosts = new Dictionary<PathTileType, int>
         {
@@ -111,6 +113,12 @@ namespace SafariModel.Model.Utils
             if (money < cost ) return false;
             money -= cost;
             return true;
+        }
+        public void GetBounty(MovingEntity m)
+        {
+            //az entity eredeti árának 70%-át kapjuk fejpénznek
+            int bounty = (int)Math.Floor(GetEnityCost(m.GetType())*0.7);
+            money += bounty;
         }
     }
 }
