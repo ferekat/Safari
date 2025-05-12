@@ -1,4 +1,4 @@
-﻿using SafariModel.Model.Tiles;
+using SafariModel.Model.Tiles;
 using SafariModel.Model.Utils;
 using SafariModel.Persistence;
 using SafariModel.Model.InstanceEntity;
