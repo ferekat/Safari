@@ -17,7 +17,7 @@ namespace SafariModel.Model
 {
     public class Model
     {
-        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
+        const int TICK_PER_TIME_UNIT = 168;//25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
         const int WEEKS_PER_MONTH = 4;
@@ -149,6 +149,8 @@ namespace SafariModel.Model
                 Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
                 if (hunter != null)
                 {
+                    hunter.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+                    hunter.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
@@ -231,6 +233,14 @@ namespace SafariModel.Model
                         {
                             data.week = 1;
                             data.month++;
+                            //guard salary
+                            foreach(Guard g in entityHandler.GetGuards())
+                            {
+                                if (!economyHandler.PaySalary(g))
+                                {
+                                    g.LeavePark();
+                                }
+                            }
                             if (data.month >= 12)
                             {
                                 InvokeGameOver();
@@ -296,8 +306,8 @@ namespace SafariModel.Model
             if (entity is Guard guardEntity)
             {
                 guardEntity.Multiplier = speedBoost;
-                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
-                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                 guardEntity.TookDamage += OnNewMessage;
                 guardEntity.LevelUp += OnNewMessage;
                 if (!economyHandler.PaySalary(guardEntity)) return;
@@ -342,6 +352,22 @@ namespace SafariModel.Model
                 }
             }
             return nearbyEntities;
+        }
+        private void HandleAnimalKill(object? sender, KillAnimalEventArgs e)
+        {
+            if (e.Killer is Guard g)
+            {
+                economyHandler.GetBounty(e.Animal);
+            }
+            entityHandler.KillAnimal(e.Animal);
+        }
+        private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)
+        {
+            if (e.Gunman is Hunter h)
+            {
+                economyHandler.GetBounty(e.Gunman);
+            }
+            entityHandler.RemoveGunman(e.Gunman);
         }
         private void OnNewMessage(object? sender, MessageEventArgs e)
         {
