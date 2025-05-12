@@ -221,18 +221,10 @@ namespace SafariModel.Model.Utils
         {
             return guards;
         }
-        public void KillAnimal(Animal a)
-        {
-            RemoveEntity(a);
-        }
 
         public void SetHunterTarget(object? sender, HunterTargetEventArgs e)
         {
             e.Hunter.TargetAnimal = SetHunterTargetAnimal();
-        }
-        public void RemoveGunman(Gunman g)
-        {
-            RemoveEntity(g);
         }
     }
 }

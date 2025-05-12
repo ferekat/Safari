@@ -352,7 +352,7 @@ namespace SafariModel.Model
             {
                 economyHandler.GetBounty(e.Animal);
             }
-            entityHandler.KillAnimal(e.Animal);
+            entityHandler.RemoveEntity(e.Animal);
         }
         private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)
         {
@@ -360,7 +360,7 @@ namespace SafariModel.Model
             {
                 economyHandler.GetBounty(e.Gunman);
             }
-            entityHandler.RemoveGunman(e.Gunman);
+            entityHandler.RemoveEntity(e.Gunman);
         }
         private void OnNewMessage(object? sender, MessageEventArgs e)
         {
