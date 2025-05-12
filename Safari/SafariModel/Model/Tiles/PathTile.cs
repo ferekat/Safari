@@ -16,17 +16,17 @@ namespace SafariModel.Model.Tiles
         BRIDGE,
 
         
-        SMALL_BRIDGE,
-        SMALL_BRIDGE_VERT,
-        SMALL_BRIDGE_HOR,
-        SMALL_BRIDGE_DR,
-        SMALL_BRIDGE_DL,
-        SMALL_BRIDGE_UR,
-        SMALL_BRIDGE_UL,
-        LARGE_BRIDGE_VERT,
-        LARGE_BRIDGE_HOR,
-        LARGE_BRIDGE_D,
-        LARGE_BRIDGE_U,
+        //SMALL_BRIDGE,
+        //SMALL_BRIDGE_VERT,
+        //SMALL_BRIDGE_HOR,
+        //SMALL_BRIDGE_DR,
+        //SMALL_BRIDGE_DL,
+        //SMALL_BRIDGE_UR,
+        //SMALL_BRIDGE_UL,
+        //LARGE_BRIDGE_VERT,
+        //LARGE_BRIDGE_HOR,
+        //LARGE_BRIDGE_D,
+        //LARGE_BRIDGE_U,
 
     }
     public class PathIntersectionNode
@@ -72,7 +72,6 @@ namespace SafariModel.Model.Tiles
             this.pathJ = pathJ;
             allNodes.Add(this);
             isVisited = false;
-          
         }
       
 
@@ -97,54 +96,13 @@ namespace SafariModel.Model.Tiles
             this.intersectionNode = new PathIntersectionNode(t.I, t.J);
             
         }
-        public void SetType(PathTileType pathType)
-        {
-            this.pathType = pathType;
-        }
-        public static bool CanPlacePath(PathTileType pathType,TileType on)
-        {
-            switch(pathType)
-            {
-                case PathTileType.ROAD:
-                    if (on == TileType.DEEP_WATER ||on == TileType.SHALLOW_WATER) return false;
-                    return true;
-                case PathTileType.SMALL_BRIDGE_VERT or PathTileType.SMALL_BRIDGE_HOR or PathTileType.SMALL_BRIDGE_DR or PathTileType.SMALL_BRIDGE_DL or PathTileType.SMALL_BRIDGE_UL or PathTileType.SMALL_BRIDGE_UR:
-                    if (on == TileType.SHALLOW_WATER) return true;
-                    return false;
-                case PathTileType.LARGE_BRIDGE_HOR or PathTileType.LARGE_BRIDGE_VERT or PathTileType.LARGE_BRIDGE_D or PathTileType.LARGE_BRIDGE_U :
-                    if (on == TileType.DEEP_WATER || on == TileType.SHALLOW_WATER) return true;
-                    return false;
-                default:
-                    return false;
-            }
-        }
-        public readonly static Dictionary<PathTileType, TileType> pathTileInteractionMap = new Dictionary<PathTileType, TileType>()
-        {
-            { PathTileType.ROAD,TileType.GROUND},
-            { PathTileType.SMALL_BRIDGE_HOR,TileType.SHALLOW_WATER},
-            { PathTileType.SMALL_BRIDGE_VERT,TileType.SHALLOW_WATER},
-            { PathTileType.SMALL_BRIDGE_DR,TileType.SHALLOW_WATER},
-            { PathTileType.SMALL_BRIDGE_DL,TileType.SHALLOW_WATER},
-            { PathTileType.SMALL_BRIDGE_UR,TileType.SHALLOW_WATER},
-            { PathTileType.SMALL_BRIDGE_UL,TileType.SHALLOW_WATER},
-            { PathTileType.LARGE_BRIDGE_HOR,TileType.DEEP_WATER},
-            { PathTileType.LARGE_BRIDGE_VERT,TileType.DEEP_WATER},
-            { PathTileType.LARGE_BRIDGE_U,TileType.DEEP_WATER},
-            { PathTileType.LARGE_BRIDGE_D,TileType.DEEP_WATER},
-        };
+    
+       
+      
         public readonly static Dictionary<string, PathTileType> pathTileShopMap = new Dictionary<string, PathTileType>()
         {
             {"Road",PathTileType.ROAD},
-            {"LargeBridge_hor",PathTileType.LARGE_BRIDGE_HOR},
-            {"LargeBridge_vert",PathTileType.LARGE_BRIDGE_VERT},
-            {"LargeBridge_u",PathTileType.LARGE_BRIDGE_U},
-            {"LargeBridge_d",PathTileType.LARGE_BRIDGE_D},
-            {"SmallBridge_hor",PathTileType.SMALL_BRIDGE_HOR},
-            {"SmallBridge_vert",PathTileType.SMALL_BRIDGE_VERT},
-            {"SmallBridge_dr",PathTileType.SMALL_BRIDGE_DR},
-            {"SmallBridge_dl",PathTileType.SMALL_BRIDGE_DL},
-            {"SmallBridge_ur",PathTileType.SMALL_BRIDGE_UR},
-            {"SmallBridge_ul",PathTileType.SMALL_BRIDGE_UL},
+            {"Bridge",PathTileType.BRIDGE }
         };
     }
     

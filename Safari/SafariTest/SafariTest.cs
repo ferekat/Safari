@@ -18,17 +18,42 @@ namespace SafariTest
         public void Init()
         {
             model = new Model();
-            Debug.WriteLine("test");
+            
         }
+        private void GoDown(Tile[,] map)
+        {
 
+        }
+        private void GoLeft(Tile[,] map)
+        {
+
+        }
+        
         [TestMethod]
+       
         public void TestPathNodeCount()
         {
-            TileMap tilemap = model.TileMap;
-            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[1, 5], PathTileType.ROAD);
-            Assert.AreEqual(PathIntersectionNode.allNodes.Count, 3);
-            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[2, 5], PathTileType.SMALL_BRIDGE_UL);
-            Assert.AreEqual(PathIntersectionNode.allNodes.Count, 3);
+            Tile[,] map = model.TileMap.Map;
+            Tile entrance = model.TileMap.Entrance;
+            int ei = entrance.I;
+            int ej = entrance.J;
+            Assert.AreEqual(2, PathIntersectionNode.allNodes.Count);
+            //első lépés
+            if (ei == 0)
+            {   
+                GoDown(map);
+            }
+            else if (ej == 0)
+            {
+                GoLeft(map);
+            }
+
+            //többi lépés
+            GoDown(map);
+            GoLeft(map);
+            GoLeft(map);
+            GoDown(map);
+
         }
 
         [TestMethod]

@@ -257,6 +257,8 @@ namespace SafariModel.Model
 
             if (Tile.tileShopMap.ContainsKey(itemName) && Tile.tileShopMap[itemName] is TileType tileToBuy)
             {
+
+                bool canPlace = (clickedTile.TileType == TileType.GROUND && tileToBuy == TileType.SHALLOW_WATER);
                 if (economyHandler.BuyTile(tileToBuy))
                 {
                     clickedTile.SetType(tileToBuy);
@@ -264,10 +266,14 @@ namespace SafariModel.Model
                 }
                 return;
             }
-            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy && PathTile.CanPlacePath(pathToBuy,clickedTile.TileType))
+            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy)
             {
+
+                bool canPlace = ((clickedTile.IsWater() && pathToBuy == PathTileType.BRIDGE) || (!clickedTile.IsWater() && pathToBuy == PathTileType.ROAD));
+                
                     //ha be lehet kötni a hálózatba és meg lehet venni
-                if (roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
+                
+                if (canPlace && roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
                 {
                     
                     OnTileMapUpdated(tileX, tileY);

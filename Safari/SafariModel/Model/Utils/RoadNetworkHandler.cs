@@ -19,7 +19,7 @@ namespace SafariModel.Model.Utils
         private static bool foundShortestPath;
 
 
-        private List<PathTile> roadNetwork = new();
+        private List<PathIntersectionNode> roadNetwork = new();
         private static List<PathTile> shortestPathExitToEntrance = new();
         private static List<PathTile> shortestPathEntranceToExit = new();
         public static List<PathTile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } }
@@ -53,39 +53,12 @@ namespace SafariModel.Model.Utils
             {
                 if (neigh is PathTile neighPathTile)
                 {
-                    if (tileToConnect.IsWater())
-                    {
-                     //   ConnectBridge();
-                    }
-                    else
-                    {
-                       // ConnectRoad();
-                    }
+                    
 
                     succ = true;
                    
-                    switch (neighPathTile.PathType) //HIDAK
-                    {
-                        case PathTileType.SMALL_BRIDGE_VERT or PathTileType.SMALL_BRIDGE_HOR or PathTileType.SMALL_BRIDGE_DR or PathTileType.SMALL_BRIDGE_DL or PathTileType.SMALL_BRIDGE_UR or PathTileType.SMALL_BRIDGE_UL:
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_VERT) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_HOR) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_DR) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_DL) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_UR) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_UL) return false;
-                            break;
-                        case PathTileType.LARGE_BRIDGE_VERT or PathTileType.LARGE_BRIDGE_HOR or PathTileType.LARGE_BRIDGE_U or PathTileType.LARGE_BRIDGE_D:
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_VERT) return false;
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_HOR) return false;
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_D) return false;
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_U) return false;
-                            break;
-                        default:
-                            break;
-                    }
 
-                    roadNetwork.Add(connectedTile);
-
+                   
 
                    
 
@@ -115,6 +88,7 @@ namespace SafariModel.Model.Utils
             {
                 tileMap.Map[tileToConnect.I, tileToConnect.J] = connectedTile;
                 neighNodes.Add(connectedTileNode);
+               
                 foreach(PathIntersectionNode node in neighNodes)
                 {
                     SimplifyStraightPath(node);
@@ -126,11 +100,6 @@ namespace SafariModel.Model.Utils
 
 
 
-                ///debug
-                //foreach (PathTile pt in roadNetwork)
-                //{
-                //    pt.PathType = PathTileType.EMPTY;
-                //}
                 
                 foreach (PathIntersectionNode node in PathIntersectionNode.allNodes)
                 {
@@ -138,7 +107,7 @@ namespace SafariModel.Model.Utils
                     if (tileMap.Map[node.PathI, node.PathJ] is PathTile pt)
                     {
 
-                   //     pt.PathType = PathTileType.EMPTY;
+                  
                     }
                   
                 }
