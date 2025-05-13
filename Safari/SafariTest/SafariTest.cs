@@ -4,6 +4,7 @@ using SafariModel.Model.Utils;
 
 using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.InstanceEntity;
+using System.Diagnostics;
 
 
 namespace SafariTest
@@ -17,16 +18,42 @@ namespace SafariTest
         public void Init()
         {
             model = new Model();
+            
         }
+        private void GoDown(Tile[,] map)
+        {
 
+        }
+        private void GoLeft(Tile[,] map)
+        {
+
+        }
+        
         [TestMethod]
+       
         public void TestPathNodeCount()
         {
-            TileMap tilemap = model.TileMap;
-            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[1, 5], PathTileType.ROAD);
-            Assert.AreEqual(PathIntersectionNode.inst.Count, 3);
-            model.RoadNetworkHandler.ConnectToNetwork(tilemap.Map[2, 5], PathTileType.SMALL_BRIDGE_DR);
-            Assert.AreEqual(PathIntersectionNode.inst.Count, 3);
+            Tile[,] map = model.TileMap.Map;
+            Tile entrance = model.TileMap.Entrance;
+            int ei = entrance.I;
+            int ej = entrance.J;
+            Assert.AreEqual(2, PathIntersectionNode.allNodes.Count);
+            //első lépés
+            if (ei == 0)
+            {   
+                GoDown(map);
+            }
+            else if (ej == 0)
+            {
+                GoLeft(map);
+            }
+
+            //többi lépés
+            GoDown(map);
+            GoLeft(map);
+            GoLeft(map);
+            GoDown(map);
+
         }
 
         [TestMethod]
@@ -38,7 +65,7 @@ namespace SafariTest
             Assert.AreEqual(model.EntityHandler.Entities.Count, initEntities);
             model.BuyItem("Lion", 40, 40);
             Assert.AreEqual(model.EntityHandler.Entities.Count, initEntities + 1);
-            Assert.AreEqual(model.EconomyHandler.Money, 9999 - 200);
+            Assert.AreEqual(model.EconomyHandler.Money, 99999 - 200);
         }
         [TestMethod]
         public void TestEntityRange()

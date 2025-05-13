@@ -139,47 +139,8 @@ namespace SafariView.ViewModel
                 {
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
                 }},
-            {PathTileType.LARGE_BRIDGE_HOR,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_hor.png")),
-                } },
-            {PathTileType.LARGE_BRIDGE_VERT,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_vert.png")),
-                } },
-            {PathTileType.LARGE_BRIDGE_D,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_d.png")),
-                } },
-            {PathTileType.LARGE_BRIDGE_U,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/large_u.png")),
-                } },
-            {PathTileType.SMALL_BRIDGE_HOR,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_hor.png")),
-                }},
-            {PathTileType.SMALL_BRIDGE_VERT,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_vert.png")),
-                }},
-            {PathTileType.SMALL_BRIDGE_DR,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dr.png")),
-                }},
-            {PathTileType.SMALL_BRIDGE_DL,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_dl.png")),
-                }},
-            {PathTileType.SMALL_BRIDGE_UR,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ur.png")),
-                }},
-            {PathTileType.SMALL_BRIDGE_UL,new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/small_ul.png")),
-                }},
-
+            {PathTileType.BRIDGE,new SolidColorBrush(Color.FromRgb(32,32,32)) }
+                
         };
 
         private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()
@@ -205,16 +166,8 @@ namespace SafariView.ViewModel
         {
             {PathTileType.EMPTY,new byte[] {0,0,0} },
             {PathTileType.ROAD,new byte[] {235,125,52}},
-            {PathTileType.LARGE_BRIDGE_HOR,new byte[] {125,37,37} },
-            {PathTileType.LARGE_BRIDGE_VERT,new byte[] {125,37,37} },
-            {PathTileType.LARGE_BRIDGE_D,new byte[] {125,37,37} },
-            {PathTileType.LARGE_BRIDGE_U,new byte[] {125,37,37} },
-            {PathTileType.SMALL_BRIDGE_HOR,new byte[] {140,136,136}},
-            {PathTileType.SMALL_BRIDGE_VERT,new byte[] {140,136,136}},
-            {PathTileType.SMALL_BRIDGE_DR,new byte[] {140,136,136}},
-            {PathTileType.SMALL_BRIDGE_DL,new byte[] {140,136,136}},
-            {PathTileType.SMALL_BRIDGE_UR,new byte[] {140,136,136}},
-            {PathTileType.SMALL_BRIDGE_UL,new byte[] {140,136,136}},
+            {PathTileType.BRIDGE,new byte[] {125,37,37} }
+            
         };
 
     
@@ -495,7 +448,7 @@ namespace SafariView.ViewModel
                 if (shopString == "Jeep")
                 {
                     Jeep dummy = new Jeep(0, 0);
-                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPoint(dummy); //a jeepet rárakjuk a bejárat tile közepére
+                    System.Drawing.Point p = model.TileMap.Entrance.TileCenterPointForEntity(dummy); //a jeepet rárakjuk a bejárat tile közepére
                     model.BuyItem("Jeep",p.X,p.Y);
                   
                     return;
@@ -787,7 +740,7 @@ namespace SafariView.ViewModel
                         Brush? b = null;
 
                         //Get type of tile
-                        if (t is PathTile p && p.HasPlaceable())
+                        if (t is PathTile p)
                         {
                             b = pathBrushes[p.PathType];
                         }
@@ -795,12 +748,12 @@ namespace SafariView.ViewModel
                         {
                            
                            
-                                b = tileBrushes[t.Type];
+                                b = tileBrushes[t.TileType];
 
                            
                         }
 
-                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!);
+                        RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!,t.H);
 
                         RenderedTiles.Add(tile);
                     }
@@ -822,12 +775,12 @@ namespace SafariView.ViewModel
                     {
                         if (h.IsVisible && h.HasEntered)
                         {
-                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()]));
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                         }
                     }
                    else
                    {
-                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()]));
+                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
             }
@@ -857,7 +810,7 @@ namespace SafariView.ViewModel
                     {
                         
                        
-                        b = minimaptileBrushes[t.Type];
+                        b = minimaptileBrushes[t.TileType];
                        
                     }
                     Int32Rect rect = new Int32Rect(i, j, 1, 1);
@@ -883,7 +836,7 @@ namespace SafariView.ViewModel
             {
 
               
-                    b = minimaptileBrushes[t.Type];
+                    b = minimaptileBrushes[t.TileType];
               
             }
             Int32Rect rect = new Int32Rect(tileX, tileY, 1, 1);
