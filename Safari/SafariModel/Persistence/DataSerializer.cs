@@ -17,9 +17,9 @@ namespace SafariModel.Persistence
         {
             if (t is PathTile pt)
             {
-                return string.Format("PT,{0},{1},{2},{3},{4}", pt.I, pt.J, pt.H, t.Type, pt.PathType);
+                return string.Format("PT,{0},{1},{2},{3},{4}", pt.I, pt.J, pt.H, t.TileType, pt.PathType);
             }
-            else return string.Format("T,{0},{1},{2},{3}", t.I, t.J, t.H, t.Type);
+            else return string.Format("T,{0},{1},{2},{3}", t.I, t.J, t.H, t.TileType);
         }
 
         public static Tile DeSerializeTile(string serializedTile)
@@ -37,7 +37,7 @@ namespace SafariModel.Persistence
                 PathTileType pathType = PathTileType.EMPTY;
                 Enum.TryParse(values[5], out pathType);
 
-                return new PathTile(new Tile(i, j, h, type), pathType, new PathIntersectionNode(i, j));
+                return new PathTile(new Tile(i, j, h, type), pathType);
             }
             else if (values[0].Equals("T"))
             {

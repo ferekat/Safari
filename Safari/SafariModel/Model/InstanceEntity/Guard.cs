@@ -64,7 +64,7 @@ namespace SafariModel.Model.InstanceEntity
         protected override void EntityLogic()
         {
             #region Betöltés után idk kiértékelése
-            if(targetID != null)
+            if (targetID != null)
             {
                 Entity? e = GetEntityByID((int)targetID);
                 if (e != null && e is Hunter h)
@@ -76,7 +76,7 @@ namespace SafariModel.Model.InstanceEntity
             SetTargetHunter();
             if (targetHunter != null)
             {
-                if (tickBeforeFire % (timeShots/Multiplier) == 0)
+                if (tickBeforeFire % (timeShots / Multiplier) == 0)
                 {
                     Fire(this, targetHunter);
                 }
@@ -94,34 +94,35 @@ namespace SafariModel.Model.InstanceEntity
                     TargetAnimal = null;
                     IncreaseLevel(0);
                 }
-            if (!isLeaving)
-            {
-                SetTargetHunter();
-                if (targetHunter != null)
+                if (!isLeaving)
                 {
-                    if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                    SetTargetHunter();
+                    if (targetHunter != null)
                     {
-                        Fire(this, targetHunter);
+                        if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                        {
+                            Fire(this, targetHunter);
+                        }
+                        tickBeforeFire++;
                     }
-                    tickBeforeFire++;
+                    else if (TargetAnimal != null)
+                    {
+                        if (TargX != TargetAnimal.X || TargY != TargetAnimal.Y)
+                        {
+                            ChaseTarget();
+                        }
+                        if (TargX == x && TargY == y)
+                        {
+                            KillAnimal();
+                            TargetAnimal = null;
+                            IncreaseLevel(0);
+                        }
+                    }
                 }
-                else if (TargetAnimal != null)
+                else if (X == 50 || X == MapSizeConvert || Y == 50 || Y == MapSizeConvert)
                 {
-                    if (TargX != TargetAnimal.X || TargY != TargetAnimal.Y)
-                    {
-                        ChaseTarget();
-                    }
-                    if (TargX == x && TargY == y)
-                    {
-                        KillAnimal();
-                        TargetAnimal = null;
-                        IncreaseLevel(0);
-                    }
+                    RemoveGunman(this);
                 }
-            }
-            else if (X == 50 || X == MapSizeConvert || Y == 50 || Y == MapSizeConvert)
-            {
-                RemoveGunman(this);
             }
         }
         #region Private methods

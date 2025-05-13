@@ -108,16 +108,13 @@ namespace SafariModel.Model.Tiles
         public PathTileType PathType { get { return pathType; } /*set {/*if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.NODE; } } */}
       
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
-        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H,t.TileType)
-        //akkor jön létre a PathTile amikor leteszünk egy utat/hidat
-        public PathTile(Tile t,PathTileType pathType,PathIntersectionNode intersectionNode) : base(t.I, t.J, t.H,TileType.EMPTY)
+        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, TileType.EMPTY)
         {
             this.pathType = pathType;
             cachedType = pathType;
             this.intersectionNode = new PathIntersectionNode(t.I, t.J);
-    
-       
         }
+        //akkor jön létre a PathTile amikor leteszünk egy utat/hidat
         public readonly static Dictionary<string, PathTileType> pathTileShopMap = new Dictionary<string, PathTileType>()
         {
             {"Road",PathTileType.ROAD},

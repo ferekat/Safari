@@ -21,7 +21,7 @@ namespace SafariModel.Model.InstanceEntity
         private int waitingTime;
         private int tickBeforeTarget;
         private bool leavingMap;
-        //private int mapSizeConvert;
+        private int mapSizeConvert;
         private bool duel;
 
         #region Loading helpers

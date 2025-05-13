@@ -204,7 +204,7 @@ namespace SafariModel.Model
 
             //-------- !!IDEIGLENES!! térkép példányosítás
 
-            tileMap = TileMap.CreateMapTmp();
+            //tileMap = TileMap.CreateMapTmp();
             //-------------
 
             TileCollision tc = new TileCollision(tileMap);
@@ -260,7 +260,7 @@ namespace SafariModel.Model
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
-            data.intersections = PathIntersectionNode.intersections;
+            data.intersections = PathIntersectionNode.allNodes;
             CountTimePassed(data);
         }
         private void CountTimePassed(GameData data)
@@ -457,25 +457,27 @@ namespace SafariModel.Model
 
 
             //Intersectionök visszatöltése
-            PathIntersectionNode.intersections.Clear();
-            PathIntersectionNode.intersections.AddRange(data.intersections);
+            PathIntersectionNode.allNodes.Clear();
+            PathIntersectionNode.allNodes.AddRange(data.intersections);
 
             //tileok visszatöltése
-            this.tileMap = new TileMap(data.tileMap, data.entrance, data.exit);
+            this.tileMap = new TileMap(data.tileMap);
+            tileMap.Entrance = data.entrance;
+            tileMap.Exit = data.exit;
             MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
 
             //intersectionök tileokhoz kötése
-            foreach(PathIntersectionNode node in PathIntersectionNode.intersections)
+            foreach(PathIntersectionNode node in PathIntersectionNode.allNodes)
             {
                 Tile t = tileMap.Map[node.PathI, node.PathJ];
                 if(t is PathTile pt)
                 {
                     if (tileMap.Entrance.I == node.PathI && tileMap.Entrance.J == node.PathJ)
-                        tileMap.Entrance.SetIntersection(node);
+                        tileMap.Entrance.IntersectionNode = node;
                     else if (tileMap.Exit.I == node.PathI && tileMap.Exit.J == node.PathJ)
-                        tileMap.Exit.SetIntersection(node);
+                        tileMap.Exit.IntersectionNode = node;
                     else
-                        pt.SetIntersection(node);
+                        pt.IntersectionNode = node;
                 }
             }
 
