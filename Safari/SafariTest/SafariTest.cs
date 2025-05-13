@@ -17,8 +17,8 @@ namespace SafariTest
         [TestInitialize]
         public void Init()
         {
-            model = new Model();
-            
+            //Todo mockkal helyettesíteni
+            model = new Model(null);
         }
         private void GoDown(Tile[,] map)
         {

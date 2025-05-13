@@ -12,11 +12,14 @@ using SafariModel.Model.AbstractEntity;
 using System.Drawing;
 using System.Diagnostics;
 using SafariModel.Model.EventArgsClasses;
+using System.Xml.XPath;
 
 namespace SafariModel.Model
 {
     public class Model
     {
+        public string ParkName { get; private set; }
+
         const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
@@ -25,6 +28,8 @@ namespace SafariModel.Model
         public static readonly int MAPSIZE = 100;
         private TileMap tileMap;
         private GameData? data;
+
+        private IDataAccess? dataAccess;
 
         private EntityHandler entityHandler;
         private EconomyHandler economyHandler;
@@ -87,8 +92,12 @@ namespace SafariModel.Model
         public event EventHandler? NewMessage;
         #endregion
 
-        public Model()
+        public Model(IDataAccess? dataAccess)
         {
+            ParkName = "";
+
+            this.dataAccess = dataAccess;
+
             entityHandler = new EntityHandler();
             secondCounterHunter = 0;
             worldGenerationHandler = new WorldGenerationHandler("zjcdmtheqgjcvjm",entityHandler);
@@ -182,6 +191,49 @@ namespace SafariModel.Model
         }
         #endregion
 
+        public void NewGame(string parkName)
+        {
+
+            ParkName = parkName;
+
+            //egyenlőre csak kimásolva a konstruktorból
+
+            entityHandler = new EntityHandler();
+            secondCounterHunter = 0;
+
+
+            //-------- !!IDEIGLENES!! térkép példányosítás
+
+            //tileMap = TileMap.CreateMapTmp();
+            //-------------
+
+            TileCollision tc = new TileCollision(tileMap);
+            MovingEntity.RegisterTileCollision(tc);
+            Entity.RegisterHandler(entityHandler);
+            Entity.RegisterTileMap(tileMap.Map);
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
+
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            entityHandler.LoadEntity(h);
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            touristHandler = new TouristHandler();
+
+            economyHandler = new EconomyHandler(9999);
+
+            tickCount = 0;
+            tickPerGameSpeedCount = 0;
+            gameSpeed = GameSpeed.Slow;
+            speedBoost = 1;
+
+
+            data = new GameData();
+
+            OnNewGameStarted();
+        }
+
         private void OnNewGameStarted()
         {
             NewGameStarted?.Invoke(this, EventArgs.Empty);
@@ -194,13 +246,22 @@ namespace SafariModel.Model
 
         private void InvokeTickPassed()
         {
+            UpdateGameData();
+            TickPassed?.Invoke(this, data);
+        }
+
+        private void UpdateGameData()
+        {
             //Itt lehet esetleg klónozni jobb lenne az adatokat?
+            data!.parkName = ParkName;
             data!.tileMap = tileMap.Map;
+            data!.entrance = tileMap.Entrance;
+            data!.exit = tileMap.Exit;
             data.entities = entityHandler.GetEntities();
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
+            data.intersections = PathIntersectionNode.allNodes;
             CountTimePassed(data);
-            TickPassed?.Invoke(this, data);
         }
         private void CountTimePassed(GameData data)
         {
@@ -285,7 +346,6 @@ namespace SafariModel.Model
                 
                 if (canPlace && roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
                 {
-                    
                     OnTileMapUpdated(tileX, tileY);
                 }
                 return;
@@ -372,6 +432,65 @@ namespace SafariModel.Model
         private void OnNewMessage(object? sender, MessageEventArgs e)
         {
             NewMessage?.Invoke(sender, e);
+        }
+
+        public async Task SaveGameAsync(string filePath)
+        {
+            if (dataAccess == null) return;
+            if (data == null) return;
+            UpdateGameData();
+
+            await dataAccess.SaveAsync(filePath, data);
+        }
+
+        public async Task LoadGameAsync(string filePath)
+        {
+            if (dataAccess == null) return;
+            if (data == null) return;
+
+            data = await dataAccess.LoadAsync(filePath);
+
+            ParkName = data.parkName;
+
+            //statok visszatöltése
+            this.economyHandler = new EconomyHandler(data.money);
+
+
+            //Intersectionök visszatöltése
+            PathIntersectionNode.allNodes.Clear();
+            PathIntersectionNode.allNodes.AddRange(data.intersections);
+
+            //tileok visszatöltése
+            this.tileMap = new TileMap(data.tileMap);
+            tileMap.Entrance = data.entrance;
+            tileMap.Exit = data.exit;
+            MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
+
+            //intersectionök tileokhoz kötése
+            foreach(PathIntersectionNode node in PathIntersectionNode.allNodes)
+            {
+                Tile t = tileMap.Map[node.PathI, node.PathJ];
+                if(t is PathTile pt)
+                {
+                    if (tileMap.Entrance.I == node.PathI && tileMap.Entrance.J == node.PathJ)
+                        tileMap.Entrance.IntersectionNode = node;
+                    else if (tileMap.Exit.I == node.PathI && tileMap.Exit.J == node.PathJ)
+                        tileMap.Exit.IntersectionNode = node;
+                    else
+                        pt.IntersectionNode = node;
+                }
+            }
+
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+
+            //entityk visszatöltése
+
+            entityHandler.ClearAll();
+
+            foreach (Entity e in data.entities)
+            {
+                entityHandler.LoadEntity(e);
+            }
         }
     }
 }

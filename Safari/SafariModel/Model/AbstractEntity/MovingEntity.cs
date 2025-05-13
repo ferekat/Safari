@@ -18,11 +18,9 @@ namespace SafariModel.Model.AbstractEntity
         protected Queue<Point> targetPoints; 
         private Point currentTarget;
         private Vector2 movementVector;
-        private float subX;
-        private float subY;
+        private double subX;
+        private double subY;
 
-
-        
         private static TileCollision tileCollision;
        
         
@@ -174,10 +172,10 @@ namespace SafariModel.Model.AbstractEntity
 
             subX += movementVector.X;
             subY += movementVector.Y;
-            int wholeX = (int)float.Floor(subX);
-            int wholeY = (int)float.Floor(subY);
-            subX -= float.Floor(subX);
-            subY -= float.Floor(subY);
+            int wholeX = (int)double.Floor(subX);
+            int wholeY = (int)double.Floor(subY);
+            subX -= double.Floor(subX);
+            subY -= double.Floor(subY);
             this.x += wholeX;
             this.y += wholeY;
 
@@ -435,6 +433,47 @@ namespace SafariModel.Model.AbstractEntity
         protected virtual TileType[] ImPassableTileTypes()
         {
             return new TileType[] { TileType.FENCE, TileType.DEEP_WATER, TileType.ENTRANCE, TileType.EXIT };
+        }
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+            dataholder.doubles.Enqueue(subX);
+            dataholder.doubles.Enqueue(subY);
+
+            if (IsMoving) 
+            { 
+                dataholder.points.Enqueue(CurrentTarget);
+                foreach(Point p in targetPoints)
+                {
+                    dataholder.points.Enqueue(p);
+                } 
+            }
+            //sorozatelválasztó
+            dataholder.points.Enqueue(null);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+
+            double? readData;
+
+            readData = dataholder.doubles.Dequeue();
+            if (readData != null)
+                subX = (float)readData;
+            readData = dataholder.doubles.Dequeue();
+            if (readData != null)
+                subY = (float)readData;
+
+            Point? p = dataholder.points.Dequeue();
+            Queue<Point> pointqueue = new Queue<Point>();
+            while (p != null)
+            {
+                pointqueue.Enqueue((Point)p);
+                p = dataholder.points.Dequeue();
+            }
+            SetPath(pointqueue);
         }
 
         protected abstract void EntityLogic();
