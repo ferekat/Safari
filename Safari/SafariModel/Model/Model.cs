@@ -457,15 +457,5 @@ namespace SafariModel.Model
                 entityHandler.LoadEntity(e);
             }
         }
-
-        public bool Debug_FoundShortestPath()
-        {
-            return RoadNetworkHandler.FoundShortestPath;
-        }
-
-        public int Debug_InterSectionNodeCount()
-        {
-            return PathIntersectionNode.intersections.Count;
-        }
     }
 }

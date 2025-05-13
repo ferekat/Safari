@@ -1018,11 +1018,6 @@ namespace SafariView.ViewModel
                 Water: {a.Water}
                 Action: {a.Action}
                 Range: {a.Range}
-                
-                Debug_FoundShortestPath:
-                {model.Debug_FoundShortestPath()}
-                model.Debug_InterSectionNodeCount:
-                {model.Debug_InterSectionNodeCount()}
                 """;
             }
             else
