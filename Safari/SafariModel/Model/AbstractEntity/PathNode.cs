@@ -14,8 +14,6 @@ namespace SafariModel.Model.AbstractEntity
 
         public int DistanceToStart { get; private set; }
         public int Cost { get; private set; }
-
-        
         public PathNode(PathNode? parent,int x,int y, int distanceToStart, int distancetoFinish)
         {
             this.Parent = parent;
@@ -24,7 +22,5 @@ namespace SafariModel.Model.AbstractEntity
             DistanceToStart = distanceToStart;
             Cost = distanceToStart+distancetoFinish;
         }
-
-
     }
 }

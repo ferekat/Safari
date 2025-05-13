@@ -35,6 +35,8 @@ namespace SafariModel.Model.Utils
             exit = tileMap.Exit;
             entrance.IntersectionNode!.Distance = 0;
             foundShortestPath = false;
+            //Visszatöltéshez kell
+            ShortestPathAStar();
         }
 
         public bool ConnectToNetwork(Tile tileToConnect, PathTileType pathToConnect)

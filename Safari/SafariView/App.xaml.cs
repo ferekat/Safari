@@ -1,4 +1,5 @@
 ﻿using SafariModel.Model;
+using SafariModel.Persistence;
 using SafariView.View;
 using SafariView.ViewModel;
 using System.Configuration;
@@ -31,13 +32,14 @@ namespace SafariView
         #region Startup method
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
-            model = new Model();
+            model = new Model(new FileDataAccess());
             List<RenderObject> renderedTiles = new List<RenderObject>();
             List<RenderObject> renderedEntities = new List<RenderObject>();
 
             viewModel = new ViewModel.ViewModel(model,renderedTiles,renderedEntities);
             viewModel.ExitGame += new EventHandler(ViewModel_GameExit);
             viewModel.StartGame += new EventHandler(ViewModel_GameStart);
+            viewModel.EndGame += new EventHandler(ViewModel_GameEnd);
             viewModel.FinishedRenderingTileMap += new EventHandler(ViewModel_FinishedTileMapRendering);
             viewModel.FinishedRenderingEntities += new EventHandler(ViewModel_FinishedEntityRendering);
 
@@ -73,8 +75,14 @@ namespace SafariView
         }
         private void ViewModel_GameStart(object? sender, System.EventArgs e)
         {
-            lobbyWindow!.Close();
+            lobbyWindow!.Hide();
             mainWindow!.Show();
+        }
+
+        private void ViewModel_GameEnd(object? sender, System.EventArgs e)
+        {
+            lobbyWindow!.Show();
+            mainWindow!.Hide();
         }
         #endregion
     }

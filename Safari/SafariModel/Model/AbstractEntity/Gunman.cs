@@ -21,6 +21,11 @@ namespace SafariModel.Model.AbstractEntity
         private int multiplier;
         private int mapSizeConvert;
 
+        #region Loading helpers
+        int? targetID;
+        int? targetAnimalID;
+        #endregion
+
         public int Health { get; protected set; }
         public int Damage { get; protected set; }
         public MovingEntity Target { get { return target!; } }
@@ -125,9 +130,56 @@ namespace SafariModel.Model.AbstractEntity
             this.SetTarget(new Point(TargX, TargY));
         }
 
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+
+            dataholder.ints.Enqueue(health);
+            dataholder.ints.Enqueue(damage);
+            //targets
+            dataholder.ints.Enqueue(target == null ? null : target.ID);
+            dataholder.ints.Enqueue(targetAnimal == null ? null : targetAnimal.ID);
+
+            dataholder.ints.Enqueue(targX);
+            dataholder.ints.Enqueue(targY);
+
+            dataholder.ints.Enqueue(multiplier);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+
+            health = dataholder.ints.Dequeue() ?? health;
+            damage = dataholder.ints.Dequeue() ?? damage;
+            //targets
+            targetID = dataholder.ints.Dequeue();
+            targetAnimalID = dataholder.ints.Dequeue();
+
+            targX = dataholder.ints.Dequeue() ?? targX;
+            targY = dataholder.ints.Dequeue() ?? targY;
+
+            multiplier = dataholder.ints.Dequeue() ?? multiplier;
+        }
+
         protected override void EntityLogic()
         {
-
+            #region Betöltés után idk kiértékelése
+            if (targetID != null)
+            {
+                Entity? e = GetEntityByID((int)targetID);
+                if (e != null && e is MovingEntity me)
+                    target = me;
+                targetID = null;
+            }
+            if(targetAnimalID != null)
+            {
+                Entity? e = GetEntityByID((int)targetAnimalID);
+                if (e != null && e is Animal a)
+                    targetAnimal = a;
+                targetAnimalID = null;
+            }
+            #endregion
         }
     }
 }

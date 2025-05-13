@@ -34,6 +34,19 @@ namespace SafariModel.Model.AbstractEntity
 
         }
 
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+            dataholder.ints.Enqueue(regrowthTime);
+            dataholder.bools.Enqueue(canBeEaten);
+        }
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+            regrowthTime = dataholder.ints.Dequeue() ?? 0;
+            canBeEaten = dataholder.bools.Dequeue() ?? true;
+        }
+
         #endregion
     }
 }

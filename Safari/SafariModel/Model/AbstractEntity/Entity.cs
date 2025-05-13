@@ -64,6 +64,13 @@ namespace SafariModel.Model.AbstractEntity
             ChunkCoordinateChanged?.Invoke(this, (prev, current));
         }
 
+        public static Entity? GetEntityByID(int id)
+        {
+            if(entityHandler != null)
+                return entityHandler.GetEntityByID(id);
+            return null;
+        }
+
         protected static List<Entity> GetEntitiesInChunk((int, int) chunk)
         {
             List<Entity>? entities = entityHandler!.GetEntitiesInChunk(chunk);
@@ -86,6 +93,33 @@ namespace SafariModel.Model.AbstractEntity
             this.y = y;
             this.id = CurrentID++;
         }
+
+        public virtual void CopyData(EntityData dataholder)
+        {
+            dataholder.Reset();
+            dataholder.ints.Enqueue(X);
+            dataholder.ints.Enqueue(Y);
+            dataholder.ints.Enqueue(ID);
+        }
+
+        public virtual void LoadData(EntityData dataholder)
+        {
+            int? readData;
+            readData = dataholder.ints.Dequeue();
+            if (readData != null)
+                x = (int)readData;
+            readData = dataholder.ints.Dequeue();
+            if (readData != null)
+                y = (int)readData;
+            readData = dataholder.ints.Dequeue();
+            if (readData != null)
+            {
+                id = (int)readData;
+                if (id >= CurrentID)
+                    CurrentID = id + 1;
+            }
+        }
+
         public abstract void EntityTick();
     }
 }
