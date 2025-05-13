@@ -234,6 +234,10 @@ namespace SafariModel.Model.Utils
         {
             return guards;
         }
+        public List<Hunter> GetHunters()
+        {
+            return hunters;
+        }
 
         public void SetHunterTarget(object? sender, HunterTargetEventArgs e)
         {
