@@ -15,13 +15,25 @@ namespace SafariView.ViewModel
         private Rect rect;
         private Brush texture;
 
+        private int h;
+        private double x;
+        private double y;
+        public int H { get { return h; } }
+        public double RX { get { return x; } }
+        public double RY { get { return y; } } 
+
+
         public Rect Rectangle {  get { return rect; } }
         public Brush Texture { get { return texture; } }
 
-        public RenderObject(double x, double y, double size, Brush tex)
+        public RenderObject(double x, double y, double size, Brush tex,int h)
         {
             rect = new Rect(x, y, size, size);
             texture = tex;
+            
+            this.h = h;
+            this.y = y;
+            this.x = x;
         }
     }
 }

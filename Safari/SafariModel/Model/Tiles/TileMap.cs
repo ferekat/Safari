@@ -13,21 +13,46 @@ namespace SafariModel.Model.Tiles
         public static readonly int MAPCHUNKSIZE = 10;
 
         private Tile[,] map;
+        private Tile[,][,]chunks;
         private PathTile entrance;
         private PathTile exit;
 
         public Tile[,] Map { get { return map; } }
-        public PathTile Entrance { get { return entrance; } }
-        public PathTile Exit { get { return exit; } }
+        public PathTile Entrance { get { return entrance; } set { entrance = value; map[entrance.I, entrance.J] = entrance; } }
+        public PathTile Exit { get { return exit; } set { exit = value; map[exit.I, exit.J] = exit; } }
+        public Tile[,][,] Chunks { get { return chunks; } }
 
-
-        public TileMap(Tile[,] map, PathTile entrance, PathTile exit)
+        public TileMap(Tile[,] map)
         {
+            chunks = new Tile[MAPCHUNKSIZE,MAPCHUNKSIZE][,];
+            for (int i = 0; i < MAPCHUNKSIZE; i++)
+            {
+                for (int j = 0; j < MAPCHUNKSIZE; j++)
+                {
+                    chunks[i,j] = new Tile[MAPCHUNKSIZE, MAPCHUNKSIZE];
+                }
+            }
             this.map = map;
-            this.entrance = entrance;
-            this.exit = exit;
-
+          
+            for (int chunkX = 0; chunkX < MAPCHUNKSIZE; chunkX++) 
+            {
+                for (int chunkY = 0; chunkY < MAPCHUNKSIZE; chunkY++)
+                {
+                    for (int i = 0; i < MAPCHUNKSIZE; i++) 
+                    {
+                        for (int j = 0; j < MAPCHUNKSIZE; j++) 
+                        {
+                           
+                            int mapX = chunkX * MAPCHUNKSIZE + i;
+                            int mapY = chunkY * MAPCHUNKSIZE + j;
+                            chunks[chunkX,chunkY][i, j] = map[mapX, mapY];
+                           
+                        }
+                    }
+                }
+            }
         }
+        
         public static bool IsTileCoordInBounds(int i, int j)
         {
             return i >= 0 &&
@@ -85,45 +110,7 @@ namespace SafariModel.Model.Tiles
             {'H',TileType.MEDIUM_HIGH},
             {'I',TileType.HIGH_HILL}
         };
-        public static TileMap CreateMapTmp()
-        {
-            using (StreamReader sr = new StreamReader("TestMap.txt"))
-            {
-
-                Tile[,] map = new Tile[100, 100];
-                for (int i = 0; i < 100; i++)
-                {
-                    string? line = sr.ReadLine();
-                    if (line != null)
-                    {
-                        for (int j = 0; j < 100; j++)
-                        {
-                            char c = line[j];
-                            map[i, j] = new Tile(i, j, 0, dict[c]);
-                        }
-                    }
-                }
-                for (int i = 0; i < 100; i++)
-                {
-                    map[i, 0].SetType(TileType.FENCE);
-                    map[i,99].SetType(TileType.FENCE);
-                }
-                    for (int j = 0;j < 100; j++)
-                    {
-                    map[0,j].SetType(TileType.FENCE);
-                    map[99, j].SetType(TileType.FENCE);
-                    }
-                map[0, 5].SetType(TileType.ENTRANCE);
-                map[5, 0].SetType(TileType.EXIT);
-
-                map[0, 5] = new PathTile(map[0, 5], PathTileType.ROAD, new PathIntersectionNode(0, 5));
-                map[5, 0] = new PathTile(map[5, 0], PathTileType.ROAD, new PathIntersectionNode(5, 0));
-
-
-
-
-            return new TileMap(map, (PathTile)map[0, 5], (PathTile)map[5, 0]);
-            }
-        }
+     
+        
     }
 }

@@ -21,7 +21,7 @@ namespace SafariModel.Model.InstanceEntity
         private int waitingTime;
         private int tickBeforeTarget;
         private bool leavingMap;
-        private int mapSizeConvert;
+        //private int mapSizeConvert;
         private bool duel;
 
         #region Loading helpers
@@ -46,7 +46,7 @@ namespace SafariModel.Model.InstanceEntity
             waitingTime = 0;
             tickBeforeTarget = 0;
             leavingMap = false;
-            mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
+            //mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
             duel = false;
             isVisible = false;
         }
@@ -55,31 +55,7 @@ namespace SafariModel.Model.InstanceEntity
             //itt majd megy vele az állat is, ha az Animal-ben a leader logika megvalósul
             hasEntered = false;
 
-            int l = X - 50;
-            int r = mapSizeConvert - X;
-            int t = Y - 50;
-            int b = mapSizeConvert - Y;
-            int min = Math.Min(Math.Min(l, r), Math.Min(t, b));
-            switch (min)
-            {
-                case int _ when min == l:
-                    TargX = 50;
-                    TargY = Y;
-                    break;
-                case int _ when min == r:
-                    TargX = mapSizeConvert;
-                    TargY = Y;
-                    break;
-                case int _ when min == t:
-                    TargX = X;
-                    TargY = 50;
-                    break;
-                case int _ when min == b:
-                    TargX = X;
-                    TargY = mapSizeConvert;
-                    break;
-            }
-            this.SetTarget(new Point(TargX, TargY));
+            FindNearestExit();
         }
         private void DecideTask()
         {
@@ -135,7 +111,7 @@ namespace SafariModel.Model.InstanceEntity
 
                     }
                 }
-                else if (X == 50 || X == mapSizeConvert || Y == 50 || Y == mapSizeConvert)
+                else if (X == 50 || X == MapSizeConvert || Y == 50 || Y == MapSizeConvert)
                 {
                     RemoveGunman(this);
                 }

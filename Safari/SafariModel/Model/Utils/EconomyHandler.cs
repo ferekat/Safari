@@ -1,7 +1,9 @@
-﻿using SafariModel.Model.InstanceEntity;
+﻿using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
@@ -24,7 +26,8 @@ namespace SafariModel.Model.Utils
             { typeof(Cactus),80 },
             { typeof(Greasewood),50 },
             { typeof(PalmTree),100 },
-            { typeof(Guard),0 }
+            { typeof(Guard),0 },
+            { typeof(Hunter), 350 }
         };
         private Dictionary<PathTileType, int> pathTileCosts = new Dictionary<PathTileType, int>
         {
@@ -32,35 +35,9 @@ namespace SafariModel.Model.Utils
                 PathTileType.ROAD,100
             },
             {
-                PathTileType.SMALL_BRIDGE_VERT,500
-            },
-            {
-                PathTileType.SMALL_BRIDGE_HOR,500
-            },
-            {
-                PathTileType.SMALL_BRIDGE_DR,500
-            },
-            {
-                PathTileType.SMALL_BRIDGE_DL,500
-            },
-            {
-                PathTileType.SMALL_BRIDGE_UR,500
-            },
-            {
-                PathTileType.SMALL_BRIDGE_UL,500
-            },
-            {
-                PathTileType.LARGE_BRIDGE_VERT,1500
-            },
-            {
-                PathTileType.LARGE_BRIDGE_HOR,1500
-            },
-            {
-                PathTileType.LARGE_BRIDGE_U,1500
-            },
-            {
-                PathTileType.LARGE_BRIDGE_D,1500
+                PathTileType.BRIDGE,200
             }
+           
         };
         private Dictionary<TileType, int> tileCosts = new Dictionary<TileType, int>
         {
@@ -110,6 +87,12 @@ namespace SafariModel.Model.Utils
             if (money < cost ) return false;
             money -= cost;
             return true;
+        }
+        public void GetBounty(MovingEntity m)
+        {
+            //az entity eredeti árának 70%-át kapjuk fejpénznek
+            int bounty = (int)Math.Floor(GetEnityCost(m.GetType())*0.7);
+            money += bounty;
         }
     }
 }

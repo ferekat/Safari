@@ -185,9 +185,9 @@ namespace SafariModel.Model.Utils
                         break;
                 }
                 hunter!.Multiplier = speed;
-                hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
+                //hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
                 hunter!.HunterTarget += new EventHandler<HunterTargetEventArgs>(SetHunterTarget);
-                hunter!.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(RemoveGunman);
+                //hunter!.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(RemoveGunman);
                 LoadEntity(hunter);
             }
         }
@@ -234,18 +234,10 @@ namespace SafariModel.Model.Utils
         {
             return guards;
         }
-        public void KillAnimal(object? sender, KillAnimalEventArgs e)
-        {
-            RemoveEntity(e.Animal);
-        }
 
         public void SetHunterTarget(object? sender, HunterTargetEventArgs e)
         {
             e.Hunter.TargetAnimal = SetHunterTargetAnimal();
-        }
-        public void RemoveGunman(object? sender, GunmanRemoveEventArgs e)
-        {
-            RemoveEntity(e.Gunman);
         }
     }
 }

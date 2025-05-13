@@ -1,4 +1,4 @@
-﻿using SafariModel.Model.Tiles;
+using SafariModel.Model.Tiles;
 using SafariModel.Model.Utils;
 using SafariModel.Persistence;
 using SafariModel.Model.InstanceEntity;
@@ -35,6 +35,8 @@ namespace SafariModel.Model
         private EconomyHandler economyHandler;
         private RoadNetworkHandler roadNetworkHandler;
         private TouristHandler touristHandler;
+        private WorldGenerationHandler worldGenerationHandler;
+
         private int tickCount;
         private int tickPerGameSpeedCount;
         private int secondCounterHunter;
@@ -98,12 +100,11 @@ namespace SafariModel.Model
 
             entityHandler = new EntityHandler();
             secondCounterHunter = 0;
+            worldGenerationHandler = new WorldGenerationHandler("zjcdmtheqgjcvjm",entityHandler);
 
-
-            //-------- !!IDEIGLENES!! térkép példányosítás
+           
+            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
             
-            tileMap = TileMap.CreateMapTmp();
-            //-------------
 
             TileCollision tc = new TileCollision(tileMap);
             MovingEntity.RegisterTileCollision(tc);
@@ -119,7 +120,7 @@ namespace SafariModel.Model
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
             touristHandler = new TouristHandler();
 
-            economyHandler = new EconomyHandler(9999);
+            economyHandler = new EconomyHandler(99999);
 
             tickCount = 0;
             tickPerGameSpeedCount = 0;
@@ -157,6 +158,8 @@ namespace SafariModel.Model
                 Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
                 if (hunter != null)
                 {
+                    hunter.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+                    hunter.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                     if (secondCounterHunter == hunter.EnterField)
                     {
                         hunter.HasEntered = true;
@@ -291,6 +294,14 @@ namespace SafariModel.Model
                         {
                             data.week = 1;
                             data.month++;
+                            //guard salary
+                            foreach(Guard g in entityHandler.GetGuards())
+                            {
+                                if (!economyHandler.PaySalary(g))
+                                {
+                                    g.LeavePark();
+                                }
+                            }
                             if (data.month >= 12)
                             {
                                 InvokeGameOver();
@@ -317,6 +328,8 @@ namespace SafariModel.Model
 
             if (Tile.tileShopMap.ContainsKey(itemName) && Tile.tileShopMap[itemName] is TileType tileToBuy)
             {
+
+                bool canPlace = (clickedTile.TileType == TileType.GROUND && tileToBuy == TileType.SHALLOW_WATER);
                 if (economyHandler.BuyTile(tileToBuy))
                 {
                     clickedTile.SetType(tileToBuy);
@@ -324,10 +337,14 @@ namespace SafariModel.Model
                 }
                 return;
             }
-            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy && PathTile.CanPlacePath(pathToBuy,clickedTile.Type))
+            if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy)
             {
+
+                bool canPlace = ((clickedTile.IsWater() && pathToBuy == PathTileType.BRIDGE) || (!clickedTile.IsWater() && pathToBuy == PathTileType.ROAD));
+                
                     //ha be lehet kötni a hálózatba és meg lehet venni
-                if (roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
+                
+                if (canPlace && roadNetworkHandler.ConnectToNetwork(clickedTile,pathToBuy) && economyHandler.BuyPathTile(pathToBuy))
                 {
                     OnTileMapUpdated(tileX, tileY);
                 }
@@ -349,8 +366,8 @@ namespace SafariModel.Model
             if (entity is Guard guardEntity)
             {
                 guardEntity.Multiplier = speedBoost;
-                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(entityHandler.KillAnimal);
-                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(entityHandler.RemoveGunman);
+                guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+                guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                 guardEntity.TookDamage += OnNewMessage;
                 guardEntity.LevelUp += OnNewMessage;
                 if (!economyHandler.PaySalary(guardEntity)) return;
@@ -395,6 +412,22 @@ namespace SafariModel.Model
                 }
             }
             return nearbyEntities;
+        }
+        private void HandleAnimalKill(object? sender, KillAnimalEventArgs e)
+        {
+            if (e.Killer is Guard g)
+            {
+                economyHandler.GetBounty(e.Animal);
+            }
+            entityHandler.RemoveEntity(e.Animal);
+        }
+        private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)
+        {
+            if (e.Gunman is Hunter h)
+            {
+                economyHandler.GetBounty(e.Gunman);
+            }
+            entityHandler.RemoveEntity(e.Gunman);
         }
         private void OnNewMessage(object? sender, MessageEventArgs e)
         {

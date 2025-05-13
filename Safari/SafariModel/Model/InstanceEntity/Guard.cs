@@ -22,6 +22,7 @@ namespace SafariModel.Model.InstanceEntity
         private int baseDamage;
         private Hunter? targetHunter;
         private int timeShots;
+        private bool isLeaving;
 
         #region Loading helpers
         int? targetID;
@@ -50,12 +51,14 @@ namespace SafariModel.Model.InstanceEntity
             Damage = 15;
             targetHunter = null;
             timeShots = 72;
+            isLeaving = false;
         }
         #endregion
         #region Public methods
-        public void CollectSalary()
+        public void LeavePark()
         {
-
+            isLeaving = true;
+            FindNearestExit();
         }
         #endregion
         protected override void EntityLogic()
@@ -91,6 +94,34 @@ namespace SafariModel.Model.InstanceEntity
                     TargetAnimal = null;
                     IncreaseLevel(0);
                 }
+            if (!isLeaving)
+            {
+                SetTargetHunter();
+                if (targetHunter != null)
+                {
+                    if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                    {
+                        Fire(this, targetHunter);
+                    }
+                    tickBeforeFire++;
+                }
+                else if (TargetAnimal != null)
+                {
+                    if (TargX != TargetAnimal.X || TargY != TargetAnimal.Y)
+                    {
+                        ChaseTarget();
+                    }
+                    if (TargX == x && TargY == y)
+                    {
+                        KillAnimal();
+                        TargetAnimal = null;
+                        IncreaseLevel(0);
+                    }
+                }
+            }
+            else if (X == 50 || X == MapSizeConvert || Y == 50 || Y == MapSizeConvert)
+            {
+                RemoveGunman(this);
             }
         }
         #region Private methods

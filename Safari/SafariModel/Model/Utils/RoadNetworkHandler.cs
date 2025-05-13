@@ -19,7 +19,7 @@ namespace SafariModel.Model.Utils
         private static bool foundShortestPath;
 
 
-        private List<PathTile> roadNetwork = new();
+        private List<PathIntersectionNode> roadNetwork = new();
         private static List<PathTile> shortestPathExitToEntrance = new();
         private static List<PathTile> shortestPathEntranceToExit = new();
         public static List<PathTile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } }
@@ -29,6 +29,7 @@ namespace SafariModel.Model.Utils
         private TileMap tileMap;
         public RoadNetworkHandler(TileMap tileMap)
         {
+            
             this.tileMap = tileMap;
             entrance = tileMap.Entrance;
             exit = tileMap.Exit;
@@ -46,37 +47,22 @@ namespace SafariModel.Model.Utils
             }
             int pathNeighbours = 0;
             List<PathIntersectionNode> neighNodes = new();
-            PathTile connectedTile = new PathTile(tileToConnect, pathToConnect, new PathIntersectionNode(tileToConnect.I, tileToConnect.J));
+            PathTile connectedTile = new PathTile(tileToConnect, pathToConnect);
             PathIntersectionNode neighNode = null!;
             PathIntersectionNode connectedTileNode = connectedTile.IntersectionNode!;
             bool succ = false;
-            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK
+            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK HIDAK
             {
                 if (neigh is PathTile neighPathTile)
                 {
+                    
+
                     succ = true;
                    
-                    switch (neighPathTile.PathType) //HIDAK
-                    {
-                        case PathTileType.SMALL_BRIDGE_VERT or PathTileType.SMALL_BRIDGE_HOR or PathTileType.SMALL_BRIDGE_DR or PathTileType.SMALL_BRIDGE_DL or PathTileType.SMALL_BRIDGE_UR or PathTileType.SMALL_BRIDGE_UL:
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_VERT) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_HOR) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_DR) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_DL) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_UR) return false;
-                            if (pathToConnect != PathTileType.SMALL_BRIDGE_UL) return false;
-                            break;
-                        case PathTileType.LARGE_BRIDGE_VERT or PathTileType.LARGE_BRIDGE_HOR or PathTileType.LARGE_BRIDGE_U or PathTileType.LARGE_BRIDGE_D:
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_VERT) return false;
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_HOR) return false;
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_D) return false;
-                            if (pathToConnect != PathTileType.LARGE_BRIDGE_U) return false;
-                            break;
-                        default:
-                            break;
-                    }
 
-                    roadNetwork.Add(connectedTile);
+                   
+
+                   
 
                     if (neighPathTile.IntersectionNode == null)
                     {
@@ -96,21 +82,15 @@ namespace SafariModel.Model.Utils
                     neighNode = neighPathTile.IntersectionNode;
                     neighNodes.Add(neighNode);
                     PathIntersectionNode.ConnectIntersections(connectedTileNode, neighNode);
-
-
-
-
-
-
-
-
                     pathNeighbours++;
                 }
             }
+
             if (succ)
             {
                 tileMap.Map[tileToConnect.I, tileToConnect.J] = connectedTile;
                 neighNodes.Add(connectedTileNode);
+               
                 foreach(PathIntersectionNode node in neighNodes)
                 {
                     SimplifyStraightPath(node);
@@ -122,19 +102,14 @@ namespace SafariModel.Model.Utils
 
 
 
-                ///debug
-                //foreach (PathTile pt in roadNetwork)
-                //{
-                //    pt.PathType = PathTileType.EMPTY;
-                //}
                 
-                foreach (PathIntersectionNode node in PathIntersectionNode.intersections)
+                foreach (PathIntersectionNode node in PathIntersectionNode.allNodes)
                 {
                     
                     if (tileMap.Map[node.PathI, node.PathJ] is PathTile pt)
                     {
 
-                   //     pt.PathType = PathTileType.EMPTY;
+                  
                     }
                   
                 }
@@ -275,7 +250,7 @@ namespace SafariModel.Model.Utils
             shortestPathExitToEntrance.Clear();
 
             // Reset distances and visited flags
-            foreach (var node in PathIntersectionNode.intersections)
+            foreach (var node in PathIntersectionNode.allNodes)
             {
                 node.Distance = int.MaxValue;
                 node.IsVisited = false;

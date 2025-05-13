@@ -92,7 +92,7 @@ namespace SafariModel.Model
             foreach(Tile tile in shortestPath)
             {
 
-                Point point = tile.TileCenterPoint(this);
+                Point point = tile.TileCenterPointForEntity(this);
                 if (path.Count == 0 && x == point.X && y == point.Y)
                 {
                     continue;

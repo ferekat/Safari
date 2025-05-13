@@ -19,6 +19,7 @@ namespace SafariModel.Model.AbstractEntity
         private int targY;
         private Random random;
         private int multiplier;
+        private int mapSizeConvert;
 
         #region Loading helpers
         int? targetID;
@@ -32,6 +33,7 @@ namespace SafariModel.Model.AbstractEntity
         public int TargX { get { return targX; } set { targX = value; } }
         public int TargY { get { return targY; } set { targY = value; } }
         public int Multiplier { get { return multiplier; } set { multiplier = value; } }
+        public int MapSizeConvert { get { return mapSizeConvert; } }
 
         public event EventHandler<KillAnimalEventArgs>? KilledAnimal;
         public event EventHandler<GunmanRemoveEventArgs>? GunmanRemove;
@@ -43,6 +45,7 @@ namespace SafariModel.Model.AbstractEntity
             Damage = damage;
             TargetAnimal = targetAnimal;
             random = new Random();
+            mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
         }
         protected void Fire(Guard g, Hunter h)
         {
@@ -96,6 +99,35 @@ namespace SafariModel.Model.AbstractEntity
         protected void RemoveGunman(Gunman g)
         {
             GunmanRemove?.Invoke(this, new GunmanRemoveEventArgs(g));
+        }
+
+        protected void FindNearestExit()
+        {
+            int l = X - 50;
+            int r = mapSizeConvert - X;
+            int t = Y - 50;
+            int b = mapSizeConvert - Y;
+            int min = Math.Min(Math.Min(l, r), Math.Min(t, b));
+            switch (min)
+            {
+                case int _ when min == l:
+                    TargX = 50;
+                    TargY = Y;
+                    break;
+                case int _ when min == r:
+                    TargX = mapSizeConvert;
+                    TargY = Y;
+                    break;
+                case int _ when min == t:
+                    TargX = X;
+                    TargY = 50;
+                    break;
+                case int _ when min == b:
+                    TargX = X;
+                    TargY = mapSizeConvert;
+                    break;
+            }
+            this.SetTarget(new Point(TargX, TargY));
         }
 
         public override void CopyData(EntityData dataholder)
