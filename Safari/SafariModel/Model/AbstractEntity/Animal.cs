@@ -41,8 +41,9 @@ namespace SafariModel.Model.AbstractEntity
         private Point targetedWater;
 
         private static readonly int LEADER_FOLLOW_RANGE = Tile.TILESIZE * 15;
+        private static readonly int SEARCH_CYCLES = 120;
+        private static int currentSearchCycle = 0;
 
-        private int searchLimit;
         private int hungerLimit;
         private int thirstLimit;
         private int healLimit;
@@ -64,6 +65,8 @@ namespace SafariModel.Model.AbstractEntity
         public int Food { get; protected set; }
         public int Water { get; protected set; }
         public int Health { get; protected set; }
+
+        public int MaxHealth { get; protected set; }
         public AnimalActions Action { get; protected set; }
         public bool IsLeader { get { return leader == null && members != null; } }
         public bool InGroup { get { return leader != null || members != null; } }
@@ -81,21 +84,24 @@ namespace SafariModel.Model.AbstractEntity
         #endregion
 
         #region Constructor
-        protected Animal(int x, int y, int age, int health, int food, int water, int hunger, int thirst,int breedingCooldown) : base(x, y)
+        protected Animal(int x, int y, int age, int maxHealth, int food, int water, int hunger, int thirst,int breedingCooldown) : base(x, y)
         {
             Age = age;
             Food = food;
             Water = water;
             Hunger = hunger;
             Thirst = thirst;
-            Health = health;
+            MaxHealth = maxHealth;
+            Health = maxHealth;
             Action = AnimalActions.Resting;
 
             hungerLimit = 1000;
             thirstLimit = 600;
             healLimit = 1200;
-            searchLimit = 360;
-            searchTimer = 0;
+
+            searchTimer = currentSearchCycle++;
+            if (currentSearchCycle >= SEARCH_CYCLES)
+                currentSearchCycle = 0;
             healTimer = 0;
             interactionRange = 70;
 
@@ -105,8 +111,6 @@ namespace SafariModel.Model.AbstractEntity
             exploredWaterChunks = new HashSet<(int, int)>();
 
             breedCooldown = breedingCooldown;
-
-            range = 200;
 
             CheckArea();
 
@@ -304,7 +308,7 @@ namespace SafariModel.Model.AbstractEntity
 
         private void Search()
         {
-            if (++searchTimer >= searchLimit)
+            if (++searchTimer >= SEARCH_CYCLES)
             {
                 searchTimer = 0;
                 CheckArea();
@@ -458,6 +462,8 @@ namespace SafariModel.Model.AbstractEntity
             if(++healTimer >= healLimit)
             {
                 ++Health;
+                if(Health > MaxHealth)
+                    Health = MaxHealth;
                 healTimer = 0;
             }
         }
