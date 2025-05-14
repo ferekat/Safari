@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Diagnostics;
 using SafariModel.Model.EventArgsClasses;
 using System.Xml.XPath;
+using System.Diagnostics.Metrics;
 
 namespace SafariModel.Model
 {
@@ -116,6 +117,8 @@ namespace SafariModel.Model
 
             Hunter h = new Hunter(50, 50, null);
             h.Multiplier = 1;
+            h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+            h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
             entityHandler.LoadEntity(h);
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
             touristHandler = new TouristHandler();
@@ -419,11 +422,18 @@ namespace SafariModel.Model
             {
                 economyHandler.GetBounty(e.Animal);
             }
+            foreach(Hunter h in entityHandler.GetHunters())
+            {
+                if(h.TargetAnimal == e.Animal)
+                {
+                    h.TargetAnimal = null;
+                }
+            }
             entityHandler.RemoveEntity(e.Animal);
         }
         private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)
         {
-            if (e.Gunman is Hunter h)
+            if (e.Gunman is Hunter h && h.IsKilled)
             {
                 economyHandler.GetBounty(e.Gunman);
             }

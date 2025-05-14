@@ -20,7 +20,8 @@ namespace SafariModel.Model.AbstractEntity
             GoEat,
             GoDrink,
             Wandering,
-            FindLeader
+            FindLeader,
+            FollowHunter
         }
         #endregion
 
@@ -36,6 +37,8 @@ namespace SafariModel.Model.AbstractEntity
         private Random random;
         private int interactionRange;
         private bool searchingForLeader;
+        private bool isCaught;
+        private Hunter? abductor;
 
         private Entity? targetedFood;
         private Point targetedWater;
@@ -48,6 +51,8 @@ namespace SafariModel.Model.AbstractEntity
         private int healLimit;
         private int healTimer;
         private int breedCooldown;
+        private int targetX;
+        private int targetY;
 
         #region Loading helpers
         List<int>? memberIDs;
@@ -73,6 +78,8 @@ namespace SafariModel.Model.AbstractEntity
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
         public int SearchTimer { get { return searchTimer; } }
+        public bool IsCaught { get { return isCaught; } set { isCaught = value; } }
+        public Hunter? Abductor { get { return Abductor; } set { abductor = value; } }
 
         #endregion
 
@@ -98,6 +105,7 @@ namespace SafariModel.Model.AbstractEntity
             searchTimer = 0;
             healTimer = 0;
             interactionRange = 70;
+            isCaught = false;
 
             exploredFoodPlaces = new List<Point>();
             exploredWaterPlaces = new List<Point>();
@@ -213,7 +221,19 @@ namespace SafariModel.Model.AbstractEntity
         }
         protected void Follow(MovingEntity entity)
         {
-            throw new NotImplementedException();
+            if(entity is Hunter h)
+            {
+                if(targetX != h.TargX || targetY != h.TargY)
+                {
+                    targetX = h.TargX;
+                    targetY = h.TargY;
+                    this.SetTarget(new Point(targetX, targetY));
+                }
+                if(X == h.TargX && Y == h.TargY)
+                {
+                    RemoveSelf();
+                }
+            }
         }
        
         protected void RandomWander()
@@ -254,20 +274,22 @@ namespace SafariModel.Model.AbstractEntity
             #endregion
 
             PassTick();
-            if (!searchingForLeader && leader != null && DistanceToEntity(leader) > LEADER_FOLLOW_RANGE) 
-            {
-                searchingForLeader = true;
-                SetTarget(new Point(leader.X, leader.Y));
-            }
-            Action = SelectAction();
-            switch (Action)
-            {
-                case AnimalActions.Resting: Rest(); break;
-                case AnimalActions.Wandering: Wander(); break;
-                case AnimalActions.GoEat: GoEat(); break;
-                case AnimalActions.GoDrink: GoDrink(); break;
-                case AnimalActions.FindLeader: FindLeader(); break;
-            }
+
+                if (!searchingForLeader && leader != null && DistanceToEntity(leader) > LEADER_FOLLOW_RANGE && !isCaught)
+                {
+                    searchingForLeader = true;
+                    SetTarget(new Point(leader.X, leader.Y));
+                }
+                Action = SelectAction();
+                switch (Action)
+                {
+                    case AnimalActions.Resting: Rest(); break;
+                    case AnimalActions.Wandering: Wander(); break;
+                    case AnimalActions.GoEat: GoEat(); break;
+                    case AnimalActions.GoDrink: GoDrink(); break;
+                    case AnimalActions.FindLeader: FindLeader(); break;
+                    case AnimalActions.FollowHunter: Follow(abductor!); break;
+                }
 
             AnimalLogic();
         }
@@ -293,6 +315,7 @@ namespace SafariModel.Model.AbstractEntity
 
         private AnimalActions SelectAction()
         {
+            if (isCaught) return AnimalActions.FollowHunter;
             if (Water < 40) return AnimalActions.GoDrink;
             if (Food < 40) return AnimalActions.GoEat;
             if (searchingForLeader) return AnimalActions.FindLeader;
@@ -415,7 +438,7 @@ namespace SafariModel.Model.AbstractEntity
             {
                 leader.RemoveFromGroup(this);
             }
-            else if(members != null)
+            else if(members != null && members.Count > 0)
             {
                 //új random vezető választása
                 Animal newLeader = members[random.Next(0, members.Count)];

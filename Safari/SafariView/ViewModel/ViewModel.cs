@@ -873,11 +873,11 @@ namespace SafariView.ViewModel
                     {
                         if (h.IsVisible && h.HasEntered)
                         {
-                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
                         }
                     }
-                   else
-                   {
+                    else
+                    {
                         RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
