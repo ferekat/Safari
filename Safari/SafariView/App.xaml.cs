@@ -16,6 +16,7 @@ namespace SafariView
 
         #region Private fields
         private LobbyWindow? lobbyWindow;
+       
         private MainWindow? mainWindow;
         private ViewModel.ViewModel? viewModel;
         private Model? model;
@@ -32,7 +33,7 @@ namespace SafariView
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
             lobbyWindow = new LobbyWindow();
-
+            
 
             model = new Model();
             List<RenderObject> renderedTiles = new List<RenderObject>();

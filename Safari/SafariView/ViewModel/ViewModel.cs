@@ -244,6 +244,8 @@ namespace SafariView.ViewModel
         public string LoadGamePage { get { return loadGamePage!; } private set { loadGamePage = value; OnPropertyChanged(); } }
         public string OptionName { get { return optionName!; } private set { optionName = value; OnPropertyChanged(); } }
 
+
+
         public Brush BackgroundBrush { get { return tileBrushes[TileType.GROUND]; } }
         public string TopRowHeightString { get { return topRowHeightString; } private set { topRowHeightString = value; OnPropertyChanged(); } }
         public string BottomRowHeightString { get { return bottomRowHeightString; } private set { bottomRowHeightString = value; OnPropertyChanged(); } }

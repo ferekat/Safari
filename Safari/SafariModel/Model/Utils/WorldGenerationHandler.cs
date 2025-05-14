@@ -138,25 +138,25 @@ namespace SafariModel.Model.Utils
             PathTile? exit = null;
 
             //TESZTELÉSRE:
-            entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
-            exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
-            ///////////
+            //entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
+            //exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
+            /////////////
             ///
 
-            //while (entrance == null || exit == null)
-            //{
-            //    int isHorizontal = random.Next(2);
-            //    if (isHorizontal == 0)
-            //    {
-            //        entrance = GeneratedGateOnFence(leftFence, TileType.ENTRANCE);
-            //        exit = GeneratedGateOnFence(rightFence, TileType.EXIT);
-            //    }
-            //    else
-            //    {
-            //        entrance = GeneratedGateOnFence(topFence, TileType.ENTRANCE);
-            //        exit = GeneratedGateOnFence(bottomFence, TileType.EXIT);
-            //    }
-            //}
+            while (entrance == null || exit == null)
+            {
+                int isHorizontal = random.Next(2);
+                if (isHorizontal == 0)
+                {
+                    entrance = GeneratedGateOnFence(leftFence, TileType.ENTRANCE);
+                    exit = GeneratedGateOnFence(rightFence, TileType.EXIT);
+                }
+                else
+                {
+                    entrance = GeneratedGateOnFence(topFence, TileType.ENTRANCE);
+                    exit = GeneratedGateOnFence(bottomFence, TileType.EXIT);
+                }
+            }
             tileMap.Entrance = entrance; 
             tileMap.Exit = exit;
           

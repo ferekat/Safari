@@ -121,7 +121,7 @@ namespace SafariModel.Model
             h.Multiplier = 1;
             entityHandler.LoadEntity(h);
         }
-        public Model() : this("null") { }
+        public Model() : this("testseed") { }
 
         #region Get tile and entity based on coordinates
         public (int, int) GetTileFromCoords(int x, int y)
