@@ -20,6 +20,7 @@ using System.Windows.Data;
 using System.Diagnostics.Contracts;
 using SafariModel.Model.EventArgsClasses;
 using System.Windows.Controls;
+using System.IO;
 
 namespace SafariView.ViewModel
 {
@@ -72,7 +73,17 @@ namespace SafariView.ViewModel
         private string? newGamePage;
         private string? creditsPage;
         private string? loadGamePage;
+        private string? slotPickerPage;
         private string? optionName;
+
+        private bool save1exists;
+        private bool save2exists;
+        private bool save3exists;
+        private SaveData save1data;
+        private SaveData save2data;
+        private SaveData save3data;
+
+        private string currentSlot;
 
         //Kiválasztott entitás adatai
         private string selectedEntityData;
@@ -172,7 +183,7 @@ namespace SafariView.ViewModel
             
         };
 
-    
+
         #endregion
 
         #region Entity brushes
@@ -219,8 +230,8 @@ namespace SafariView.ViewModel
                     ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/jeep.png")),
                 }},
         };
-       
-      
+
+
         #endregion
 
         #region ClickAction enum
@@ -242,9 +253,15 @@ namespace SafariView.ViewModel
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
         public string LoadGamePage { get { return loadGamePage!; } private set { loadGamePage = value; OnPropertyChanged(); } }
+        public string SlotPickerPage { get { return slotPickerPage!; } private set { slotPickerPage = value; OnPropertyChanged(); } }
         public string OptionName { get { return optionName!; } private set { optionName = value; OnPropertyChanged(); } }
 
-
+        public bool Save1Exists { get { return save1exists; } private set { save1exists = value; OnPropertyChanged(); } }
+        public bool Save2Exists { get { return save2exists; } private set { save2exists = value; OnPropertyChanged(); } }
+        public bool Save3Exists { get { return save3exists; } private set { save3exists = value; OnPropertyChanged(); } }
+        public SaveData Save1data { get { return save1data; } private set { save1data = value; OnPropertyChanged(); } }
+        public SaveData Save2data { get { return save2data; } private set { save2data = value; OnPropertyChanged(); } }
+        public SaveData Save3data { get { return save3data; } private set { save3data = value; OnPropertyChanged(); } }
 
         public Brush BackgroundBrush { get { return tileBrushes[TileType.GROUND]; } }
         public string TopRowHeightString { get { return topRowHeightString; } private set { topRowHeightString = value; OnPropertyChanged(); } }
@@ -327,10 +344,13 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Commands
-        public DelegateCommand SaveGameCommand;
-        public DelegateCommand LoadGameCommand;
+        public DelegateCommand SaveGameCommand { get; private set; }
+        public DelegateCommand LoadGameCommand { get; private set; }
+
+        public DelegateCommand SaveAndQuitCommand { get; private set; }
         public DelegateCommand ExitGameCommand { get; private set; }
         public DelegateCommand NewGamePageCommand { get; private set; }
+        public DelegateCommand SlotPickerPageCommand { get; private set; }
         public DelegateCommand LoadGamePageCommand { get; private set; }
         public DelegateCommand BackCommand { get; private set; }
         public DelegateCommand StartCommand { get; private set; }
@@ -343,6 +363,7 @@ namespace SafariView.ViewModel
         #region EventHandlers
         public event EventHandler? ExitGame;
         public event EventHandler? StartGame;
+        public event EventHandler? EndGame;
         public event EventHandler? FinishedRenderingTileMap;
         public event EventHandler? FinishedRenderingEntities;
         public event EventHandler<(int, int)>? RequestCameraChange;
@@ -355,7 +376,7 @@ namespace SafariView.ViewModel
             this.RenderedEntities = renderedEntities;
             FloatingTexts = new ObservableCollection<FloatingText>();
             this.RenderedTiles = renderedTiles;
-            minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE,96,96, PixelFormats.Rgb24, null);
+            minimapBitmap = new WriteableBitmap(Model.MAPSIZE, Model.MAPSIZE, 96, 96, PixelFormats.Rgb24, null);
             tickTimer = new DispatcherTimer(DispatcherPriority.Normal);
             tickTimer.Tick += new EventHandler(OnGameTimerTick);
             tickTimer.Interval = TimeSpan.FromSeconds(1 / 120.0);
@@ -365,23 +386,25 @@ namespace SafariView.ViewModel
             renderTimer.Interval = TimeSpan.FromSeconds((1 / 120.0));
 
             //Initialize commands
-            SaveGameCommand = new DelegateCommand((param) => SaveGame());
-            LoadGameCommand = new DelegateCommand((param) => LoadGame());
+            SaveGameCommand = new DelegateCommand(async (param) => await SaveGame());
+            LoadGameCommand = new DelegateCommand(async (param) => await LoadGame(param));
+            SaveAndQuitCommand = new DelegateCommand((param) => SaveAndQuit());
             ClickedShopIcon = new DelegateCommand((param) => ClickShop(param));
             BuyBridge = new DelegateCommand((param) => BuyBridges(param));
             ChangedGameSpeed = new DelegateCommand((param) => ChangeGameSpeed(param));
             ExitGameCommand = new DelegateCommand((param) => OnGameExit());
-            NewGamePageCommand = new DelegateCommand((param) => OnNewGamePageClicked());
+            NewGamePageCommand = new DelegateCommand((param) => OnNewGamePageClicked(param));
+            SlotPickerPageCommand = new DelegateCommand((param) => OnSlotPickerPageClicked());
             LoadGamePageCommand = new DelegateCommand((param) => OnLoadPageClicked());
             BackCommand = new DelegateCommand((param) => OnBackClicked());
-            StartCommand = new DelegateCommand((param) => OnStartClicked());
+            StartCommand = new DelegateCommand((param) => OnStartClicked(param));
             CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
 
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
             model.GameOver += new EventHandler<bool>(Model_GameOver);
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
-            model.TileMapUpdated += new EventHandler<(int,int)>(Model_TileMapUpdated);
+            model.TileMapUpdated += new EventHandler<(int, int)>(Model_TileMapUpdated);
             model.NewMessage += OnMessage;
             model.TouristHandler.TouristArrived += TouristHandler_TouristArrived;
             //Set window bindings
@@ -389,6 +412,7 @@ namespace SafariView.ViewModel
             NewGamePage = "Hidden";
             LoadGamePage = "Hidden";
             CreditsPage = "Hidden";
+            SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
             CAction = ClickAction.NOTHING;
             entityDataVisibility = Visibility.Hidden;
@@ -410,6 +434,7 @@ namespace SafariView.ViewModel
 
             selectedTile = (-1, -1);
             selectedEntityID = -1;
+            currentSlot = "0";
 
             force_render_next_frame = true;
             redrawMinimap = true;
@@ -422,14 +447,60 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Command methods
-        private void SaveGame()
+        private async Task SaveGame()
         {
-            throw new NotImplementedException();
+            //TODO ide egy try-catch mint a loadban
+            await model.SaveGameAsync($"./{currentSlot}.safarigame");
         }
 
-        private void LoadGame()
+        private async Task LoadGame(object? param)
         {
-            throw new NotImplementedException();
+            if (param != null && param is string slot)
+            {
+                if (!File.Exists($"./{slot}.safarigame")) return;
+                try
+                {
+                    await model.LoadGameAsync($"./{slot}.safarigame");
+
+                    IndexPage = "Visible";
+                    NewGamePage = "Hidden";
+                    CreditsPage = "Hidden";
+                    LoadGamePage = "Hidden";
+                    SlotPickerPage = "Hidden";
+                    OptionName = "SAFARI";
+
+                    StartGame?.Invoke(this, EventArgs.Empty);
+
+                    tickTimer.Start();
+                    renderTimer.Start();
+
+                    redrawMinimap = true;
+                    force_render_next_frame = true;
+
+                    currentSlot = slot;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.StackTrace, "Loading exception!");
+                }
+            }
+        }
+
+        private async void SaveAndQuit()
+        {
+            IndexPage = "Visible";
+            NewGamePage = "Hidden";
+            LoadGamePage = "Hidden";
+            CreditsPage = "Hidden";
+            SlotPickerPage = "Hidden";
+            OptionName = "SAFARI";
+
+            await SaveGame();
+
+            tickTimer.Stop();
+            renderTimer.Stop();
+
+            EndGame?.Invoke(this, EventArgs.Empty);
         }
 
         private void BuyBridges(object? param)
@@ -509,11 +580,24 @@ namespace SafariView.ViewModel
             ExitGame?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnNewGamePageClicked()
+        private void OnNewGamePageClicked(object? param)
+        {
+            if (param != null && param is string slot)
+            {
+                currentSlot = slot;
+                SlotPickerPage = "Hidden";
+                NewGamePage = "Visible";
+                OptionName = "New Game";
+            }
+        }
+
+        private void OnSlotPickerPageClicked()
         {
             IndexPage = "Hidden";
-            NewGamePage = "Visible";
+            SlotPickerPage = "Visible";
             OptionName = "New Game";
+
+            GetSaveDatas();
         }
         private void OnBackClicked()
         {
@@ -521,19 +605,29 @@ namespace SafariView.ViewModel
             NewGamePage = "Hidden";
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
+            SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
         }
-        private void OnStartClicked()
+        private async void OnStartClicked(object? param)
         {
+            if(param is string name) { 
             IndexPage = "Visible";
             NewGamePage = "Hidden";
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
+            SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
+
+            model.NewGame(name);
+            await SaveGame();
 
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();
             renderTimer.Start();
+
+            redrawMinimap = true;
+            force_render_next_frame = true;
+            }
 
         }
         private void OnCreditsClicked()
@@ -547,6 +641,8 @@ namespace SafariView.ViewModel
             IndexPage = "Hidden";
             LoadGamePage = "Visible";
             OptionName = "Load Game";
+
+            GetSaveDatas();
         }
         #endregion
 
@@ -554,11 +650,11 @@ namespace SafariView.ViewModel
         private void Model_TickPassed(object? sender, GameData data)
         {
             cachedGameData = data;
-            if(Money != data.money)
+            if (Money != data.money)
             {
                 Money = data.money;
             }
-            if(hour != data.hour)
+            if (hour != data.hour)
             {
                 Hour = data.hour.ToString();
             }
@@ -581,7 +677,7 @@ namespace SafariView.ViewModel
             throw new NotImplementedException();
         }
 
-        private void Model_TileMapUpdated(object? sender, (int,int) updatedTile)
+        private void Model_TileMapUpdated(object? sender, (int, int) updatedTile)
         {
             if (cachedGameData == null) return;
             force_render_next_frame = true;
@@ -624,7 +720,7 @@ namespace SafariView.ViewModel
             }
             if (CAction == ClickAction.BUY)
             {
-               
+
                 model.BuyItem(SelectedShopName, gameX, gameY);
             }
 
@@ -654,8 +750,8 @@ namespace SafariView.ViewModel
         public void ClickMinimap(object? sender, Point p)
         {
             int canvasSize = MINIMAPSIZE - 2 * MINIMAPBORDERTHICKNESS;
-            double xPercent = p.X/ canvasSize;
-            double yPercent = p.Y/ canvasSize;
+            double xPercent = p.X / canvasSize;
+            double yPercent = p.Y / canvasSize;
 
             int mapSizeinPixels = Model.MAPSIZE * Tile.TILESIZE;
 
@@ -709,9 +805,9 @@ namespace SafariView.ViewModel
             if (cameraX < 0) cameraX = 0;
             if (cameraY < 0) cameraY = 0;
 
-            if (cameraX > ((Model.MAPSIZE - HorizontalTileCount) * Tile.TILESIZE) - HorizontalCameraAdjustment) 
+            if (cameraX > ((Model.MAPSIZE - HorizontalTileCount) * Tile.TILESIZE) - HorizontalCameraAdjustment)
                 cameraX = ((Model.MAPSIZE - HorizontalTileCount) * Tile.TILESIZE) - HorizontalCameraAdjustment;
-            if (cameraY > ((Model.MAPSIZE - VerticalTileCount) * Tile.TILESIZE) - VerticalCameraAdjustment) 
+            if (cameraY > ((Model.MAPSIZE - VerticalTileCount) * Tile.TILESIZE) - VerticalCameraAdjustment)
                 cameraY = ((Model.MAPSIZE - VerticalTileCount) * Tile.TILESIZE) - VerticalCameraAdjustment;
 
             int cameraXLeft = cameraX - Tile.TILESIZE;
@@ -735,7 +831,7 @@ namespace SafariView.ViewModel
                 RenderedTiles.Clear();
 
 
-      
+
                 for (int j = tileMapTop; j < Math.Min(tileMapTop + VerticalTileCount + 3, TileMap.MAPSIZE); j++)
                 {
                     for (int i = tileMapLeft; i < Math.Min(tileMapLeft + HorizontalTileCount + 2, TileMap.MAPSIZE); i++)
@@ -762,7 +858,7 @@ namespace SafariView.ViewModel
                            
                                 b = tileBrushes[t.TileType];
 
-                           
+
                         }
 
                         RenderObject tile = new RenderObject(realX, realY,Tile.TILESIZE, b!,t.H);
@@ -787,11 +883,11 @@ namespace SafariView.ViewModel
                     {
                         if (h.IsVisible && h.HasEntered)
                         {
-                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
                         }
                     }
-                   else
-                   {
+                    else
+                    {
                         RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
@@ -804,9 +900,9 @@ namespace SafariView.ViewModel
         {
             redrawMinimap = false;
 
-            for(int i = 0; i < Model.MAPSIZE; i++)
+            for (int i = 0; i < Model.MAPSIZE; i++)
             {
-                for(int j = 0; j < Model.MAPSIZE; j++)
+                for (int j = 0; j < Model.MAPSIZE; j++)
                 {
 
                     Tile t = tileMap[i, j];
@@ -859,22 +955,22 @@ namespace SafariView.ViewModel
         private void UpdateMinimapMarker(int camX, int camY)
         {
             double mapSizeinPixels = Model.MAPSIZE * Tile.TILESIZE;
-            
+
             double xPercent = camX / mapSizeinPixels;
             double yPercent = camY / mapSizeinPixels;
 
-            MinimapPosition = new Thickness(xPercent * (MINIMAPSIZE-(2*MINIMAPBORDERTHICKNESS)), yPercent * (MINIMAPSIZE-(2 * MINIMAPBORDERTHICKNESS)), 0,0);
+            MinimapPosition = new Thickness(xPercent * (MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)), yPercent * (MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)), 0, 0);
         }
 
         private void ShowSelectedEntityData()
         {
             Entity? selected = model.GetEntityByID(selectedEntityID);
-            if(selected == null)
+            if (selected == null)
             {
                 EntityDataVisibility = Visibility.Hidden;
                 return;
             }
-            if(selected is Animal a)
+            if (selected is Animal a)
             {
                 EntityDataVisibility = Visibility.Visible;
                 SelectedEntityData = $"""
@@ -885,7 +981,6 @@ namespace SafariView.ViewModel
                 Water: {a.Water}
                 Action: {a.Action}
                 Range: {a.Range}
-                
                 """;
             }
             else
@@ -936,6 +1031,12 @@ namespace SafariView.ViewModel
                     App.Current.Dispatcher.Invoke(() => FloatingTexts.Remove(text));
                 });
             }
+        }
+        private void GetSaveDatas()
+        {
+            (Save1data, Save1Exists) = SaveData.GetSaveData("./0.safarigame");
+            (Save2data, Save2Exists) = SaveData.GetSaveData("./1.safarigame");
+            (Save3data, Save3Exists) = SaveData.GetSaveData("./2.safarigame");
         }
         #endregion
     }

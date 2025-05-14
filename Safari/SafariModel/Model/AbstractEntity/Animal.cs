@@ -1,5 +1,6 @@
 ﻿using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
+using SafariModel.Model.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -19,7 +20,8 @@ namespace SafariModel.Model.AbstractEntity
             GoEat,
             GoDrink,
             Wandering,
-            FindLeader
+            FindLeader,
+            FollowHunter
         }
         #endregion
 
@@ -35,6 +37,8 @@ namespace SafariModel.Model.AbstractEntity
         private Random random;
         private int interactionRange;
         private bool searchingForLeader;
+        private bool isCaught;
+        private Hunter? abductor;
 
         private Entity? targetedFood;
         private Point targetedWater;
@@ -47,6 +51,15 @@ namespace SafariModel.Model.AbstractEntity
         private int healLimit;
         private int healTimer;
         private int breedCooldown;
+        private int targetX;
+        private int targetY;
+
+        #region Loading helpers
+        List<int>? memberIDs;
+        int? leaderID;
+        int? targetEntityID;
+        #endregion
+
         #endregion
 
         #region Properties
@@ -65,6 +78,8 @@ namespace SafariModel.Model.AbstractEntity
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
         public int SearchTimer { get { return searchTimer; } }
+        public bool IsCaught { get { return isCaught; } set { isCaught = value; } }
+        public Hunter? Abductor { get { return Abductor; } set { abductor = value; } }
 
         #endregion
 
@@ -90,6 +105,7 @@ namespace SafariModel.Model.AbstractEntity
             searchTimer = 0;
             healTimer = 0;
             interactionRange = 70;
+            isCaught = false;
 
             exploredFoodPlaces = new List<Point>();
             exploredWaterPlaces = new List<Point>();
@@ -205,7 +221,19 @@ namespace SafariModel.Model.AbstractEntity
         }
         protected void Follow(MovingEntity entity)
         {
-            throw new NotImplementedException();
+            if(entity is Hunter h)
+            {
+                if(targetX != h.TargX || targetY != h.TargY)
+                {
+                    targetX = h.TargX;
+                    targetY = h.TargY;
+                    this.SetTarget(new Point(targetX, targetY));
+                }
+                if(X == h.TargX && Y == h.TargY)
+                {
+                    RemoveSelf();
+                }
+            }
         }
        
         protected void RandomWander()
@@ -218,21 +246,50 @@ namespace SafariModel.Model.AbstractEntity
 
         protected override void EntityLogic()
         {
+
+            #region Betöltés után idk kiértékelése
+            if(memberIDs != null)
+            {
+                if (members == null) members = new List<Animal>();
+                foreach(int id in memberIDs)
+                {
+                    Entity? e = GetEntityByID(id);
+                    if (e != null && e is Animal a)
+                        members.Add(a);
+                }
+                memberIDs = null;
+            }
+            if(leaderID != null)
+            {
+                Entity? e = GetEntityByID((int)leaderID);
+                if (e != null && e is Animal a)
+                    leader = a;
+                leaderID = null;
+            }
+            if(targetEntityID != null)
+            {
+                targetedFood = GetEntityByID((int)targetEntityID);
+                targetEntityID = null;
+            }
+            #endregion
+
             PassTick();
-            if (!searchingForLeader && leader != null && DistanceToEntity(leader) > LEADER_FOLLOW_RANGE) 
-            {
-                searchingForLeader = true;
-                SetTarget(new Point(leader.X, leader.Y));
-            }
-            Action = SelectAction();
-            switch (Action)
-            {
-                case AnimalActions.Resting: Rest(); break;
-                case AnimalActions.Wandering: Wander(); break;
-                case AnimalActions.GoEat: GoEat(); break;
-                case AnimalActions.GoDrink: GoDrink(); break;
-                case AnimalActions.FindLeader: FindLeader(); break;
-            }
+
+                if (!searchingForLeader && leader != null && DistanceToEntity(leader) > LEADER_FOLLOW_RANGE && !isCaught)
+                {
+                    searchingForLeader = true;
+                    SetTarget(new Point(leader.X, leader.Y));
+                }
+                Action = SelectAction();
+                switch (Action)
+                {
+                    case AnimalActions.Resting: Rest(); break;
+                    case AnimalActions.Wandering: Wander(); break;
+                    case AnimalActions.GoEat: GoEat(); break;
+                    case AnimalActions.GoDrink: GoDrink(); break;
+                    case AnimalActions.FindLeader: FindLeader(); break;
+                    case AnimalActions.FollowHunter: Follow(abductor!); break;
+                }
 
             AnimalLogic();
         }
@@ -258,6 +315,7 @@ namespace SafariModel.Model.AbstractEntity
 
         private AnimalActions SelectAction()
         {
+            if (isCaught) return AnimalActions.FollowHunter;
             if (Water < 40) return AnimalActions.GoDrink;
             if (Food < 40) return AnimalActions.GoEat;
             if (searchingForLeader) return AnimalActions.FindLeader;
@@ -380,7 +438,7 @@ namespace SafariModel.Model.AbstractEntity
             {
                 leader.RemoveFromGroup(this);
             }
-            else if(members != null)
+            else if(members != null && members.Count > 0)
             {
                 //új random vezető választása
                 Animal newLeader = members[random.Next(0, members.Count)];
@@ -438,6 +496,113 @@ namespace SafariModel.Model.AbstractEntity
             }
         }
         #endregion
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+
+            //felfedezett élelemhelyek
+            foreach (Point p in exploredFoodPlaces)
+            {
+                dataholder.points.Enqueue(p);
+            }
+            dataholder.points.Enqueue(null);
+
+            //felfedezett vízlelő helyek
+            foreach (Point p in exploredWaterPlaces)
+            {
+                dataholder.points.Enqueue(p);
+            }
+            dataholder.points.Enqueue(null);
+
+            //Csoport tagjai
+            if(members != null)
+            {
+                foreach(Animal a in members)
+                {
+                    dataholder.ints.Enqueue(a.ID);
+                }
+            }
+            dataholder.ints.Enqueue(null);
+
+            //vezető
+            dataholder.ints.Enqueue(leader == null ? null : leader.ID);
+
+            //Célbavett entity
+            dataholder.ints.Enqueue(targetedFood == null ? null : targetedFood.ID);
+
+            //Célbavett tile
+            dataholder.points.Enqueue(targetedWater);
+
+            //Egyéb adatok
+            dataholder.ints.Enqueue(wanderTimer);
+            dataholder.ints.Enqueue(searchTimer);
+            dataholder.ints.Enqueue(Age);
+            dataholder.ints.Enqueue(Hunger);
+            dataholder.ints.Enqueue(Thirst);
+            dataholder.ints.Enqueue(Food);
+            dataholder.ints.Enqueue(Water);
+            dataholder.ints.Enqueue(Health);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        
+        {   
+            base.LoadData(dataholder);
+            Point? readPoint;
+            //felfedezett élelemhelyek
+            exploredFoodPlaces.Clear();
+            readPoint = dataholder.points.Dequeue();
+            while(readPoint != null)
+            {
+                Point actualPoint = (Point)readPoint;
+                exploredFoodPlaces.Add(actualPoint);
+                exploredFoodChunks.Add(GetChunkCoordinates(actualPoint.X, actualPoint.Y));
+                readPoint = dataholder.points.Dequeue();
+            }
+
+            //felfedezett vízlelő helyek
+            exploredWaterPlaces.Clear();
+            readPoint = dataholder.points.Dequeue();
+            while (readPoint != null)
+            {
+                Point actualPoint = (Point)readPoint;
+                exploredWaterPlaces.Add(actualPoint);
+                exploredWaterChunks.Add(GetChunkCoordinates(actualPoint.X, actualPoint.Y));
+                readPoint = dataholder.points.Dequeue();
+            }
+
+            //Csoport tagjai
+
+            int? readInt;
+            readInt = dataholder.ints.Dequeue();
+            if (readInt != null) memberIDs = new List<int>();
+            while(readInt != null)
+            {
+                int actualInt = (int)readInt;
+                memberIDs!.Add(actualInt);
+                readInt = dataholder.ints.Dequeue();
+            }
+
+            //vezető
+            leaderID = dataholder.ints.Dequeue();
+
+            //Célbavett entity
+            targetEntityID = dataholder.ints.Dequeue();
+
+            //Célbavett tile
+            targetedWater = dataholder.points.Dequeue() ?? new Point(-1, -1);
+
+            //Egyéb adatok
+            wanderTimer = dataholder.ints.Dequeue() ?? wanderTimer;
+            searchTimer = dataholder.ints.Dequeue() ?? searchTimer;
+            Age = dataholder.ints.Dequeue() ?? Age;
+            Hunger = dataholder.ints.Dequeue() ?? Hunger;
+            Thirst = dataholder.ints.Dequeue() ?? Thirst;
+            Food = dataholder.ints.Dequeue() ?? Food;
+            Water = dataholder.ints.Dequeue() ?? Water;
+            Health = dataholder.ints.Dequeue() ?? Health;
+        }
 
         protected abstract void AnimalLogic();
 

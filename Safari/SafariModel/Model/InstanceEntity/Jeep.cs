@@ -237,5 +237,27 @@ namespace SafariModel.Model
         {
             return new TileType[] { TileType.DEEP_WATER };
         }
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+            
+            dataholder.bools.Enqueue(atExit);
+            dataholder.ints.Enqueue(touristCount);
+            dataholder.doubles.Enqueue(happiness);
+            dataholder.ints.Enqueue(waitAtEndpointDuration);
+            dataholder.ints.Enqueue(waitTimer);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+
+            atExit = dataholder.bools.Dequeue() ?? atExit;
+            touristCount = dataholder.ints.Dequeue() ?? touristCount;
+            happiness = dataholder.doubles.Dequeue() ?? happiness;
+            waitAtEndpointDuration = dataholder.ints.Dequeue() ?? waitAtEndpointDuration;
+            waitTimer = dataholder.ints.Dequeue() ?? waitTimer;
+        }
     }
 }

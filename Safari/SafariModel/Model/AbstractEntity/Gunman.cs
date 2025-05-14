@@ -19,6 +19,12 @@ namespace SafariModel.Model.AbstractEntity
         private int targY;
         private Random random;
         private int multiplier;
+        private int mapSizeConvert;
+
+        #region Loading helpers
+        int? targetID;
+        int? targetAnimalID;
+        #endregion
 
         public int Health { get; protected set; }
         public int Damage { get; protected set; }
@@ -27,6 +33,7 @@ namespace SafariModel.Model.AbstractEntity
         public int TargX { get { return targX; } set { targX = value; } }
         public int TargY { get { return targY; } set { targY = value; } }
         public int Multiplier { get { return multiplier; } set { multiplier = value; } }
+        public int MapSizeConvert { get { return mapSizeConvert; } }
 
         public event EventHandler<KillAnimalEventArgs>? KilledAnimal;
         public event EventHandler<GunmanRemoveEventArgs>? GunmanRemove;
@@ -38,6 +45,7 @@ namespace SafariModel.Model.AbstractEntity
             Damage = damage;
             TargetAnimal = targetAnimal;
             random = new Random();
+            mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
         }
         protected void Fire(Guard g, Hunter h)
         {
@@ -55,6 +63,12 @@ namespace SafariModel.Model.AbstractEntity
                 }
                 else
                 {
+                    if (h.targetAnimal != null)
+                    {
+                        h.targetAnimal.IsCaught = false;
+                        h.targetAnimal.Abductor = null;
+                    }
+                    h.IsKilled = true;
                     RemoveGunman(h);
                     g.TargetHunter = null;
                     g.IncreaseLevel(2);
@@ -93,9 +107,85 @@ namespace SafariModel.Model.AbstractEntity
             GunmanRemove?.Invoke(this, new GunmanRemoveEventArgs(g));
         }
 
+        protected void FindNearestExit()
+        {
+            int l = X - 50;
+            int r = mapSizeConvert - X;
+            int t = Y - 50;
+            int b = mapSizeConvert - Y;
+            int min = Math.Min(Math.Min(l, r), Math.Min(t, b));
+            switch (min)
+            {
+                case int _ when min == l:
+                    TargX = 50;
+                    TargY = Y;
+                    break;
+                case int _ when min == r:
+                    TargX = mapSizeConvert;
+                    TargY = Y;
+                    break;
+                case int _ when min == t:
+                    TargX = X;
+                    TargY = 50;
+                    break;
+                case int _ when min == b:
+                    TargX = X;
+                    TargY = mapSizeConvert;
+                    break;
+            }
+            this.SetTarget(new Point(TargX, TargY));
+        }
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+
+            dataholder.ints.Enqueue(health);
+            dataholder.ints.Enqueue(damage);
+            //targets
+            dataholder.ints.Enqueue(target == null ? null : target.ID);
+            dataholder.ints.Enqueue(targetAnimal == null ? null : targetAnimal.ID);
+
+            dataholder.ints.Enqueue(targX);
+            dataholder.ints.Enqueue(targY);
+
+            dataholder.ints.Enqueue(multiplier);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+
+            health = dataholder.ints.Dequeue() ?? health;
+            damage = dataholder.ints.Dequeue() ?? damage;
+            //targets
+            targetID = dataholder.ints.Dequeue();
+            targetAnimalID = dataholder.ints.Dequeue();
+
+            targX = dataholder.ints.Dequeue() ?? targX;
+            targY = dataholder.ints.Dequeue() ?? targY;
+
+            multiplier = dataholder.ints.Dequeue() ?? multiplier;
+        }
+
         protected override void EntityLogic()
         {
-
+            #region Betöltés után idk kiértékelése
+            if (targetID != null)
+            {
+                Entity? e = GetEntityByID((int)targetID);
+                if (e != null && e is MovingEntity me)
+                    target = me;
+                targetID = null;
+            }
+            if(targetAnimalID != null)
+            {
+                Entity? e = GetEntityByID((int)targetAnimalID);
+                if (e != null && e is Animal a)
+                    targetAnimal = a;
+                targetAnimalID = null;
+            }
+            #endregion
         }
     }
 }

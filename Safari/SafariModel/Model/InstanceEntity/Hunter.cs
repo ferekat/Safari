@@ -23,6 +23,11 @@ namespace SafariModel.Model.InstanceEntity
         private bool leavingMap;
         private int mapSizeConvert;
         private bool duel;
+        private bool isKilled;
+
+        #region Loading helpers
+        int? caughtAnimalID;
+        #endregion
 
         public bool IsVisible { get { return isVisible; } set { isVisible = value; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
@@ -30,6 +35,7 @@ namespace SafariModel.Model.InstanceEntity
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
         public int WaitingTime { get { return waitingTime / Multiplier; } set { waitingTime = value; } }
         public bool Duel { get { return duel; } set { duel = value; } }
+        public bool IsKilled { get { return isKilled; } set { isKilled = value; } }
 
         public event EventHandler<HunterTargetEventArgs>? HunterTarget;
         public Hunter(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
@@ -42,40 +48,18 @@ namespace SafariModel.Model.InstanceEntity
             waitingTime = 0;
             tickBeforeTarget = 0;
             leavingMap = false;
-            mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
+            //mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
             duel = false;
             isVisible = false;
+            isKilled = false;
         }
         private void TakeAnimal()
         {
-            //itt majd megy vele az állat is, ha az Animal-ben a leader logika megvalósul
             hasEntered = false;
 
-            int l = X - 50;
-            int r = mapSizeConvert - X;
-            int t = Y - 50;
-            int b = mapSizeConvert - Y;
-            int min = Math.Min(Math.Min(l, r), Math.Min(t, b));
-            switch (min)
-            {
-                case int _ when min == l:
-                    TargX = 50;
-                    TargY = Y;
-                    break;
-                case int _ when min == r:
-                    TargX = mapSizeConvert;
-                    TargY = Y;
-                    break;
-                case int _ when min == t:
-                    TargX = X;
-                    TargY = 50;
-                    break;
-                case int _ when min == b:
-                    TargX = X;
-                    TargY = mapSizeConvert;
-                    break;
-            }
-            this.SetTarget(new Point(TargX, TargY));
+            FindNearestExit();
+            TargetAnimal!.IsCaught = true;
+            TargetAnimal!.Abductor = this;
         }
         private void DecideTask()
         {
@@ -93,6 +77,17 @@ namespace SafariModel.Model.InstanceEntity
         }
         protected override void EntityLogic()
         {
+
+            #region Betöltés után idk kiértékelése
+            if(caughtAnimalID != null)
+            {
+                Entity? e = GetEntityByID((int)caughtAnimalID);
+                if (e != null && e is Animal a)
+                    caughtAnimal = a;
+                caughtAnimalID = null;
+            }
+            #endregion
+
             if (!duel)
             {
                 if (!leavingMap)
@@ -102,7 +97,7 @@ namespace SafariModel.Model.InstanceEntity
                         tickBeforeTarget++;
                         if (tickBeforeTarget == WaitingTime)
                         {
-                            HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
+                            SetTargetAnimal();
                             tickBeforeTarget = 0;
                             waitingTime = SetWaitingTime();
                         }
@@ -120,7 +115,7 @@ namespace SafariModel.Model.InstanceEntity
 
                     }
                 }
-                else if (X == 50 || X == mapSizeConvert || Y == 50 || Y == mapSizeConvert)
+                else if (X == 50 || X == MapSizeConvert || Y == 50 || Y == MapSizeConvert)
                 {
                     RemoveGunman(this);
                 }
@@ -142,6 +137,40 @@ namespace SafariModel.Model.InstanceEntity
         {
             int x = random.Next(1200, 7200);
             return x;
+        }
+        private void SetTargetAnimal()
+        {
+            HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
+        }
+
+        public override void CopyData(EntityData dataholder)
+        {
+            base.CopyData(dataholder);
+            
+            dataholder.bools.Enqueue(isVisible);
+            dataholder.ints.Enqueue(caughtAnimal == null ? null : caughtAnimal.ID);
+            dataholder.ints.Enqueue(enterField);
+            dataholder.bools.Enqueue(hasEntered);
+            dataholder.ints.Enqueue(waitingTime);
+            dataholder.ints.Enqueue(tickBeforeTarget);
+            dataholder.bools.Enqueue(leavingMap);
+            dataholder.ints.Enqueue(mapSizeConvert);
+            dataholder.bools.Enqueue(duel);
+        }
+
+        public override void LoadData(EntityData dataholder)
+        {
+            base.LoadData(dataholder);
+
+            isVisible = dataholder.bools.Dequeue() ?? isVisible;
+            caughtAnimalID = dataholder.ints.Dequeue();
+            enterField = dataholder.ints.Dequeue() ?? enterField;
+            hasEntered = dataholder.bools.Dequeue() ?? hasEntered;
+            waitingTime = dataholder.ints.Dequeue() ?? waitingTime;
+            tickBeforeTarget = dataholder.ints.Dequeue() ?? tickBeforeTarget;
+            leavingMap = dataholder.bools.Dequeue() ?? leavingMap;
+            mapSizeConvert = dataholder.ints.Dequeue() ?? mapSizeConvert;
+            duel = dataholder.bools.Dequeue() ?? duel;
         }
 
         protected override TileType[] ImPassableTileTypes()

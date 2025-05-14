@@ -10,8 +10,11 @@ namespace SafariModel.Persistence
 {
     public class GameData
     {
+        public string parkName;
         public List<Entity> entities;
         public Tile[,] tileMap;
+        public PathTile entrance;
+        public PathTile exit;
         public int money;
         public int touristAtGate;
         public double happiness;
@@ -21,6 +24,7 @@ namespace SafariModel.Persistence
         public int month;
         public int gameTime;
         public int winningMonths;
+        public List<PathIntersectionNode> intersections;
 
         public GameData()
         {

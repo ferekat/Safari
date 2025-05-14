@@ -17,8 +17,8 @@ namespace SafariTest
         [TestInitialize]
         public void Init()
         {
-            model = new Model("testseed");
-            
+            //Todo mockkal helyettesíteni
+            model = new Model(null);
         }
         private Tile GoDown(Tile currentTile,RoadNetworkHandler roadNetworkHandler)
         {
