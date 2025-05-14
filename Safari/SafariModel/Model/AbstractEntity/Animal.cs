@@ -140,12 +140,13 @@ namespace SafariModel.Model.AbstractEntity
                     exploredFoodPlaces.Remove(current);
                     exploredFoodChunks.Remove(GetChunkCoordinates());
                 }
-                if (exploredWaterPlaces.Count > 0)
+                if (exploredFoodPlaces.Count > 0)
                 {
                     SetTarget(exploredWaterPlaces[random.Next(0, exploredWaterPlaces.Count)]);
                 }
                 else //search randomly for food, if there are no explored food sources
                 {
+
                     int newX = random.Next(-600, 600);
                     int newY = random.Next(-600, 600);
                     this.SetTarget(new Point(this.x + newX, this.y + newY));

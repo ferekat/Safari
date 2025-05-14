@@ -971,6 +971,7 @@ namespace SafariView.ViewModel
                 Water: {a.Water}
                 Action: {a.Action}
                 Range: {a.Range}
+                Is Moving? {a.IsMoving}
                 """;
             }
             else

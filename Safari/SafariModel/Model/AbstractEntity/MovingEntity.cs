@@ -184,7 +184,7 @@ namespace SafariModel.Model.AbstractEntity
             if (!prevChunkCoords.Equals(currentChunkCoords)) OnChunkCoordinatesChanged(prevChunkCoords, currentChunkCoords);
             
 
-            if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) < movementVector.Length() * 1.5) //In range of target point
+            if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) <= movementVector.Length() * 1.5) //In range of target point
             {
                 this.x = currentTarget.X;
                 this.y = currentTarget.Y;

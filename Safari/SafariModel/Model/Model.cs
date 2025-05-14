@@ -213,7 +213,9 @@ namespace SafariModel.Model
             Entity.RegisterTileMap(tileMap.Map);
 
             //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
+            //entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 80, 80, 0, 0, 5000));
+            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 41, 80, 0, 0, 5000));
+            //entityHandler.LoadEntity(new Lion(200, 200, 18000, 300, 45, 45, 0, 0, 5000));
 
             Hunter h = new Hunter(50, 50, null);
             h.Multiplier = 1;
