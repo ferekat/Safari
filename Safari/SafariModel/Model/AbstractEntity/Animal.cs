@@ -43,10 +43,11 @@ namespace SafariModel.Model.AbstractEntity
         private static readonly int LEADER_FOLLOW_RANGE = Tile.TILESIZE * 15;
         private static readonly int SEARCH_CYCLES = 120;
         private static int currentSearchCycle = 0;
+        private static readonly int RANDOM_WANDER_TIME = 1200;
+        private static readonly int HUNGERLIMIT = 1000;
+        private static readonly int THRISTLIMIT = 600;
+        private static readonly int HEALLIMIT = 1200;
 
-        private int hungerLimit;
-        private int thirstLimit;
-        private int healLimit;
         private int healTimer;
         private int breedCooldown;
 
@@ -95,10 +96,6 @@ namespace SafariModel.Model.AbstractEntity
             Health = maxHealth;
             Action = AnimalActions.Resting;
 
-            hungerLimit = 1000;
-            thirstLimit = 600;
-            healLimit = 1200;
-
             searchTimer = currentSearchCycle++;
             if (currentSearchCycle >= SEARCH_CYCLES)
                 currentSearchCycle = 0;
@@ -116,7 +113,7 @@ namespace SafariModel.Model.AbstractEntity
 
             //random járkálás
             random = new Random();
-            wanderTimer = random.Next(300);
+            wanderTimer = random.Next(RANDOM_WANDER_TIME);
         }
         #endregion
 
@@ -223,7 +220,7 @@ namespace SafariModel.Model.AbstractEntity
        
         protected void RandomWander()
         {
-            wanderTimer = random.Next(300);
+            wanderTimer = random.Next(RANDOM_WANDER_TIME);
             int newX = random.Next(-1000, 1000);
             int newY = random.Next(-1000, 1000);
             this.SetTarget(new Point(this.x + newX, this.y + newY));
@@ -279,14 +276,14 @@ namespace SafariModel.Model.AbstractEntity
 
         private void PassTick()
         {
-            if (++Hunger >= hungerLimit)
+            if (++Hunger >= HUNGERLIMIT)
             {
                 Hunger = 0;
                 if (IsAdult) Food -= 1;
                 if (IsEldelry) Food -= 2;
                 if (--Food < 0) --Health;
             }
-            if (++Thirst >= thirstLimit)
+            if (++Thirst >= THRISTLIMIT)
             {
                 Thirst = 0;
                 if (--Water < 0) --Health;
@@ -459,7 +456,7 @@ namespace SafariModel.Model.AbstractEntity
         }
         private void Rest()
         {
-            if(++healTimer >= healLimit)
+            if(++healTimer >= HEALLIMIT)
             {
                 ++Health;
                 if(Health > MaxHealth)
