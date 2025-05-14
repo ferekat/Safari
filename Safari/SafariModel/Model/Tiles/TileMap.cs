@@ -83,34 +83,6 @@ namespace SafariModel.Model.Tiles
 
             return ret;
         }
-        public int GetNeighbourTilesCount(Tile tile)
-        {
-            List<Tile> l = GetNeighbourTiles(tile);
-            return l.Count;
-        }
-
-        //DEEP_WATER,
-        //SHALLOW_WATER,
-        //GROUND,
-        //GROUND_SMALL,
-        //SMALL_HILL,
-        //SMALL_MEDIUM,
-        //MEDIUM_HILL,
-        //MEDIUM_HIGH,
-        //HIGH_HILL,
-        public static Dictionary<char, TileType> dict = new()
-        {
-            {'A',TileType.DEEP_WATER },
-            {'B',TileType.SHALLOW_WATER },
-            {'C',TileType.GROUND},
-            {'D',TileType.GROUND_SMALL },
-            {'E',TileType.SMALL_HILL},
-            {'F',TileType.SMALL_MEDIUM},
-            {'G',TileType.MEDIUM_HILL},
-            {'H',TileType.MEDIUM_HIGH},
-            {'I',TileType.HIGH_HILL}
-        };
      
-        
     }
 }

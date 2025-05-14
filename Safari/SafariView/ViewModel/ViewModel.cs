@@ -38,6 +38,8 @@ namespace SafariView.ViewModel
         private int cameraX;
         private int cameraY;
 
+        private int visitorsAtGate;
+
         private Guard? selectedGuard;
         private (int, int) selectedTile;
         private int selectedEntityID;
@@ -233,6 +235,9 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Window bindings
+
+        public int VisitorsAtGate { get {  return visitorsAtGate; } private set { visitorsAtGate = value; OnPropertyChanged(); } }
+
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
@@ -376,7 +381,7 @@ namespace SafariView.ViewModel
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
             model.TileMapUpdated += new EventHandler<(int,int)>(Model_TileMapUpdated);
             model.NewMessage += OnMessage;
-
+            model.TouristHandler.TouristArrived += TouristHandler_TouristArrived;
             //Set window bindings
             IndexPage = "Visible";
             NewGamePage = "Hidden";
@@ -406,6 +411,11 @@ namespace SafariView.ViewModel
 
             force_render_next_frame = true;
             redrawMinimap = true;
+        }
+
+        private void TouristHandler_TouristArrived(object? sender, int e)
+        {
+            VisitorsAtGate = e;
         }
         #endregion
 

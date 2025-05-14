@@ -70,6 +70,10 @@ namespace SafariModel.Model.Utils
         {
             money += entityCostTable[item];
         }
+        public void TicketSell(int cost)
+        {
+            money += cost;
+        }
         public bool BuyTile(TileType tileType)
         {
             

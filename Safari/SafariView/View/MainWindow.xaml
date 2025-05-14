@@ -530,7 +530,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="Visitors" Grid.Row="0" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="0" Grid.Column="1"/>
+                            <TextBlock Text="{Binding VisitorsAtGate}" Grid.Row="0" Grid.Column="1"/>
 
                             <TextBlock Text="Gazelle" Grid.Row="1" Grid.Column="0"/>
                             <TextBlock Text="0" Grid.Row="1" Grid.Column="1"/>

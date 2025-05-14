@@ -76,7 +76,7 @@ namespace SafariModel.Model
         public EntityHandler EntityHandler { get { return entityHandler; } }  
         public RoadNetworkHandler RoadNetworkHandler { get { return roadNetworkHandler; } }
 
-
+        public TouristHandler TouristHandler {  get { return touristHandler; } }
         #endregion
 
         #region Events
@@ -87,40 +87,41 @@ namespace SafariModel.Model
         public event EventHandler? NewMessage;
         #endregion
 
-        public Model()
+        public Model(string seed)
         {
-            entityHandler = new EntityHandler();
             secondCounterHunter = 0;
-            worldGenerationHandler = new WorldGenerationHandler("zjcdmtheqgjcvjm",entityHandler);
-
-           
-            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
-            
-
-            TileCollision tc = new TileCollision(tileMap);
-            MovingEntity.RegisterTileCollision(tc);
-            Entity.RegisterHandler(entityHandler);
-            Entity.RegisterTileMap(tileMap.Map);
-
-            //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Gazelle(100, 200,18000,300,45,45,0,0, 5000));
-
-            Hunter h = new Hunter(50, 50, null);
-            h.Multiplier = 1;
-            entityHandler.LoadEntity(h);
-            roadNetworkHandler = new RoadNetworkHandler(tileMap);
-            touristHandler = new TouristHandler();
-
-            economyHandler = new EconomyHandler(99999);
-
             tickCount = 0;
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
-
-
             data = new GameData();
+
+            entityHandler = new EntityHandler();
+            Entity.RegisterHandler(entityHandler);
+
+
+            worldGenerationHandler = new WorldGenerationHandler(seed,entityHandler);
+            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
+            Entity.RegisterTileMap(tileMap.Map);
+
+            TileCollision tc = new TileCollision(tileMap);
+            MovingEntity.RegisterTileCollision(tc);
+           
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            Jeep.RegisterNetworkHandler(roadNetworkHandler);
+            
+            economyHandler = new EconomyHandler(99999);
+            touristHandler = new TouristHandler(economyHandler);
+            Jeep.RegisterTouristHandler(touristHandler);
+
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Gazelle(100, 200,18000,300,45,45,0,0, 5000));
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            entityHandler.LoadEntity(h);
         }
+        public Model() : this("null") { }
 
         #region Get tile and entity based on coordinates
         public (int, int) GetTileFromCoords(int x, int y)
@@ -172,7 +173,7 @@ namespace SafariModel.Model
                     }
                 }
             }
-            touristHandler.TouristUpdateTick();
+            touristHandler.NewTouristAtGatePerTick();
 
 
 
@@ -180,11 +181,7 @@ namespace SafariModel.Model
         }
         #endregion
 
-        private void OnNewGameStarted()
-        {
-            NewGameStarted?.Invoke(this, EventArgs.Empty);
-        }
-
+       
         private void OnTileMapUpdated(int tileX, int tileY)
         {
             TileMapUpdated?.Invoke(this, (tileX,tileY));
@@ -287,7 +284,7 @@ namespace SafariModel.Model
 
 
             if (entity == null) return;
-
+           
             if(entity is MovingEntity me)
             {
                 me.UpdateSpeedMultiplier(speedBoost);

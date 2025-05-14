@@ -31,6 +31,9 @@ namespace SafariView
         #region Startup method
         public void AppStartUp(object? sender, StartupEventArgs e)
         {
+            lobbyWindow = new LobbyWindow();
+
+
             model = new Model();
             List<RenderObject> renderedTiles = new List<RenderObject>();
             List<RenderObject> renderedEntities = new List<RenderObject>();
@@ -42,7 +45,6 @@ namespace SafariView
             viewModel.FinishedRenderingEntities += new EventHandler(ViewModel_FinishedEntityRendering);
 
 
-            lobbyWindow = new LobbyWindow();
             
             mainWindow = new MainWindow(renderedTiles,renderedEntities);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;

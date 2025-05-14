@@ -13,25 +13,14 @@ namespace SafariModel.Model.Tiles
     {
         EMPTY,
         ROAD,
-        BRIDGE,
-
-        
-        //SMALL_BRIDGE,
-        //SMALL_BRIDGE_VERT,
-        //SMALL_BRIDGE_HOR,
-        //SMALL_BRIDGE_DR,
-        //SMALL_BRIDGE_DL,
-        //SMALL_BRIDGE_UR,
-        //SMALL_BRIDGE_UL,
-        //LARGE_BRIDGE_VERT,
-        //LARGE_BRIDGE_HOR,
-        //LARGE_BRIDGE_D,
-        //LARGE_BRIDGE_U,
-
+        BRIDGE
     }
     public class PathIntersectionNode
     {
-        private bool isVisited;
+        private bool isVisitedByAStar;
+
+        private int shortestPathId;
+      
         private int pathI;
         private int pathJ;
         private List<PathIntersectionNode> nextIntersections = new();
@@ -39,8 +28,11 @@ namespace SafariModel.Model.Tiles
        
         public readonly static List<PathIntersectionNode> allNodes = new List<PathIntersectionNode>();
         public int PathI { get { return pathI; } }
-        public bool IsVisited { get { return isVisited; } set { isVisited = value; } }
         public int PathJ { get { return pathJ; } }
+        public int ShortestPathId { get { return shortestPathId; } set { shortestPathId = value; } }
+   
+        public bool IsVisitedByAStar { get { return isVisitedByAStar; } set { isVisitedByAStar = value; } }
+      
         public List<PathIntersectionNode> NextIntersections { get { return nextIntersections; } }
         public int Distance { get { return distance; } set { distance = value; } }
         public static void ConnectIntersections(PathIntersectionNode intersect1, PathIntersectionNode intersect2)
@@ -56,7 +48,7 @@ namespace SafariModel.Model.Tiles
             intersect2.nextIntersections.Remove(intersect1);
             if (intersect1.NextIntersections.Count == 0)
             {
-               
+
                 allNodes.Remove(intersect1);
             }
             if (intersect2.NextIntersections.Count == 0)
@@ -64,14 +56,18 @@ namespace SafariModel.Model.Tiles
                 allNodes.Remove(intersect2);
             }
         }
-       
+
+        
+
         public PathIntersectionNode(int pathI, int pathJ)
         {
          
             this.pathI = pathI;
             this.pathJ = pathJ;
             allNodes.Add(this);
-            isVisited = false;
+            isVisitedByAStar = false;
+            shortestPathId = 0;
+     
         }
       
 
