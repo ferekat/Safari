@@ -41,7 +41,7 @@ namespace SafariModel.Model.InstanceEntity
         public Hunter(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
 
         {
-            entitySize = 40;
+            entitySize = 60;
             random = new Random();
             enterField = TimeNextHunter();
             hasEntered = false;
@@ -110,7 +110,11 @@ namespace SafariModel.Model.InstanceEntity
                         }
                         if (TargX == x && TargY == y)
                         {
-                            DecideTask();
+                            if (!TargetAnimal.IsAlive)
+                            {
+                                TargetAnimal = null;
+                            }
+                            else { DecideTask(); }
                         }
 
                     }
@@ -129,13 +133,13 @@ namespace SafariModel.Model.InstanceEntity
         }
         private int TimeNextHunter()
         {
-            int x = random.Next(30, 120);
+            int x = random.Next(15, 60);
             return x;
 
         }
         private int SetWaitingTime()
         {
-            int x = random.Next(1200, 7200);
+            int x = random.Next(600, 3600);
             return x;
         }
         private void SetTargetAnimal()

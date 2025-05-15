@@ -12,7 +12,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Cactus(int x, int y) : base(x, y, 50) 
         {
-            entitySize = 40;
+            entitySize = 60;
         }
         #endregion
     }

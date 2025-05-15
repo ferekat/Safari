@@ -12,7 +12,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public Giraffe(int x, int y) : base(x, y, 0, 350, 80, 80, 0, 0, 5000)
         {
-            entitySize = 90;
+            entitySize = 120;
             range = Tile.TILESIZE * 30;
             BaseSpeed = 3.25f;
         }

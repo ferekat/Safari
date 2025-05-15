@@ -478,6 +478,7 @@ namespace SafariModel.Model
                     h.TargetAnimal = null;
                 }
             }
+            e.Animal.IsAlive = false;
             entityHandler.RemoveEntity(e.Animal);
         }
         private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)

@@ -144,7 +144,7 @@ namespace SafariModel.Model.AbstractEntity
             dataholder.ints.Enqueue(damage);
             //targets
             dataholder.ints.Enqueue(target == null ? null : target.ID);
-            dataholder.ints.Enqueue(targetAnimal == null ? null : targetAnimal.ID);
+            dataholder.ints.Enqueue((targetAnimal == null || !targetAnimal.IsAlive) ? null : targetAnimal.ID);
 
             dataholder.ints.Enqueue(targX);
             dataholder.ints.Enqueue(targY);

@@ -56,6 +56,7 @@ namespace SafariModel.Model.AbstractEntity
         private int breedCooldown;
         private int targetX;
         private int targetY;
+        private bool isAlive;
 
         #region Loading helpers
         List<int>? memberIDs;
@@ -85,6 +86,7 @@ namespace SafariModel.Model.AbstractEntity
         public int SearchTimer { get { return searchTimer; } }
         public bool IsCaught { get { return isCaught; } set { isCaught = value; } }
         public Hunter? Abductor { get { return Abductor; } set { abductor = value; } }
+        public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
 
         public int ExploredFoodPlaceCount { get { return exploredFoodPlaces.Count; } }
         public int ExploredWaterPlaceCount { get { return exploredWaterPlaces.Count; } }
@@ -113,6 +115,7 @@ namespace SafariModel.Model.AbstractEntity
             healTimer = 0;
             interactionRange = 70;
             isCaught = false;
+            isAlive = true;
 
             exploredFoodPlaces = new List<Point>();
             exploredWaterPlaces = new List<Point>();
@@ -237,6 +240,7 @@ namespace SafariModel.Model.AbstractEntity
                 }
                 if(X == h.TargX && Y == h.TargY)
                 {
+                    isAlive = false;
                     RemoveSelf();
                 }
             }
@@ -315,7 +319,7 @@ namespace SafariModel.Model.AbstractEntity
                 if (--Water < 0) --Health;
             }
             ++Age;
-            if (Age >= 120000) RemoveSelf();
+            if (Age >= 120000) { RemoveSelf(); isAlive = false; } 
             if(IsAdult && breedCooldown > 0) breedCooldown--;
         }
 
