@@ -83,6 +83,7 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? slotPickerPage;
         private string? optionName;
+        private string? seedString;
 
         private bool save1exists;
         private bool save2exists;
@@ -103,6 +104,7 @@ namespace SafariView.ViewModel
         private float topRowHeightRelative;
         private float bottomRowHeightRelative;
         private float mid;
+        private GameDifficulty selectedDifficulty;
 
         private Model model;
         #endregion
@@ -299,6 +301,7 @@ namespace SafariView.ViewModel
         public string? LeopardCount { get { return leopardCount.ToString(); } private set { leopardCount = int.Parse(value!); OnPropertyChanged(); } }
         public string? JeepCount { get { return jeepCount.ToString(); } private set { jeepCount = int.Parse(value!); OnPropertyChanged(); } }
         public string? GuardCount { get { return guardCount.ToString(); } private set { guardCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? SeedString { get { return seedString; } set { seedString = value; OnPropertyChanged(); } }
         #endregion
 
         #region Properties
@@ -348,6 +351,18 @@ namespace SafariView.ViewModel
                 if (int.TryParse(value!.Split('/')[0], out int parsedMonth))
                 {
                     month = parsedMonth;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public GameDifficulty SelectedDifficulty
+        {
+            get => selectedDifficulty;
+            set
+            {
+                if (selectedDifficulty != value)
+                {
+                    selectedDifficulty = value;
                     OnPropertyChanged();
                 }
             }
@@ -595,12 +610,15 @@ namespace SafariView.ViewModel
                 {
                     case "Easy":
                         model.GameDifficulty = GameDifficulty.Easy;
+                        SelectedDifficulty = GameDifficulty.Easy;
                         break;
                     case "Medium":
                         model.GameDifficulty = GameDifficulty.Medium;
+                        SelectedDifficulty = GameDifficulty.Medium;
                         break;
                     case "Hard":
                         model.GameDifficulty = GameDifficulty.Hard;
+                        SelectedDifficulty = GameDifficulty.Hard;
                         break;
                 }
                 Month = $"0/{model.NeededMonths()}";
@@ -649,7 +667,8 @@ namespace SafariView.ViewModel
             SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
 
-            model.NewGame(name);
+                model.SeedString = SeedString!;
+                model.NewGame(name);
 
                
 
@@ -756,6 +775,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
+            model.SeedString = SeedString!;
             StartGame?.Invoke(this, EventArgs.Empty);
 
             redrawMinimap = true;

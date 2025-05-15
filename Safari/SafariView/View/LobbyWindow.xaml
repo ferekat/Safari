@@ -47,30 +47,60 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                         <TextBlock FontSize="8" Width="45" VerticalAlignment="Center" Foreground="White" FontWeight="Bold">Seed:</TextBlock>
-                        <TextBox Width="85" BorderBrush="#FF13501B"></TextBox>
+                        <TextBox Width="85" BorderBrush="#FF13501B" Text="{Binding SeedString, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,3">
                         <TextBlock FontSize="8" Width="45" Foreground="White" FontWeight="Bold">Difficulty:</TextBlock>
-                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Easy">Easy
+                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Easy">Easy
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="2" />
                                 </Style>
                             </Button.Resources>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#FFC3DBAD"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedDifficulty}" Value="Easy">
+                                            <Setter Property="Background" Value="#FF13501B"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
-                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Medium">Medium
+                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Medium">Medium
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="2" />
                                 </Style>
                             </Button.Resources>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#FFC3DBAD"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedDifficulty}" Value="Medium">
+                                            <Setter Property="Background" Value="#FF13501B"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
-                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Hard">Hard
+                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Hard">Hard
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="2" />
                                 </Style>
                             </Button.Resources>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#FFC3DBAD"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedDifficulty}" Value="Hard">
+                                            <Setter Property="Background" Value="#FF13501B"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                         </Button>
                     </StackPanel>
                 </StackPanel>
