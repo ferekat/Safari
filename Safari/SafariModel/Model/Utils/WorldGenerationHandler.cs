@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices.Marshalling;
+using System.Text;
 using System.Threading.Channels;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -35,6 +36,10 @@ namespace SafariModel.Model.Utils
         public WorldGenerationHandler(string seed, EntityHandler entityHandler)
         {
             this.entityHandler = entityHandler;
+            if (seed == null)
+            {
+                seed = " ";
+            }
             random = new Random(ConvertSeed(seed));
             Tile[,] map = new Tile[TileMap.MAPSIZE, TileMap.MAPSIZE];
             for (int i = 0; i < TileMap.MAPSIZE; i++)
@@ -46,7 +51,7 @@ namespace SafariModel.Model.Utils
             }
             tileMap = new TileMap(map);
         }
-
+       
         private int ConvertSeed(string seed)
         {
             int ret = 0;

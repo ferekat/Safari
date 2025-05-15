@@ -21,6 +21,8 @@ using System.Diagnostics.Contracts;
 using SafariModel.Model.EventArgsClasses;
 using System.Windows.Controls;
 using System.IO;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace SafariView.ViewModel
 {
@@ -38,10 +40,11 @@ namespace SafariView.ViewModel
         private GameSpeed gameSpeed;
         private int cameraX;
         private int cameraY;
-
+        
         private int visitorsAtGate;
         private double avgRating;
 
+        private Random random;
         private Guard? selectedGuard;
         private (int, int) selectedTile;
         private int selectedEntityID;
@@ -259,7 +262,6 @@ namespace SafariView.ViewModel
 
         #region Window bindings
 
-      
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
@@ -405,6 +407,7 @@ namespace SafariView.ViewModel
         public ViewModel(Model model, List<RenderObject> renderedTiles, List<RenderObject> renderedEntities)
         {
             this.model = model;
+            random = new Random();
             this.RenderedEntities = renderedEntities;
             FloatingTexts = new ObservableCollection<FloatingText>();
             this.RenderedTiles = renderedTiles;
@@ -456,6 +459,7 @@ namespace SafariView.ViewModel
             Month = "0/12";
             Bridges = "Hidden";
             Shop = "Visible";
+            SeedString = RandomSeed();
 
             TopRowHeightRelative = 0.08F;
             BottomRowHeightRelative = 0.15F;
@@ -880,6 +884,21 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Private methods
+
+        private string RandomSeed()
+        {
+            StringBuilder sb = new StringBuilder();
+            string randSeed = string.Empty;
+            for (int i = 0; i < 15; i++)
+            {
+                char nextChar = (char)(random.Next() % 128);
+                if (!char.IsWhiteSpace(nextChar))
+                {
+                    sb.Append(nextChar);
+                }
+            }
+            return sb.ToString();
+        }
         private void RenderGameArea()
         {
 

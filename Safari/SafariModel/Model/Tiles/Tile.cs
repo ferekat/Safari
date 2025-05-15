@@ -63,7 +63,7 @@ namespace SafariModel.Model.Tiles
         public readonly static Dictionary<TileType, int> waterHeightMap = new()
         {
             {TileType.DEEP_WATER,int.MaxValue},
-            { TileType.SHALLOW_WATER,100},
+            { TileType.SHALLOW_WATER,1000},
         };
 
 

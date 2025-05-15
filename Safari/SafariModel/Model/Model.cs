@@ -85,7 +85,7 @@ namespace SafariModel.Model
         public EconomyHandler EconomyHandler { get { return economyHandler; } }
         public EntityHandler EntityHandler { get { return entityHandler; } }  
         public RoadNetworkHandler RoadNetworkHandler { get { return roadNetworkHandler; } }
-
+        public WorldGenerationHandler WorldGenerationHandler {  get { return worldGenerationHandler; } }
         public TouristHandler TouristHandler {  get { return touristHandler; } }
         public string SeedString { get { return seedString; } set { seedString = value; } }
         #endregion
@@ -220,6 +220,9 @@ namespace SafariModel.Model
             speedBoost = 1;
             data = new GameData();
 
+
+            entityHandler = new EntityHandler();
+            Entity.RegisterHandler(entityHandler);
 
             worldGenerationHandler = new WorldGenerationHandler(seedString, entityHandler);
             tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
