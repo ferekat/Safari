@@ -112,5 +112,20 @@ namespace SafariTest
 
             Assert.AreEqual(2, g1.GetEntitiesInRange().Count);
         }
+        [TestMethod]
+        public void TestSpawnHunter()
+        {
+            EntityHandler handler = new EntityHandler();
+            Entity.RegisterHandler(handler);
+            handler.SpawnHunter(3);
+
+            Assert.AreEqual(1, handler.GetHunters().Count);
+
+            int x = handler.GetHunters()[0].X;
+            int y = handler.GetHunters()[0].Y;
+
+            Assert.IsTrue((x == 50 || y == 50) || (x == 4937 || y == 4937));
+            Assert.IsTrue(50 <= x && x <= 4937 && 50 <= y && y <= 4937);
+        }
     }
 }
