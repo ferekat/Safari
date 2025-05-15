@@ -966,17 +966,17 @@ namespace SafariView.ViewModel
                 if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
-                    if (e is Hunter h)
-                    {
-                        if (h.IsVisible && h.HasEntered)
-                        {
-                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
-                        }
-                    }
-                    else
-                    {
+                    //if (e is Hunter h)
+                    //{
+                    //    if (h.IsVisible && h.HasEntered)
+                    //    {
+                    //        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
+                    //    }
+                    //}
+                    //else
+                    //{
                         RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
-                    }
+                    //}
                 }
             }
 

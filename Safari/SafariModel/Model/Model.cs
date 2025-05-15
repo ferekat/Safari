@@ -21,7 +21,7 @@ namespace SafariModel.Model
     {
         public string ParkName { get; private set; }
 
-        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
+        const int TICK_PER_TIME_UNIT = 168;//25200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
         const int WEEKS_PER_MONTH = 4;
@@ -509,6 +509,7 @@ namespace SafariModel.Model
                     h.TargetAnimal = null;
                 }
             }
+            e.Animal.IsAlive = false;
             entityHandler.RemoveEntity(e.Animal);
         }
         private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)

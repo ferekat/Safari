@@ -110,7 +110,11 @@ namespace SafariModel.Model.InstanceEntity
                         }
                         if (TargX == x && TargY == y)
                         {
-                            DecideTask();
+                            if (!TargetAnimal.IsAlive)
+                            {
+                                TargetAnimal = null;
+                            }
+                            else { DecideTask(); }
                         }
 
                     }
@@ -129,13 +133,13 @@ namespace SafariModel.Model.InstanceEntity
         }
         private int TimeNextHunter()
         {
-            int x = random.Next(30, 120);
+            int x = 3;// random.Next(30, 120);
             return x;
 
         }
         private int SetWaitingTime()
         {
-            int x = random.Next(1200, 7200);
+            int x = 3;// random.Next(1200, 7200);
             return x;
         }
         private void SetTargetAnimal()
