@@ -20,6 +20,7 @@ namespace SafariModel.Model.Utils
         private List<Plant> plants = new();
         private List<Hunter> hunters = new();
         private List<Guard> guards = new();
+        private List<Jeep> jeeps = new();
 
 
         private Dictionary<int, Entity> entitiesByID = new();
@@ -42,6 +43,7 @@ namespace SafariModel.Model.Utils
             if (entity is Hunter hu) hunters.Add(hu);
             if (entity is Guard g) guards.Add(g);
             if (entity is Plant p) plants.Add(p);
+            if (entity is Jeep j) jeeps.Add(j);
 
             entitiesByID.Add(entity.ID, entity);
             UpdateChunks((-1, -1), entity.GetChunkCoordinates(), entity);
@@ -56,6 +58,7 @@ namespace SafariModel.Model.Utils
             if (entity is Hunter hu) hunters.Remove(hu);
             if (entity is Guard g) guards.Remove(g);
             if (entity is Plant p) plants.Remove(p);
+            if (entity is Jeep j) jeeps.Remove(j);
 
             entitiesByID.Remove(entity.ID);
             entitiesByChunks[entity.GetChunkCoordinates()].Remove(entity);
@@ -69,6 +72,7 @@ namespace SafariModel.Model.Utils
             plants.Clear();
             hunters.Clear();
             guards.Clear();
+            jeeps.Clear();
 
             entitiesByID.Clear();
             entitiesByChunks.Clear();
@@ -184,7 +188,6 @@ namespace SafariModel.Model.Utils
                         hunter = new Hunter(random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), (Model.MAPSIZE + 1) * 49 - 12, SetHunterTargetAnimal());
                         break;
                 }
-                hunter!.Multiplier = speed;
                 //hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
                 hunter!.HunterTarget += new EventHandler<HunterTargetEventArgs>(SetHunterTarget);
                 //hunter!.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(RemoveGunman);

@@ -16,6 +16,7 @@ namespace SafariModel.Persistence
         public PathTile entrance;
         public PathTile exit;
         public int money;
+        public GameDifficulty difficulty;
 
         public int touristAtGate;
         public int touristsVisited;

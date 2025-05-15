@@ -42,7 +42,10 @@ namespace SafariModel.Model.Utils
         public int MonthlyTouristCount { get { return monthlyTouristCount; } set { monthlyTouristCount = value; } }
 
 
+        public TouristHandler()
+        {
 
+        }
         public TouristHandler(int touristsAtGate, int touristsVisited, int entryFee, double avgRating, int currentGroupSize,EconomyHandler economyHandler)
         {
             this.touristsAtGate = touristsAtGate;
@@ -80,8 +83,8 @@ namespace SafariModel.Model.Utils
        
         public void NewTouristAtGatePerTick()
         {
-            Debug.WriteLine($"try: {touristsAtGate}");
 
+          //  Debug.WriteLine($"try {touristsAtGate}");
             double spawn = random.NextDouble();
                 if (tick % 120 == 0)
                 {
@@ -111,7 +114,7 @@ namespace SafariModel.Model.Utils
             }
             return 0;
         }
-        public void TouristsLeavePark(List<Animal> seenAnimals, int seenHunterCount, int touristCount)
+        public void TouristsLeavePark(HashSet<Animal> seenAnimals, int seenHunterCount, int touristCount)
         {
             List<double> ratings = CalcTourRatings(seenAnimals, seenHunterCount,touristCount);
             double sum = ratings.Sum();
@@ -123,7 +126,7 @@ namespace SafariModel.Model.Utils
             GroupLeft?.Invoke(this, avgRating);
            
         }
-        private List<double> CalcTourRatings(List<Animal> seenAnimals, int seenHunterCount, int touristCount)
+        private List<double> CalcTourRatings(HashSet<Animal> seenAnimals, int seenHunterCount, int touristCount)
         {
             double rating;
             double animalCount = seenAnimals.Count;

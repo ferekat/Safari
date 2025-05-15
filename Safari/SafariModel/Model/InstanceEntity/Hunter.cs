@@ -31,9 +31,9 @@ namespace SafariModel.Model.InstanceEntity
 
         public bool IsVisible { get { return isVisible; } set { isVisible = value; } }
         public Animal CaughtAnimal { get { return caughtAnimal!; } }
-        public int EnterField { get { return enterField / Multiplier; } set { enterField = value; } }
+        public int EnterField { get { return enterField; } set { enterField = value; } }
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
-        public int WaitingTime { get { return waitingTime / Multiplier; } set { waitingTime = value; } }
+        public int WaitingTime { get { return waitingTime; } set { waitingTime = value; } }
         public bool Duel { get { return duel; } set { duel = value; } }
         public bool IsKilled { get { return isKilled; } set { isKilled = value; } }
 

@@ -122,19 +122,19 @@ namespace SafariView.ViewModel
                 } },
             { TileType.GROUND, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass_0.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass_0.png")),
                 }}, //sötét zöld
              { TileType.GROUND_SMALL, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass.png")),
                 }}, //világos zöld
             { TileType.SMALL_HILL, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_0.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_0.png")),
                 }}, //sárga
              { TileType.SMALL_MEDIUM, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_1.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_1.png")),
                 }}, //narancs
                 { TileType.MEDIUM_HILL, new ImageBrush
                 {
@@ -142,28 +142,31 @@ namespace SafariView.ViewModel
                 }}, //piros
                  { TileType.MEDIUM_HIGH, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_3.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_3.png")),
                 }}, //rózsaszín
             { TileType.HIGH_HILL,new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.png")),
                 }}, //lila
             { TileType.FENCE,new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.png")),
                 }},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
         };
         private static Dictionary<PathTileType, Brush> pathBrushes = new Dictionary<PathTileType, Brush>()
-        {
+        {{ PathTileType.N,new SolidColorBrush(Color.FromRgb(255,0,0))},
             {PathTileType.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
             {PathTileType.ROAD,new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.png")),
                 }},
-            {PathTileType.BRIDGE,new SolidColorBrush(Color.FromRgb(32,32,32)) }
-                
+            {PathTileType.BRIDGE,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/bridge_0.png")),
+                }}
+
         };
 
         private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()
@@ -189,8 +192,10 @@ namespace SafariView.ViewModel
         {
             {PathTileType.EMPTY,new byte[] {0,0,0} },
             {PathTileType.ROAD,new byte[] {235,125,52}},
-            {PathTileType.BRIDGE,new byte[] {125,37,37} }
-            
+            {PathTileType.BRIDGE,new byte[] {125,37,37} },
+
+
+            {PathTileType.N,new byte[] {235,125,52}},
         };
 
 
@@ -733,7 +738,6 @@ namespace SafariView.ViewModel
             if (gazelleCount != data.gazelles)
             {
                 GazelleCount = data.gazelles.ToString();
-                Debug.WriteLine(GazelleCount);
             }
             if (giraffeCount != data.giraffes)
             {
@@ -963,7 +967,9 @@ namespace SafariView.ViewModel
             foreach (Entity e in entities)
             {
                 int sizemodifier = 0;
+                int alignCenter = e.EntitySize / 2;
                 if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
+                if (e is Jeep) alignCenter = 0; 
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
                     if (e is Hunter h)
@@ -975,7 +981,7 @@ namespace SafariView.ViewModel
                     }
                     else
                     {
-                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                        RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
             }
@@ -1067,7 +1073,7 @@ namespace SafariView.ViewModel
                 Food: {a.Food}
                 Water: {a.Water}
                 Action: {a.Action}
-                Range: {a.Range}
+                Is moving: {a.IsMoving}
                 """;
             }
             else
@@ -1091,7 +1097,10 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
-            model.UpdatePerTick();
+            for(int i = 0; i < (int)gameSpeed; i++)
+            {
+                model.UpdatePerTick();
+            }
         }
 
         private void FinishedEntityRender()

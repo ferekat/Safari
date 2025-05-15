@@ -13,7 +13,8 @@ namespace SafariModel.Model.Tiles
     {
         EMPTY,
         ROAD,
-        BRIDGE
+        BRIDGE,
+       N
     }
     public class PathIntersectionNode
     {
@@ -61,8 +62,12 @@ namespace SafariModel.Model.Tiles
             }
         }
 
+        public override string ToString()
+        {
+            return $"PNODE: ({PathI}, {PathJ}) ";
+        }
 
-        
+
 
         public void ConnectIntersection(PathIntersectionNode other)
         {
@@ -75,10 +80,13 @@ namespace SafariModel.Model.Tiles
             this.id = CurrentID++;
             this.pathI = pathI;
             this.pathJ = pathJ;
-            allNodes.Add(this);
+            if (!allNodes.Contains(this))
+            {
+                allNodes.Add(this);
+            }
             isVisitedByAStar = false;
             shortestPathId = 0;
-     
+            
         }
 
        
@@ -105,16 +113,17 @@ namespace SafariModel.Model.Tiles
 
 
         private PathTileType pathType;
-    
+        private PathTileType cachedType;
         private PathIntersectionNode? intersectionNode;
 
      
-        public PathTileType PathType { get { return pathType; } /*set {/*if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.NODE; } } */}
+        public PathTileType PathType { get { return pathType; }set   {if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.N; } } }
       
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
-        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, TileType.EMPTY)
+        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, t.TileType)
         {
             this.pathType = pathType;
+            cachedType = pathType;
             this.intersectionNode = new PathIntersectionNode(t.I, t.J);
         }
         //akkor jön létre a PathTile amikor leteszünk egy utat/hidat

@@ -19,7 +19,7 @@ namespace SafariModel.Model.AbstractEntity
         protected int entitySize;
         private int id;
 
-        private static readonly int CHUNK_SIZE = 200;
+        public static readonly int CHUNK_SIZE = 200;
 
         private static EntityHandler? entityHandler;
         protected static Tile[,]? tileMap;
@@ -54,7 +54,7 @@ namespace SafariModel.Model.AbstractEntity
             return (x / CHUNK_SIZE, y / CHUNK_SIZE);
         }
 
-        protected double DistanceToEntity(Entity other)
+        public double DistanceToEntity(Entity other)
         {
             return Math.Sqrt(Math.Pow(this.X - other.X, 2)+ Math.Pow(this.Y-other.Y, 2));
         }
