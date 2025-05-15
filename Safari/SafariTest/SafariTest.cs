@@ -120,7 +120,7 @@ namespace SafariTest
         [TestMethod]
         public void TestWorldGen()
         {
-            
+
             TileMap tileMap = model.TileMap;
             PathTile entrance = tileMap.Entrance;
             PathTile exit = tileMap.Exit;
@@ -132,7 +132,7 @@ namespace SafariTest
             Assert.IsTrue(exitNeighs.Count(n => n.TileType == TileType.GROUND) == 1);
             Assert.IsTrue(exitNeighs.Count(n => n.TileType == TileType.GROUND) == 1);
 
-
+        }
         [TestMethod]
         public void TestEntitySavingAndLoading()
         {
