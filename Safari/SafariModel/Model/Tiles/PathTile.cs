@@ -75,7 +75,10 @@ namespace SafariModel.Model.Tiles
             this.id = CurrentID++;
             this.pathI = pathI;
             this.pathJ = pathJ;
-            allNodes.Add(this);
+            if (!allNodes.Contains(this))
+            {
+                allNodes.Add(this);
+            }
             isVisitedByAStar = false;
             shortestPathId = 0;
      
@@ -112,7 +115,7 @@ namespace SafariModel.Model.Tiles
         public PathTileType PathType { get { return pathType; } /*set {/*if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.NODE; } } */}
       
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
-        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, TileType.EMPTY)
+        public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, t.TileType)
         {
             this.pathType = pathType;
             this.intersectionNode = new PathIntersectionNode(t.I, t.J);

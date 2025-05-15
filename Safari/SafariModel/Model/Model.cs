@@ -342,7 +342,7 @@ namespace SafariModel.Model
             {
 
                 bool canPlace = (clickedTile.TileType == TileType.GROUND && tileToBuy == TileType.SHALLOW_WATER);
-                if (economyHandler.BuyTile(tileToBuy))
+                if (canPlace &&economyHandler.BuyTile(tileToBuy))
                 {
                     clickedTile.SetType(tileToBuy);
                     OnTileMapUpdated(tileX,tileY);
@@ -352,7 +352,8 @@ namespace SafariModel.Model
             if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy)
             {
 
-                bool canPlace = ((clickedTile.IsWater() && pathToBuy == PathTileType.BRIDGE) || (!clickedTile.IsWater() && pathToBuy == PathTileType.ROAD));
+                bool canPlace = ((clickedTile.IsWater() && pathToBuy == PathTileType.BRIDGE) ||
+                   (!clickedTile.IsWater() && pathToBuy == PathTileType.ROAD)) ;
                 
                     //ha be lehet kötni a hálózatba és meg lehet venni
                 

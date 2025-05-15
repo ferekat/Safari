@@ -49,26 +49,36 @@ namespace SafariModel.Model.Utils
             {
                 return false;
             }
+            List<Tile> traversableTiles = new List<Tile>();
+            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))
+            {
+                if(tileMap.IsTraversablePath(neigh.I, neigh.J, tileToConnect.I, tileToConnect.J, true))
+                {
+                    traversableTiles.Add(neigh);
+                }
+            }
+           
             int pathNeighbours = 0;
             List<PathIntersectionNode> neighNodes = new();
-            PathTile connectedTile = new PathTile(tileToConnect, pathToConnect);
-           // AddToNetwork(connectedTile.IntersectionNode!);
+            PathTile connectedTile = null!;
+         
             
             PathIntersectionNode neighNode = null!;
-            PathIntersectionNode connectedTileNode = connectedTile.IntersectionNode!;
+            PathIntersectionNode connectedTileNode = null!;/* = connectedTile.IntersectionNode!;*/
             bool succ = false;
-            foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK HIDAK
+            foreach (Tile neigh in traversableTiles)  //HEGYEK HIDAK
             {
            // Debug.WriteLine("exe");
                 if (neigh is PathTile neighPathTile)
                 {
                     succ = true;
-
+                    connectedTile = new PathTile(tileToConnect, pathToConnect);
+                    connectedTileNode = connectedTile.IntersectionNode!;
                     if (neighPathTile.IntersectionNode == null)
                     {
 
                         neighPathTile.IntersectionNode = new PathIntersectionNode(neighPathTile.I, neighPathTile.J);
-                    //    roadNetwork.Add(neighPathTile.IntersectionNode);
+                 
                         
                         int deltaI = Math.Abs(connectedTile.I - neighPathTile.I);
                         int deltaJ = Math.Abs(neighPathTile.J - neighPathTile.J);

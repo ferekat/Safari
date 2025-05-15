@@ -117,7 +117,7 @@ namespace SafariModel.Model.AbstractEntity
 
             for (; n > 0; --n)
             {
-                if (!tileCollision.IsPassable(x, y, this.ImPassableTileTypes())) return false;
+                if (!tileCollision.IsPassable(x, y, this.ImPassableTileTypes()) || !tileCollision.TileMap.IsTraversablePath(x0,y0,x1,y1,false)) return false;
 
                 if (error > 0)
                 {
@@ -303,7 +303,7 @@ namespace SafariModel.Model.AbstractEntity
                     int targetX = nodeX + coordset.Item1;
                     int targetY = nodeY + coordset.Item2;
                     //Ha ráléphet a tilera, és azt a tilet nem dolgoztuk még fel és nincs benne a feldolgozandó tileok között...
-                    if (tileCollision.IsPassable(targetX, targetY, this.ImPassableTileTypes()) && !closedList.Contains((targetX, targetY)) && !openListCoords.Contains((targetX, targetY)))
+                    if (tileCollision.IsPassable(targetX, targetY, this.ImPassableTileTypes()) && tileCollision.TileMap.IsTraversablePath(targetX,targetY,nodeY,nodeY,false) && !closedList.Contains((targetX, targetY)) && !openListCoords.Contains((targetX, targetY)))
                     {
                         //Új node, amit eltárolunk az openlistben
                         PathNode newNode = new PathNode(

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,7 +53,23 @@ namespace SafariModel.Model.Tiles
                 }
             }
         }
-        
+        public bool IsTraversablePath(int x0, int y0, int x1, int y1,bool excludeGates)
+        {
+            Tile t0 = map[x0, y0];
+            Tile t1 = map[x1, y1];
+             //   Debug.WriteLine($"tr{t0.TileType},{t1.TileType},{x0},{y0}");
+            if (excludeGates && (t0.IsGate() || t1.IsGate()))
+            {
+                return true;
+            }
+            if (Tile.OrderedTraversableHeights.Contains(t0.TileType) && Tile.OrderedTraversableHeights.Contains(t1.TileType))
+            {
+                int t0Type = Tile.OrderedTraversableHeights.IndexOf(t0.TileType);
+                int t1Type = Tile.OrderedTraversableHeights.IndexOf(t1.TileType);
+                return Math.Abs(t0Type - t1Type) <= 1;
+            }
+            return false;
+        }
         public static bool IsTileCoordInBounds(int i, int j)
         {
             return i >= 0 &&

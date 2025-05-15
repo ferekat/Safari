@@ -144,6 +144,8 @@ namespace SafariModel.Model.Utils
             //TESZTELÉSRE:
             entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
             exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
+            exit.SetType(TileType.EXIT);
+            entrance.SetType(TileType.ENTRANCE);
             /////////////
             ///
 

@@ -77,7 +77,7 @@ namespace SafariModel.Model.Utils
        
         public void NewTouristAtGatePerTick()
         {
-            Debug.WriteLine($"try: {touristsAtGate}");
+            
 
             double spawn = random.NextDouble();
                 if (tick % 120 == 0)
