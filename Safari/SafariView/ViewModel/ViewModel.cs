@@ -122,19 +122,19 @@ namespace SafariView.ViewModel
                 } },
             { TileType.GROUND, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass_0.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass_0.png")),
                 }}, //sötét zöld
              { TileType.GROUND_SMALL, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/grass.png")),
                 }}, //világos zöld
             { TileType.SMALL_HILL, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_0.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_0.png")),
                 }}, //sárga
              { TileType.SMALL_MEDIUM, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_1.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_1.png")),
                 }}, //narancs
                 { TileType.MEDIUM_HILL, new ImageBrush
                 {
@@ -142,15 +142,15 @@ namespace SafariView.ViewModel
                 }}, //piros
                  { TileType.MEDIUM_HIGH, new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_3.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground_3.png")),
                 }}, //rózsaszín
             { TileType.HIGH_HILL,new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/ground.png")),
                 }}, //lila
             { TileType.FENCE,new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/fence.png")),
                 }},
             { TileType.ENTRANCE,new SolidColorBrush(Color.FromRgb(255, 0, 0))},
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
@@ -160,10 +160,13 @@ namespace SafariView.ViewModel
             {PathTileType.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
             {PathTileType.ROAD,new ImageBrush
                 {
-                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.jpg")),
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/road.png")),
                 }},
-            {PathTileType.BRIDGE,new SolidColorBrush(Color.FromRgb(32,32,32)) }
-                
+            {PathTileType.BRIDGE,new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/bridge_0.png")),
+                }}
+
         };
 
         private static Dictionary<TileType, byte[]> minimaptileBrushes = new Dictionary<TileType, byte[]>()

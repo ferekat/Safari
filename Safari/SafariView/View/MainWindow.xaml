@@ -189,7 +189,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                                <Image Source="../Resources/road.jpg" Stretch="Uniform" Margin="7"/>
+                                <Image Source="../Resources/road.png" Stretch="Uniform" Margin="7"/>
                             </Button>
                             <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="Bridge" Margin="0,0,10,0">
                                 <Button.Style>
