@@ -186,5 +186,35 @@ namespace SafariTest
             CollectionAssert.DoesNotContain(result, g);
             CollectionAssert.DoesNotContain(result, far1);
         }
+        [TestMethod]
+        public void TestGuardIncreaseLevel()
+        {
+            Guard g = new Guard(100, 200, null);
+            string? message = null;
+
+            g.LevelUp += (s, e) => message = e.Message!;
+            g.ShotWeight = 14;
+            g.IncreaseLevel(1);
+
+            Assert.AreEqual(2, g.Level);
+            Assert.AreEqual(24 - 10, g.ShotWeight);
+            Assert.AreEqual((int)(15 * Math.Pow(1.2, 2)), g.Damage);
+            Assert.AreEqual("Level 2!", message);
+
+            g = new Guard(100, 200, null);
+            g.ShotWeight = 0;
+            g.IncreaseLevel(1);
+            Assert.AreEqual(1, g.Level);
+            Assert.AreEqual(10, g.ShotWeight);
+
+            g = new Guard(100, 200, null);
+            g.ShotWeight = 10;
+            g.IncreaseLevel(2);
+            Assert.AreEqual(20, g.ShotWeight);
+
+            g = new Guard(100, 200, null);
+            g.IncreaseLevel(3);
+            Assert.AreEqual(3, g.ShotWeight);
+        }
     }
 }
