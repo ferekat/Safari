@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using SafariModel.Model.Utils;
 using SafariModel.Model.EventArgsClasses;
+using System.Diagnostics;
 
 namespace SafariModel.Model.InstanceEntity
 {
@@ -34,6 +35,7 @@ namespace SafariModel.Model.InstanceEntity
         public int Level { get { return level; } }
         public int TickBeforeFire { get { return tickBeforeFire; } set { tickBeforeFire = value; } }
         public Hunter? TargetHunter { get { return targetHunter; } set { targetHunter = value; } }
+        public int ShotWeight { get { return shotWeight; } set { shotWeight = value; } }
 
         public event EventHandler<MessageEventArgs>? LevelUp;
 
@@ -76,7 +78,7 @@ namespace SafariModel.Model.InstanceEntity
             SetTargetHunter();
             if (targetHunter != null)
             {
-                if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                if (tickBeforeFire % timeShots == 0)
                 {
                     Fire(this, targetHunter);
                 }
@@ -84,6 +86,7 @@ namespace SafariModel.Model.InstanceEntity
             }
             else if (TargetAnimal != null)
             {
+                Debug.WriteLine("Vágom, hogy vadásznom kéne, de a kurva anyád");
                 if (TargX != TargetAnimal.X || TargY != TargetAnimal.Y)
                 {
                     ChaseTarget();
@@ -99,7 +102,7 @@ namespace SafariModel.Model.InstanceEntity
                     SetTargetHunter();
                     if (targetHunter != null)
                     {
-                        if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                        if (tickBeforeFire % timeShots == 0)
                         {
                             Fire(this, targetHunter);
                         }
@@ -151,7 +154,7 @@ namespace SafariModel.Model.InstanceEntity
             {
                 shotWeight += 10;
             }
-            if (n == 2)
+            else if (n == 2)
             {
                 shotWeight += 20;
             }

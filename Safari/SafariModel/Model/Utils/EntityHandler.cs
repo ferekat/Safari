@@ -188,7 +188,6 @@ namespace SafariModel.Model.Utils
                         hunter = new Hunter(random.Next(50, (Model.MAPSIZE + 1) * 49 - 11), (Model.MAPSIZE + 1) * 49 - 12, SetHunterTargetAnimal());
                         break;
                 }
-                hunter!.Multiplier = speed;
                 //hunter!.KilledAnimal += new EventHandler<KillAnimalEventArgs>(KillAnimal);
                 hunter!.HunterTarget += new EventHandler<HunterTargetEventArgs>(SetHunterTarget);
                 //hunter!.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(RemoveGunman);

@@ -24,7 +24,7 @@ namespace SafariModel.Model.InstanceEntity
 
         protected override void EatInteraction(Entity e)
         {
-            Food = 100;
+            Food = 110;
             e.RemoveSelf();
         }
     }

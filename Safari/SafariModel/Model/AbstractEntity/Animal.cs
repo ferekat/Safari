@@ -44,11 +44,14 @@ namespace SafariModel.Model.AbstractEntity
         private Point targetedWater;
 
         private static readonly int LEADER_FOLLOW_RANGE = Tile.TILESIZE * 15;
+        private static readonly int LEADER_APPROACH_RANGE = Tile.TILESIZE * 4;
+        private static readonly int SEARCH_CYCLES = 120;
+        private static int currentSearchCycle = 0;
+        private static readonly int RANDOM_WANDER_TIME = 1200;
+        private static readonly int HUNGERLIMIT = 1000;
+        private static readonly int THRISTLIMIT = 600;
+        private static readonly int HEALLIMIT = 1200;
 
-        private int searchLimit;
-        private int hungerLimit;
-        private int thirstLimit;
-        private int healLimit;
         private int healTimer;
         private int breedCooldown;
         private int targetX;
@@ -69,17 +72,22 @@ namespace SafariModel.Model.AbstractEntity
         public int Food { get; protected set; }
         public int Water { get; protected set; }
         public int Health { get; protected set; }
+
+        public int MaxHealth { get; protected set; }
         public AnimalActions Action { get; protected set; }
         public bool IsLeader { get { return leader == null && members != null; } }
         public bool InGroup { get { return leader != null || members != null; } }
-        public bool IsAdult { get { return Age > 20000 && !IsEldelry; } }
-        public bool IsEldelry { get { return Age > 50000; } }
+        public bool IsAdult { get { return Age > 30000 && !IsEldelry; } }
+        public bool IsEldelry { get { return Age > 100000; } }
 
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
         public int SearchTimer { get { return searchTimer; } }
         public bool IsCaught { get { return isCaught; } set { isCaught = value; } }
         public Hunter? Abductor { get { return Abductor; } set { abductor = value; } }
+
+        public int ExploredFoodPlaceCount { get { return exploredFoodPlaces.Count; } }
+        public int ExploredWaterPlaceCount { get { return exploredWaterPlaces.Count; } }
 
         #endregion
 
@@ -88,21 +96,20 @@ namespace SafariModel.Model.AbstractEntity
         #endregion
 
         #region Constructor
-        protected Animal(int x, int y, int age, int health, int food, int water, int hunger, int thirst,int breedingCooldown) : base(x, y)
+        protected Animal(int x, int y, int age, int maxHealth, int food, int water, int hunger, int thirst,int breedingCooldown) : base(x, y)
         {
             Age = age;
             Food = food;
             Water = water;
             Hunger = hunger;
             Thirst = thirst;
-            Health = health;
+            MaxHealth = maxHealth;
+            Health = maxHealth;
             Action = AnimalActions.Resting;
 
-            hungerLimit = 1000;
-            thirstLimit = 600;
-            healLimit = 1200;
-            searchLimit = 360;
-            searchTimer = 0;
+            searchTimer = currentSearchCycle++;
+            if (currentSearchCycle >= SEARCH_CYCLES)
+                currentSearchCycle = 0;
             healTimer = 0;
             interactionRange = 70;
             isCaught = false;
@@ -114,13 +121,11 @@ namespace SafariModel.Model.AbstractEntity
 
             breedCooldown = breedingCooldown;
 
-            range = 200;
-
             CheckArea();
 
             //random járkálás
             random = new Random();
-            wanderTimer = random.Next(300);
+            wanderTimer = random.Next(RANDOM_WANDER_TIME);
         }
         #endregion
 
@@ -148,12 +153,13 @@ namespace SafariModel.Model.AbstractEntity
                     exploredFoodPlaces.Remove(current);
                     exploredFoodChunks.Remove(GetChunkCoordinates());
                 }
-                if (exploredWaterPlaces.Count > 0)
+                if (exploredFoodPlaces.Count > 0)
                 {
                     SetTarget(exploredWaterPlaces[random.Next(0, exploredWaterPlaces.Count)]);
                 }
                 else //search randomly for food, if there are no explored food sources
                 {
+
                     int newX = random.Next(-600, 600);
                     int newY = random.Next(-600, 600);
                     this.SetTarget(new Point(this.x + newX, this.y + newY));
@@ -238,7 +244,7 @@ namespace SafariModel.Model.AbstractEntity
        
         protected void RandomWander()
         {
-            wanderTimer = random.Next(300);
+            wanderTimer = random.Next(RANDOM_WANDER_TIME);
             int newX = random.Next(-1000, 1000);
             int newY = random.Next(-1000, 1000);
             this.SetTarget(new Point(this.x + newX, this.y + newY));
@@ -296,20 +302,20 @@ namespace SafariModel.Model.AbstractEntity
 
         private void PassTick()
         {
-            if (++Hunger >= hungerLimit)
+            if (++Hunger >= HUNGERLIMIT)
             {
                 Hunger = 0;
                 if (IsAdult) Food -= 1;
                 if (IsEldelry) Food -= 2;
                 if (--Food < 0) --Health;
             }
-            if (++Thirst >= thirstLimit)
+            if (++Thirst >= THRISTLIMIT)
             {
                 Thirst = 0;
                 if (--Water < 0) --Health;
             }
             ++Age;
-            if (Age >= 60000) RemoveSelf();
+            if (Age >= 120000) RemoveSelf();
             if(IsAdult && breedCooldown > 0) breedCooldown--;
         }
 
@@ -326,7 +332,7 @@ namespace SafariModel.Model.AbstractEntity
 
         private void Search()
         {
-            if (++searchTimer >= searchLimit)
+            if (++searchTimer >= SEARCH_CYCLES)
             {
                 searchTimer = 0;
                 CheckArea();
@@ -346,7 +352,7 @@ namespace SafariModel.Model.AbstractEntity
             targetedFood = null;
         }
 
-        private void CheckArea()
+        public void CheckArea()
         {
             List<Tile> tilesInRange = GetTilesInRange();
             List<Entity> entitiesInRange = GetEntitiesInRange();
@@ -477,9 +483,11 @@ namespace SafariModel.Model.AbstractEntity
         }
         private void Rest()
         {
-            if(++healTimer >= healLimit)
+            if(++healTimer >= HEALLIMIT)
             {
                 ++Health;
+                if(Health > MaxHealth)
+                    Health = MaxHealth;
                 healTimer = 0;
             }
         }
@@ -489,7 +497,7 @@ namespace SafariModel.Model.AbstractEntity
             if (leader == null) return;
             if(ReachedTarget && !IsMoving) SetTarget(new Point(leader.X, leader.Y));
             //Found leader
-            if (DistanceToEntity(leader) < Range)
+            if (DistanceToEntity(leader) < LEADER_APPROACH_RANGE)
             {
                 CancelMovement();
                 searchingForLeader = false;

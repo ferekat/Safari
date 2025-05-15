@@ -30,19 +30,22 @@ namespace SafariModel.Persistence
                 data.parkName = await reader.ReadLineAsync() + "";
                 data.money = int.Parse(await reader.ReadLineAsync() + "");
 
+
+                
+                data.day = int.Parse(await reader.ReadLineAsync() + "");
+                data.week = int.Parse(await reader.ReadLineAsync() + "");
+                data.month = int.Parse(await reader.ReadLineAsync() + "");
+                data.difficulty = (GameDifficulty)int.Parse(await reader.ReadLineAsync() + "");
+                data.gameTime = int.Parse(await reader.ReadLineAsync() + "");
+                data.winningMonths = int.Parse(await reader.ReadLineAsync() + "");
+
+                data.hour = int.Parse(await reader.ReadLineAsync() + "");
                 data.touristAtGate = int.Parse(await reader.ReadLineAsync() + "");
                 data.touristsVisited = int.Parse(await reader.ReadLineAsync() + "");
                 data.entryFee = int.Parse(await reader.ReadLineAsync() + "");
                 double.TryParse(await reader.ReadLineAsync() + "", NumberStyles.Float, CultureInfo.InvariantCulture, out double avgRating);
                 data.avgRating = avgRating;
                 data.currentGroupSize = int.Parse(await reader.ReadLineAsync() + "");
-
-                data.hour = int.Parse(await reader.ReadLineAsync() + "");
-                data.day = int.Parse(await reader.ReadLineAsync() + "");
-                data.week = int.Parse(await reader.ReadLineAsync() + "");
-                data.month = int.Parse(await reader.ReadLineAsync() + "");
-                data.gameTime = int.Parse(await reader.ReadLineAsync() + "");
-                data.winningMonths = int.Parse(await reader.ReadLineAsync() + "");
 
                 Tile[,] tileMap = new Tile[Model.Model.MAPSIZE, Model.Model.MAPSIZE];
 
@@ -98,17 +101,20 @@ namespace SafariModel.Persistence
                     builder.AppendLine(data.parkName);
                     builder.AppendLine(data.money.ToString());
 
-                    builder.AppendLine(data.touristAtGate.ToString());
-                    builder.AppendLine(data.touristsVisited.ToString());
-                    builder.AppendLine(data.entryFee.ToString());
-                    builder.AppendLine(data.avgRating.ToString("G",CultureInfo.CreateSpecificCulture("en-US")));
-                    builder.AppendLine(data.currentGroupSize.ToString());  
-                    builder.AppendLine(data.hour.ToString());
                     builder.AppendLine(data.day.ToString());
                     builder.AppendLine(data.week.ToString());
                     builder.AppendLine(data.month.ToString());
+                    builder.AppendLine(((int)data.difficulty).ToString());
                     builder.AppendLine(data.gameTime.ToString());
                     builder.AppendLine(data.winningMonths.ToString());
+
+                    builder.AppendLine(data.hour.ToString());
+                    builder.AppendLine(data.touristAtGate.ToString());
+                    builder.AppendLine(data.touristsVisited.ToString());
+                    builder.AppendLine(data.entryFee.ToString());
+                    builder.AppendLine(data.avgRating.ToString("G", CultureInfo.CreateSpecificCulture("en-US")));
+                    builder.AppendLine(data.currentGroupSize.ToString());
+                    
 
                     await writer.WriteAsync(builder.ToString());
 

@@ -21,7 +21,7 @@ namespace SafariModel.Model
     {
         public string ParkName { get; private set; }
 
-        const int TICK_PER_TIME_UNIT = 25200; //teszt -> 168;
+        const int TICK_PER_TIME_UNIT = 7200; //teszt -> 168;
         const int HOURS_PER_DAY = 24;
         const int DAYS_PER_WEEK = 7;
         const int WEEKS_PER_MONTH = 4;
@@ -64,18 +64,6 @@ namespace SafariModel.Model
                     GameSpeed.Fast => 9,
                     _ => 1
                 };
-
-                foreach (Entity entity in entityHandler.GetEntities())
-                {
-                    if (entity is MovingEntity me)
-                    {
-                        me.UpdateSpeedMultiplier(speedBoost);
-                        if(me is Gunman g)
-                        {
-                            g.Multiplier = speedBoost;
-                        }
-                    }
-                }
                 secondCounterHunter = 0;
             }
         }
@@ -88,6 +76,7 @@ namespace SafariModel.Model
         public WorldGenerationHandler WorldGenerationHandler {  get { return worldGenerationHandler; } }
         public TouristHandler TouristHandler {  get { return touristHandler; } }
         public string SeedString { get { return seedString; } set { seedString = value; } }
+        public Dictionary<(int, int), List<Entity>> SpatialMap { get { return spatialMap; } set { spatialMap = value; } }
         #endregion
 
         #region Events
@@ -103,6 +92,7 @@ namespace SafariModel.Model
 
             this.dataAccess = dataAccess;
             data = new GameData();
+            data.difficulty = gameDifficulty;
 
 
             entityHandler = new EntityHandler();
@@ -210,19 +200,16 @@ namespace SafariModel.Model
         public void NewGame(string parkName)
         {
 
-            ParkName = "";
-
-          
-
-
-
+            ParkName = parkName;
 
             tickCount = 0;
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
             data = new GameData();
+            data.difficulty = gameDifficulty;
 
+            
 
             entityHandler = new EntityHandler();
             Entity.RegisterHandler(entityHandler);
@@ -296,21 +283,10 @@ namespace SafariModel.Model
         }
         private void CountTimePassed(GameData data)
         {
-            int divider = 1;
             int neededMonths = NeededMonths();
-            switch (gameSpeed)
-            {
-                case GameSpeed.Slow:
-                    divider = 1;
-                    break;
-                case GameSpeed.Medium:
-                    divider = HOURS_PER_DAY;
-                    break;
-                case GameSpeed.Fast:
-                    divider = HOURS_PER_DAY * DAYS_PER_WEEK;
-                    break;
-            }
-            if (tickPerGameSpeedCount >= TICK_PER_TIME_UNIT / divider)
+            int effectiveTickPerTimeUnit = TICK_PER_TIME_UNIT / speedBoost;
+
+            if (tickPerGameSpeedCount >= effectiveTickPerTimeUnit)
             {
                 tickPerGameSpeedCount = 0;
                 data.hour++;
@@ -428,15 +404,9 @@ namespace SafariModel.Model
             }
 
             if (entity == null) return;
-           
-            if(entity is MovingEntity me)
-            {
-                me.UpdateSpeedMultiplier(speedBoost);
-            }
 
             if (entity is Guard guardEntity)
             {
-                guardEntity.Multiplier = speedBoost;
                 guardEntity.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
                 guardEntity.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
                 guardEntity.TookDamage += OnNewMessage;
