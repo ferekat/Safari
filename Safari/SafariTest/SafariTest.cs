@@ -23,22 +23,22 @@ namespace SafariTest
             //Todo mockkal helyettesíteni
             model = new Model(null);
         }
-        private Tile GoDown(Tile currentTile,RoadNetworkHandler roadNetworkHandler)
+        private Tile GoDown(Tile currentTile, RoadNetworkHandler roadNetworkHandler)
         {
             Tile next = roadNetworkHandler.TileMap.Map[currentTile.I + 1, currentTile.J];
             roadNetworkHandler.ConnectToNetwork(next, PathTileType.ROAD);
             return next;
         }
-        private Tile GoLeft(Tile currentTile,RoadNetworkHandler roadNetworkHandler)
+        private Tile GoLeft(Tile currentTile, RoadNetworkHandler roadNetworkHandler)
         {
-            Tile next = roadNetworkHandler.TileMap.Map[currentTile.I, currentTile.J+1];
+            Tile next = roadNetworkHandler.TileMap.Map[currentTile.I, currentTile.J + 1];
             roadNetworkHandler.ConnectToNetwork(next, PathTileType.ROAD);
             return next;
         }
-    
-       
+
+
         [TestMethod]
-       
+
         public void TestPathNodeCount()
         {
             Tile[,] map = model.TileMap.Map;
@@ -46,7 +46,7 @@ namespace SafariTest
             PathTile exit = model.TileMap.Exit;
             Tile currentTile = entrance;
             RoadNetworkHandler roadNetworkHandler = model.RoadNetworkHandler;
-            
+
             PathIntersectionNode.allNodes.Clear();
             PathIntersectionNode.allNodes.Add(entrance.IntersectionNode!);
             PathIntersectionNode.allNodes.Add(exit.IntersectionNode!);
@@ -55,7 +55,7 @@ namespace SafariTest
             int ej = entrance.J;
 
 
-            Assert.AreEqual(2,PathIntersectionNode.allNodes.Count);
+            Assert.AreEqual(2, PathIntersectionNode.allNodes.Count);
             //első lépés
 
             currentTile = GoDown(currentTile, roadNetworkHandler);
@@ -64,21 +64,21 @@ namespace SafariTest
 
             //többi lépés
 
-            currentTile =  GoDown(currentTile,roadNetworkHandler);
-           ; 
+            currentTile = GoDown(currentTile, roadNetworkHandler);
+            ;
             Assert.AreEqual(3, PathIntersectionNode.allNodes.Count);
 
             currentTile = GoLeft(currentTile, roadNetworkHandler);
-           
+
             Assert.AreEqual(4, PathIntersectionNode.allNodes.Count);
 
 
             currentTile = GoLeft(currentTile, roadNetworkHandler);
-            
+
             Assert.AreEqual(4, PathIntersectionNode.allNodes.Count);
 
             currentTile = GoDown(currentTile, roadNetworkHandler);
-            
+
             Assert.AreEqual(5, PathIntersectionNode.allNodes.Count);
 
         }
@@ -102,8 +102,8 @@ namespace SafariTest
             //Range: 1000 pixels
             Gazelle g1 = new Gazelle(100, 200);
             //These entities are in g1's range
-            Gazelle g2 = new Gazelle(g1.X+g1.Range-1, g1.Y);
-            Gazelle g3 = new Gazelle(g1.X, g1.Y + g1.Range-1);
+            Gazelle g2 = new Gazelle(g1.X + g1.Range - 1, g1.Y);
+            Gazelle g3 = new Gazelle(g1.X, g1.Y + g1.Range - 1);
             //These entities are out of g1's range
             Gazelle g4 = new Gazelle(g1.X + g1.Range, g1.Y);
             Gazelle g5 = new Gazelle(g1.X, g1.Y + g1.Range);
@@ -163,7 +163,7 @@ namespace SafariTest
             string pt1ser = DataSerializer.SerializeTile(pt1);
             Tile pt2 = DataSerializer.DeSerializeTile(pt1ser);
             Assert.IsTrue(pt2 is PathTile);
-            if(pt2 is PathTile ptconv)
+            if (pt2 is PathTile ptconv)
                 Assert.AreEqual(pt1.PathType, ptconv.PathType);
 
             //Entityk serializálása
@@ -172,7 +172,7 @@ namespace SafariTest
             Entity? e2 = DataSerializer.DeSerializeEntity(g1ser);
             Assert.IsNotNull(e2);
             Assert.IsTrue(e2 is Gazelle);
-            if(e2 is Gazelle g2)
+            if (e2 is Gazelle g2)
             {
                 Assert.AreEqual(g1.X, g2.X);
                 Assert.AreEqual(g1.Y, g2.Y);
@@ -201,13 +201,13 @@ namespace SafariTest
 
             Assert.AreEqual(nodes1.Count, nodes2.Count);
 
-            for(int i = 0; i < nodes1.Count; i++)
+            for (int i = 0; i < nodes1.Count; i++)
             {
                 Assert.AreEqual(nodes1[i].ID, nodes2[i].ID);
                 Assert.AreEqual(nodes1[i].PathI, nodes2[i].PathI);
                 Assert.AreEqual(nodes1[i].PathJ, nodes2[i].PathJ);
                 Assert.AreEqual(nodes1[i].NextIntersections.Count, nodes2[i].NextIntersections.Count);
-                for(int j = 0; j < nodes1[i].NextIntersections.Count; j++)
+                for (int j = 0; j < nodes1[i].NextIntersections.Count; j++)
                 {
                     Assert.AreEqual(nodes1[i].NextIntersections[j].ID, nodes2[i].NextIntersections[j].ID);
                 }
@@ -220,12 +220,12 @@ namespace SafariTest
 
             EntityHandler handler = new EntityHandler();
 
-            Tile[,] testMap = new Tile[Model.MAPSIZE,Model.MAPSIZE];
-            for(int i = 0; i < Model.MAPSIZE; i++)
+            Tile[,] testMap = new Tile[Model.MAPSIZE, Model.MAPSIZE];
+            for (int i = 0; i < Model.MAPSIZE; i++)
             {
                 for (int j = 0; j < Model.MAPSIZE; j++)
                 {
-                    Tile t = new Tile(i, j,0, TileType.SHALLOW_WATER);
+                    Tile t = new Tile(i, j, 0, TileType.SHALLOW_WATER);
                     testMap[i, j] = t;
                 }
             }
@@ -234,7 +234,7 @@ namespace SafariTest
             Entity.RegisterHandler(handler);
 
             Gazelle g = new Gazelle(Entity.CHUNK_SIZE, Entity.CHUNK_SIZE);
-            Greasewood gr = new Greasewood(Entity.CHUNK_SIZE+1, Entity.CHUNK_SIZE+1);
+            Greasewood gr = new Greasewood(Entity.CHUNK_SIZE + 1, Entity.CHUNK_SIZE + 1);
 
             handler.LoadEntity(g);
             handler.LoadEntity(gr);
@@ -277,7 +277,7 @@ namespace SafariTest
         {
             EntityHandler handler = new EntityHandler();
             Entity.RegisterHandler(handler);
-            var spatialMap = new Dictionary<(int,int), List< Entity >> ();
+            var spatialMap = new Dictionary<(int, int), List<Entity>>();
             int tileSize = 10;
             var e1 = new Gazelle(5, 5);
             var e2 = new Gazelle(15, 5);
@@ -308,16 +308,16 @@ namespace SafariTest
             Entity.RegisterHandler(handler);
             Dictionary<(int, int), List<Entity>> spatialMap = new();
 
-            Gazelle g = new Gazelle(50,50);
+            Gazelle g = new Gazelle(50, 50);
 
             var nearby1 = new Lion(55, 52);
             var nearby2 = new Lion(60, 45);
             var far1 = new Giraffe(90, 90);
             var exactRange = new Gazelle(60, 50);
 
-            var coordsG = (g.X / 50,  g.Y / 50);
+            var coordsG = (g.X / 50, g.Y / 50);
             spatialMap[coordsG] = new List<Entity> { g, nearby1, nearby2, exactRange };
-            spatialMap[(9,9)] = new List<Entity> {far1 };
+            spatialMap[(9, 9)] = new List<Entity> { far1 };
 
             int range = 10;
 
@@ -359,5 +359,6 @@ namespace SafariTest
             g = new Guard(100, 200, null);
             g.IncreaseLevel(3);
             Assert.AreEqual(3, g.ShotWeight);
+        }
     }
 }
