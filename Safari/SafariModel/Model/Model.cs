@@ -192,6 +192,11 @@ namespace SafariModel.Model
             touristHandler.NewTouristAtGatePerTick();
 
 
+            foreach (PathTile p in roadNetworkHandler.RN)
+            {
+                p.PathType = PathTileType.EMPTY;
+            }
+
 
             InvokeTickPassed();
         }
@@ -225,8 +230,7 @@ namespace SafariModel.Model
             MovingEntity.RegisterTileCollision(tc);
 
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
-            Jeep.RegisterNetworkHandler(roadNetworkHandler);
-
+            
             economyHandler = new EconomyHandler(99999);
             touristHandler = new TouristHandler(economyHandler);
             Jeep.RegisterTouristHandler(touristHandler);

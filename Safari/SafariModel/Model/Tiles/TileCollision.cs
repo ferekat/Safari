@@ -36,7 +36,7 @@ namespace SafariModel.Model.Tiles
             }
             return weight;
             //mennyire "nehéz" átkelni egy adott tile-on (pl. hilleken lassabban lehet közlekedni), a pathfindinghoz
-            //Nincs még implementálva!!!
+      
             return 1;
         }
     }

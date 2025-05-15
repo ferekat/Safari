@@ -27,7 +27,8 @@ namespace SafariModel.Model
         private int waitTimer;
 
         private PathIntersectionNode prev;
-        private List<Animal> seenAnimals = new();
+        private HashSet<Animal> seenAnimals = new();
+        private HashSet<Hunter> revealedHunters = new();
 
         #region Loading helpers
         int? prevID;
@@ -139,10 +140,10 @@ namespace SafariModel.Model
         protected override void EntityLogic()
         {
 
-
+            Debug.WriteLine($"sp: {roadNetworkHandler.FoundShortestPath}");
             if (seenAnimalIDs != null)
             {
-                if (seenAnimals == null) seenAnimals = new List<Animal>();
+                if (seenAnimals == null) seenAnimals = new HashSet<Animal>();
                 foreach (int id in seenAnimalIDs)
                 {
                     Entity? e = GetEntityByID(id);
@@ -160,7 +161,7 @@ namespace SafariModel.Model
             //betöltés
 
 
-
+            //
             if (!isMoving && roadNetworkHandler.FoundShortestPath)  //nem mozog 
             {
           
@@ -212,19 +213,26 @@ namespace SafariModel.Model
         }
         private void TouristSeesEntities()
         {
-
-            List<Entity> entities = GetEntitiesInRange();
-                  
-            foreach(Entity entity in entities)
+            List<Entity> nearbyEntities = GetEntitiesInRange();         
+            foreach(Entity entity in nearbyEntities)
             {
                 if (entity is Animal a && !seenAnimals.Contains(a))
-                {
-                    
+                {   
                     seenAnimals.Add(a);
                 }
-                if (entity is Hunter)
+                if (entity is Hunter revealedHunter)
                 {
                     seenHunterCount++;
+                    revealedHunter.IsVisible = true;
+                    revealedHunters.Add(revealedHunter);
+                }
+                foreach (Hunter h in revealedHunters)
+                {
+                    if (!nearbyEntities.Contains(h))
+                    {
+                        h.IsVisible = false;
+                        revealedHunters.Remove(h);
+                    }
                 }
             }
         }

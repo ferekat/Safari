@@ -24,7 +24,7 @@ namespace SafariModel.Model.Tiles
         ENTRANCE,
         EXIT,
         FENCE,
-
+        N,
 
 
 

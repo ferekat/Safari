@@ -13,7 +13,8 @@ namespace SafariModel.Model.Tiles
     {
         EMPTY,
         ROAD,
-        BRIDGE
+        BRIDGE,
+       N
     }
     public class PathIntersectionNode
     {
@@ -81,7 +82,7 @@ namespace SafariModel.Model.Tiles
             }
             isVisitedByAStar = false;
             shortestPathId = 0;
-     
+            
         }
 
        
@@ -108,16 +109,17 @@ namespace SafariModel.Model.Tiles
 
 
         private PathTileType pathType;
-    
+        private PathTileType cachedType;
         private PathIntersectionNode? intersectionNode;
 
      
-        public PathTileType PathType { get { return pathType; } /*set {/*if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.NODE; } } */}
+        public PathTileType PathType { get { return pathType; }set   {if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.N; } } }
       
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
         public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, t.TileType)
         {
             this.pathType = pathType;
+            cachedType = pathType;
             this.intersectionNode = new PathIntersectionNode(t.I, t.J);
         }
         //akkor jön létre a PathTile amikor leteszünk egy utat/hidat
