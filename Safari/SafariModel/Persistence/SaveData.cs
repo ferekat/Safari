@@ -36,7 +36,8 @@ namespace SafariModel.Persistence
                 string month = reader.ReadLine() + "";
                 save.Time = $"{month}. month/{week}. week/{day}.day";
                 //TODO nehézség
-                save.Difficulty = "TempDifficulty";
+                string diff = reader.ReadLine() + "";
+                save.Difficulty = $"{(GameDifficulty)int.Parse(diff)}";
 
                 return (save, true);
             }

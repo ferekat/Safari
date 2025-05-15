@@ -35,6 +35,7 @@ namespace SafariModel.Persistence
                 data.day = int.Parse(await reader.ReadLineAsync() + "");
                 data.week = int.Parse(await reader.ReadLineAsync() + "");
                 data.month = int.Parse(await reader.ReadLineAsync() + "");
+                data.difficulty = (GameDifficulty)int.Parse(await reader.ReadLineAsync() + "");
                 data.gameTime = int.Parse(await reader.ReadLineAsync() + "");
                 data.winningMonths = int.Parse(await reader.ReadLineAsync() + "");
 
@@ -103,6 +104,7 @@ namespace SafariModel.Persistence
                     builder.AppendLine(data.day.ToString());
                     builder.AppendLine(data.week.ToString());
                     builder.AppendLine(data.month.ToString());
+                    builder.AppendLine(((int)data.difficulty).ToString());
                     builder.AppendLine(data.gameTime.ToString());
                     builder.AppendLine(data.winningMonths.ToString());
 
