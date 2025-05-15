@@ -134,11 +134,6 @@ namespace SafariModel.Model.AbstractEntity
 
             return true;
         }
-
-        public void UpdateSpeedMultiplier(int multiplier)
-        {
-            Speed = BaseSpeed * multiplier;
-        }
         private static (int, int) GetTileCoords(int x, int y)
         {
             return (x / Tile.TILESIZE, y / Tile.TILESIZE);

@@ -735,7 +735,6 @@ namespace SafariView.ViewModel
             if (gazelleCount != data.gazelles)
             {
                 GazelleCount = data.gazelles.ToString();
-                Debug.WriteLine(GazelleCount);
             }
             if (giraffeCount != data.giraffes)
             {
@@ -979,7 +978,7 @@ namespace SafariView.ViewModel
                     }
                     else
                     {
-                         RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                        RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
             }
@@ -1095,7 +1094,10 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
-            model.UpdatePerTick();
+            for(int i = 0; i < (int)gameSpeed; i++)
+            {
+                model.UpdatePerTick();
+            }
         }
 
         private void FinishedEntityRender()

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using SafariModel.Model.Utils;
 using SafariModel.Model.EventArgsClasses;
+using System.Diagnostics;
 
 namespace SafariModel.Model.InstanceEntity
 {
@@ -77,7 +78,7 @@ namespace SafariModel.Model.InstanceEntity
             SetTargetHunter();
             if (targetHunter != null)
             {
-                if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                if (tickBeforeFire % timeShots == 0)
                 {
                     Fire(this, targetHunter);
                 }
@@ -85,6 +86,7 @@ namespace SafariModel.Model.InstanceEntity
             }
             else if (TargetAnimal != null)
             {
+                Debug.WriteLine("Vágom, hogy vadásznom kéne, de a kurva anyád");
                 if (TargX != TargetAnimal.X || TargY != TargetAnimal.Y)
                 {
                     ChaseTarget();
@@ -100,7 +102,7 @@ namespace SafariModel.Model.InstanceEntity
                     SetTargetHunter();
                     if (targetHunter != null)
                     {
-                        if (tickBeforeFire % (timeShots / Multiplier) == 0)
+                        if (tickBeforeFire % timeShots == 0)
                         {
                             Fire(this, targetHunter);
                         }
