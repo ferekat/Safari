@@ -60,9 +60,10 @@ namespace SafariModel.Model
             List<PathIntersectionNode> validNodes = new();
 
 
-        PathIntersectionNode currentNode = roadNetworkHandler.Entrance.IntersectionNode!;
+            PathIntersectionNode currentNode = roadNetworkHandler.Entrance.IntersectionNode!;
 
             int smallestVisitedSPId = currentNode.ShortestPathId;
+          
             PathIntersectionNode to = roadNetworkHandler.ShortestPathExitToEntrance[currentNode.ShortestPathId - 1].IntersectionNode!;
             prev = currentNode;
             while (smallestVisitedSPId > 1)
@@ -139,8 +140,7 @@ namespace SafariModel.Model
         }
         protected override void EntityLogic()
         {
-
-            Debug.WriteLine($"sp: {roadNetworkHandler.FoundShortestPath}");
+          
             if (seenAnimalIDs != null)
             {
                 if (seenAnimals == null) seenAnimals = new HashSet<Animal>();
@@ -157,14 +157,13 @@ namespace SafariModel.Model
                 prev = PathIntersectionNode.allNodes.First(n => (n.ID == prevID));
                 prevID = null;
             }
-           
+
             //betöltés
 
 
-            //
+          //  Debug.WriteLine($"a: {isMoving}, {atExit},{groupOnBoard},{waitTimer},{waitAtEndpointDuration},");
             if (!isMoving && roadNetworkHandler.FoundShortestPath)  //nem mozog 
             {
-          
                 waitTimer++;
                 if (waitTimer > waitAtEndpointDuration)     
                 {
@@ -204,6 +203,7 @@ namespace SafariModel.Model
             int enteringTourists =  touristHandler.TouristsEnterPark();
                 if (enteringTourists > 0)
                 {
+                    Debug.WriteLine(enteringTourists);
                     touristCount = enteringTourists;
                     groupOnBoard = true;
                    
@@ -226,15 +226,16 @@ namespace SafariModel.Model
                     revealedHunter.IsVisible = true;
                     revealedHunters.Add(revealedHunter);
                 }
+            }
                 foreach (Hunter h in revealedHunters)
                 {
                     if (!nearbyEntities.Contains(h))
                     {
+                        
                         h.IsVisible = false;
                         revealedHunters.Remove(h);
                     }
                 }
-            }
         }
        
         private void TouristsTakeOff()

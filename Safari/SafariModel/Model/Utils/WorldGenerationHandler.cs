@@ -28,7 +28,10 @@ namespace SafariModel.Model.Utils
         private static int GATE_GEN_CHANCE = 2000; //legyen nagy
 
         private TileMap tileMap;
-       
+       public WorldGenerationHandler()
+        {
+
+        }
         public WorldGenerationHandler(string seed, EntityHandler entityHandler)
         {
             this.entityHandler = entityHandler;

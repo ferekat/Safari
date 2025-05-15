@@ -39,9 +39,6 @@ namespace SafariModel.Model.Tiles
         private int j;
         private int h;
 
-        private int[] heightBounds = { -200, -100, 0, 120, 250, 300 };
-
-
         private TileType tileType;
 
         //<Amit szeretnék venni,Ahova le tudom tenni>

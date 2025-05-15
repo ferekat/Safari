@@ -62,8 +62,12 @@ namespace SafariModel.Model.Tiles
             }
         }
 
+        public override string ToString()
+        {
+            return $"PNODE: ({PathI}, {PathJ}) ";
+        }
 
-        
+
 
         public void ConnectIntersection(PathIntersectionNode other)
         {
