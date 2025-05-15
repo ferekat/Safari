@@ -44,7 +44,7 @@ namespace SafariView
             viewModel.FinishedRenderingTileMap += new EventHandler(ViewModel_FinishedTileMapRendering);
             viewModel.FinishedRenderingEntities += new EventHandler(ViewModel_FinishedEntityRendering);
 
-
+            lobbyWindow = new LobbyWindow();
             
             mainWindow = new MainWindow(renderedTiles,renderedEntities);
             mainWindow.DataContext = lobbyWindow.DataContext = viewModel;

@@ -40,6 +40,7 @@ namespace SafariView.ViewModel
         private int cameraY;
 
         private int visitorsAtGate;
+        private double avgRating;
 
         private Guard? selectedGuard;
         private (int, int) selectedTile;
@@ -247,8 +248,7 @@ namespace SafariView.ViewModel
 
         #region Window bindings
 
-        public int VisitorsAtGate { get {  return visitorsAtGate; } private set { visitorsAtGate = value; OnPropertyChanged(); } }
-
+      
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
@@ -406,7 +406,7 @@ namespace SafariView.ViewModel
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
             model.TileMapUpdated += new EventHandler<(int, int)>(Model_TileMapUpdated);
             model.NewMessage += OnMessage;
-            model.TouristHandler.TouristArrived += TouristHandler_TouristArrived;
+           
             //Set window bindings
             IndexPage = "Visible";
             NewGamePage = "Hidden";
@@ -440,10 +440,7 @@ namespace SafariView.ViewModel
             redrawMinimap = true;
         }
 
-        private void TouristHandler_TouristArrived(object? sender, int e)
-        {
-            VisitorsAtGate = e;
-        }
+      
         #endregion
 
         #region Command methods
@@ -619,7 +616,10 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
 
             model.NewGame(name);
-            await SaveGame();
+
+               
+
+                await SaveGame();
 
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();
@@ -630,6 +630,9 @@ namespace SafariView.ViewModel
             }
 
         }
+
+      
+
         private void OnCreditsClicked()
         {
             IndexPage = "Hidden";

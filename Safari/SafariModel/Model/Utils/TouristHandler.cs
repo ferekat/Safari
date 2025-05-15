@@ -10,7 +10,7 @@ namespace SafariModel.Model.Utils
 {
     public class TouristHandler
     {
-        Random random = new Random();
+        private Random random;
         private readonly static int MAX_WAITING_TOURIST = 30;
         private readonly static int RATING_TIERS = 5;
         private readonly static int MAX_RATING = 100;
@@ -19,38 +19,54 @@ namespace SafariModel.Model.Utils
 
         private readonly static int MAX_GROUP_SIZE = Jeep.MAX_CAPACITY;
         
-        private int touristsAtEntrance;
+        private int touristsAtGate;
         private int touristsVisited;
         private int entryFee; //[100;2000]
         private double avgRating; //[-RATING_TIERS,RATING_TIERS]
+        private int currentGroupSize;
+       
         private double avgTouristSpawn; //ennyi másodpercenként jön új turista
         private int tick = 0;
 
-        private int currentGroupSize;
         private EconomyHandler economyHandler;
 
         public event EventHandler<int> TouristArrived;
+        public event EventHandler<double> GroupLeft;
+
+        public int TouristsAtGate { get { return touristsAtGate; } }
+        public int TouristsVisited { get { return touristsVisited; } }
         public int EntryFee {  get { return entryFee; } }   
-        public int TouristsAtGate { get { return touristsAtEntrance; } }
+        public double AvgRating { get { return avgRating; } }
         public int CurrentGroupSize { get { return currentGroupSize; } }
      
 
 
+        public TouristHandler(int touristsAtGate, int touristsVisited, int entryFee, double avgRating, int currentGroupSize,EconomyHandler economyHandler)
+        {
+            this.touristsAtGate = touristsAtGate;
+            this.touristsVisited = touristsVisited;
+            this.entryFee = entryFee;
+            this.avgRating = avgRating;
+            this.currentGroupSize = currentGroupSize;
+            this.economyHandler = economyHandler;
+            random = new Random();
+            avgTouristSpawn = CalcSpawnChance();
+        }
 
         public TouristHandler(EconomyHandler economyHandler)
         {
+            random = new Random();
             this.economyHandler = economyHandler;
-            touristsAtEntrance = 0;
+            touristsAtGate = 0;
             entryFee = 1000;
             avgRating = 0;
             touristsVisited = 0;    
             currentGroupSize = random.Next(MAX_GROUP_SIZE) + 1;
             avgTouristSpawn = CalcSpawnChance();
-            
         }
         private double CalcSpawnChance()
         {
-            return 2;
+            return 1;
             return 50.0 - 6.0 * avgRating + entryFee / 100.0;
         }
         private double ChanceAtEverySec(double sec)
@@ -61,16 +77,17 @@ namespace SafariModel.Model.Utils
        
         public void NewTouristAtGatePerTick()
         {
-            
+            Debug.WriteLine($"try: {touristsAtGate}");
+
             double spawn = random.NextDouble();
                 if (tick % 120 == 0)
                 {
                   //  Debug.WriteLine(tick/120);
                 }
-            if (spawn < ChanceAtEverySec(avgTouristSpawn) && touristsAtEntrance < MAX_WAITING_TOURIST)
+            if (spawn < ChanceAtEverySec(avgTouristSpawn) && touristsAtGate < MAX_WAITING_TOURIST)
             {
-                touristsAtEntrance+= 1;
-                TouristArrived?.Invoke(this, touristsAtEntrance);
+                touristsAtGate+= 1;
+                TouristArrived?.Invoke(this, touristsAtGate);
                 
             }
             avgTouristSpawn = CalcSpawnChance();
@@ -80,10 +97,10 @@ namespace SafariModel.Model.Utils
         public int TouristsEnterPark()
         {
             int group = currentGroupSize; 
-            if (touristsAtEntrance >= group)
+            if (touristsAtGate >= group)
             {
-                touristsAtEntrance -= group;
-                TouristArrived?.Invoke(this, touristsAtEntrance);
+                touristsAtGate -= group;
+                TouristArrived?.Invoke(this, touristsAtGate);
                 currentGroupSize = random.Next(MAX_GROUP_SIZE)+1;
                 economyHandler.TicketSell(group*entryFee);    
                 return group;
@@ -96,9 +113,10 @@ namespace SafariModel.Model.Utils
             double sum = ratings.Sum();
             
 
-            avgRating = (avgRating * touristsVisited + sum) / (touristsVisited + touristCount);   //mozgóátlag
+            avgRating = (avgRating * touristsVisited + sum) / (touristsVisited + touristCount);  //mozgóátlag
+            avgRating = Math.Round(avgRating,2);
             touristsVisited += touristCount;
-           
+            GroupLeft?.Invoke(this, avgRating);
            
         }
         private List<double> CalcTourRatings(List<Animal> seenAnimals, int seenHunterCount, int touristCount)

@@ -25,15 +25,19 @@ namespace SafariModel.Model
      
         private int waitAtEndpointDuration;
         private int waitTimer;
-    
-    
 
-        private List<Animal> seenAnimals = new List<Animal>();
+        private PathIntersectionNode prev;
+        private List<Animal> seenAnimals = new();
 
+        #region Loading helpers
+        int? prevID;
+        List<int>? seenAnimalIDs;
+        #endregion
+
+
+        private Random random = new();
         private static TouristHandler touristHandler = null!;
         private static RoadNetworkHandler roadNetworkHandler = null!;
-        private PathIntersectionNode prev;
-        private Random random = new();
   
         public Jeep(int x, int y) : base(x, y)
         {
@@ -52,7 +56,7 @@ namespace SafariModel.Model
         private List<PathTile> NextRandomPath()
         {
             List<PathTile> randomPath = new List<PathTile>();
-           List<PathIntersectionNode> validNodes = new();
+            List<PathIntersectionNode> validNodes = new();
 
 
         PathIntersectionNode currentNode = roadNetworkHandler.Entrance.IntersectionNode!;
@@ -134,10 +138,29 @@ namespace SafariModel.Model
         }
         protected override void EntityLogic()
         {
-            
-              //  Debug.WriteLine(touristHandler.CurrentGroupSize);
-              //  Debug.WriteLine(touristHandler.TouristsAtGate);
-          //  Debug.WriteLine("----");
+
+
+            if (seenAnimalIDs != null)
+            {
+                if (seenAnimals == null) seenAnimals = new List<Animal>();
+                foreach (int id in seenAnimalIDs)
+                {
+                    Entity? e = GetEntityByID(id);
+                    if (e != null && e is Animal a)
+                        seenAnimals.Add(a);
+                }
+                seenAnimalIDs = null;
+            }
+            if (prevID != null)
+            { 
+                prev = PathIntersectionNode.allNodes.First(n => (n.ID == prevID));
+                prevID = null;
+            }
+           
+            //betöltés
+
+
+
             if (!isMoving && roadNetworkHandler.FoundShortestPath)  //nem mozog 
             {
           
@@ -238,15 +261,28 @@ namespace SafariModel.Model
             return new TileType[] { TileType.DEEP_WATER };
         }
 
+
+
+
+
+      
         public override void CopyData(EntityData dataholder)
         {
             base.CopyData(dataholder);
             
             dataholder.bools.Enqueue(atExit);
+            dataholder.bools.Enqueue(groupOnBoard);
+            dataholder.ints.Enqueue(seenHunterCount);
             dataholder.ints.Enqueue(touristCount);
-            dataholder.doubles.Enqueue(happiness);
             dataholder.ints.Enqueue(waitAtEndpointDuration);
             dataholder.ints.Enqueue(waitTimer);
+            dataholder.ints.Enqueue(prev == null ? null : prevID);
+
+            foreach (Animal a in seenAnimals)
+            {
+                dataholder.ints.Enqueue(a.ID);
+            }
+            dataholder.ints.Enqueue(null);
         }
 
         public override void LoadData(EntityData dataholder)
@@ -254,10 +290,25 @@ namespace SafariModel.Model
             base.LoadData(dataholder);
 
             atExit = dataholder.bools.Dequeue() ?? atExit;
+            groupOnBoard = dataholder.bools.Dequeue() ?? groupOnBoard;
+            seenHunterCount = dataholder.ints.Dequeue() ?? seenHunterCount; 
             touristCount = dataholder.ints.Dequeue() ?? touristCount;
-            happiness = dataholder.doubles.Dequeue() ?? happiness;
             waitAtEndpointDuration = dataholder.ints.Dequeue() ?? waitAtEndpointDuration;
             waitTimer = dataholder.ints.Dequeue() ?? waitTimer;
+            prevID = dataholder.ints.Dequeue() ?? prevID;
+
+
+            int? readInt;
+            readInt = dataholder.ints.Dequeue();
+            if (readInt != null) seenAnimalIDs = new List<int>();
+            while (readInt != null)
+            {
+                int actualInt = (int)readInt;
+                seenAnimalIDs!.Add(actualInt);
+                readInt = dataholder.ints.Dequeue();
+            }
+            
+
         }
     }
 }

@@ -17,22 +17,18 @@ namespace SafariModel.Model.Tiles
     }
     public class PathIntersectionNode
     {
-
+        public readonly static List<PathIntersectionNode> allNodes = new List<PathIntersectionNode>();
+       
+        private static int CurrentID = 0;
+        
         private bool isVisitedByAStar;
-
         private int shortestPathId;
-      
-
         private int id;
-        private bool isVisited;
-
         private int pathI;
         private int pathJ;
         private List<PathIntersectionNode> nextIntersections = new();
         private int distance;
-        public readonly static List<PathIntersectionNode> allNodes = new List<PathIntersectionNode>();
 
-        private static int CurrentID = 0;
 
         public int ID { get { return id; } }
         public int PathI { get { return pathI; } }
@@ -85,7 +81,11 @@ namespace SafariModel.Model.Tiles
      
         }
 
-        public PathIntersectionNode(int id,int pathI, int pathJ, int distance, bool isVisited)
+       
+      
+  
+
+        public PathIntersectionNode(int id,int pathI, int pathJ, int distance,int shortestPathId, bool isVisitedByAStar)
         {
             this.id = id;
             if (id >= CurrentID)
@@ -93,7 +93,8 @@ namespace SafariModel.Model.Tiles
             this.pathI = pathI;
             this.pathJ = pathJ;
             this.distance = distance;
-            this.isVisited = isVisited;
+            this.shortestPathId = shortestPathId;
+            this.isVisitedByAStar = isVisitedByAStar;
             nextIntersections = new List<PathIntersectionNode>();
         }
 
@@ -104,17 +105,16 @@ namespace SafariModel.Model.Tiles
 
 
         private PathTileType pathType;
-        private PathTileType cachedType;
+    
         private PathIntersectionNode? intersectionNode;
 
-        public PathTileType CachedType { get { return cachedType; } }
+     
         public PathTileType PathType { get { return pathType; } /*set {/*if (intersectionNode == null) pathType = cachedType; else { pathType = PathTileType.NODE; } } */}
       
         public PathIntersectionNode? IntersectionNode { get { return intersectionNode; } set { intersectionNode = value; } }
         public PathTile(Tile t,PathTileType pathType) : base(t.I, t.J, t.H, TileType.EMPTY)
         {
             this.pathType = pathType;
-            cachedType = pathType;
             this.intersectionNode = new PathIntersectionNode(t.I, t.J);
         }
         //akkor jön létre a PathTile amikor leteszünk egy utat/hidat

@@ -106,7 +106,10 @@
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" BorderBrush="#FF1B5019" Background="#FFC3DBAD" Foreground="#FFA3963F" Margin="10,10,10,10" FontSize="30px" HorizontalAlignment="Left" Command="{Binding SaveAndQuitCommand}"  Content="SAVE AND QUIT"></Button>
                     <TextBlock Grid.Column="1" FontSize="30px" Padding="30,5,30,5" Background="#FFFFD243" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10" Text="{Binding Month}"></TextBlock>
+                   
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        
+
                         <StackPanel Orientation="Horizontal" Background="#FFC3DBAD" Margin="8">
                             <StackPanel Orientation="Vertical" Margin="5,0,20,0">
                                 <TextBlock HorizontalAlignment="Center" Foreground="#FFAAA556" FontSize="20px">H</TextBlock>
@@ -166,149 +169,7 @@
                         <ColumnDefinition Width="0.66*"/>
                         <ColumnDefinition Width="0.17*"/>
                     </Grid.ColumnDefinitions>
-                    <!--<Grid Grid.Row="0" Grid.Column="1" Visibility="{Binding Bridges}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.05*"/>
-                            <ColumnDefinition Width="0.85*" />
-                            <ColumnDefinition Width="0.1*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="1">
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="SmallBridge_hor" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="SmallBridge_hor">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/small_hor.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="SmallBridge_vert" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="SmallBridge_vert">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/small_vert.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="SmallBridge_dl" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="SmallBridge_dl">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/small_dl.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="SmallBridge_dr" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="SmallBridge_dr">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/small_dr.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="SmallBridge_ul" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="SmallBridge_ul">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/small_ul.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="SmallBridge_ur" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="SmallBridge_ur">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/small_ur.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="LargeBridge_hor" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="LargeBridge_hor">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/large_hor.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="LargeBridge_vert" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="LargeBridge_vert">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/large_vert.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="LargeBridge_u" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="LargeBridge_u">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/large_u.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                            <Button Height="60" Width="60" Command="{Binding ClickedShopIcon}" CommandParameter="LargeBridge_d" Margin="0,0,10,0">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="#FFFFD243"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedShopName}" Value="LargeBridge_d">
-                                                <Setter Property="Background" Value="#FF2AA34B"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                                <Image Source="../Resources/large_d.png" Stretch="Uniform" Margin="7"/>
-                            </Button>
-                        </StackPanel>
-                        <StackPanel Orientation="Vertical" Grid.Column="2">
-                            <Button Command="{Binding BuyBridge}" HorizontalAlignment="Right" Height="60" Width="60" FontSize="20px" FontWeight="Bold" Content="Back">
-                            </Button>
-                        </StackPanel>
-                    </Grid>-->
+                   
                     <Grid Grid.Column="1" Grid.Row="0" Visibility="{Binding Shop}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.05*"/>
@@ -530,7 +391,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="Visitors" Grid.Row="0" Grid.Column="0"/>
-                            <TextBlock Text="{Binding VisitorsAtGate}" Grid.Row="0" Grid.Column="1"/>
+                            <TextBlock Text="0" Grid.Row="0" Grid.Column="1"/>
 
                             <TextBlock Text="Gazelle" Grid.Row="1" Grid.Column="0"/>
                             <TextBlock Text="0" Grid.Row="1" Grid.Column="1"/>

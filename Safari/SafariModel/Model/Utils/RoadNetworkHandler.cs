@@ -21,10 +21,9 @@ namespace SafariModel.Model.Utils
         private int SPNodeCount = 0;
         private List<PathTile> shortestPathExitToEntrance = new();
         private List<PathTile> shortestPathEntranceToExit = new();
-       
       
-    
-      
+
+
         public PathTile Entrance { get { return entrance; } }
         public PathTile Exit { get { return exit; } }
         public bool FoundShortestPath { get { return foundShortestPath; } }
