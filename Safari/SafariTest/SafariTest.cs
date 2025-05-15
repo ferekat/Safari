@@ -96,16 +96,19 @@ namespace SafariTest
         {
             EntityHandler handler = new EntityHandler();
             Entity.RegisterHandler(handler);
-            //Range: 200 pixels
+            //Range: 1000 pixels
             Gazelle g1 = new Gazelle(100, 200);
-            Gazelle g2 = new Gazelle(200, 200);
-            Gazelle g3 = new Gazelle(100, 100);
-            //This entity is out of g1's range
-            Gazelle g4 = new Gazelle(1000, 1000);
+            //These entities are in g1's range
+            Gazelle g2 = new Gazelle(g1.X+g1.Range-1, g1.Y);
+            Gazelle g3 = new Gazelle(g1.X, g1.Y + g1.Range-1);
+            //These entities are out of g1's range
+            Gazelle g4 = new Gazelle(g1.X + g1.Range, g1.Y);
+            Gazelle g5 = new Gazelle(g1.X, g1.Y + g1.Range);
             handler.LoadEntity(g1);
             handler.LoadEntity(g2);
             handler.LoadEntity(g3);
             handler.LoadEntity(g4);
+            handler.LoadEntity(g5);
 
             Assert.AreEqual(2, g1.GetEntitiesInRange().Count);
         }

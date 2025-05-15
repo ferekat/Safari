@@ -26,12 +26,13 @@ namespace SafariModel.Model.AbstractEntity
         
         private static (int, int)[] coordSets = new (int, int)[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
-        protected float speed;
+        private float baseSpeed;
+        private float speed;
         protected int range;
         protected bool isMoving;
 
         public float Speed { get { return speed; } protected set { speed = value; CalculateMovementVector(); } }
-        public float BaseSpeed { get; private set; }
+        public float BaseSpeed { get { return baseSpeed; } protected set { baseSpeed = value; speed = value; } }
         public int Range { get { return range; } }
         public bool IsMoving { get { return isMoving; } }
 
@@ -184,7 +185,7 @@ namespace SafariModel.Model.AbstractEntity
             if (!prevChunkCoords.Equals(currentChunkCoords)) OnChunkCoordinatesChanged(prevChunkCoords, currentChunkCoords);
             
 
-            if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) < movementVector.Length() * 1.5) //In range of target point
+            if (Math.Sqrt(Math.Pow(currentTarget.X - this.x, 2) + Math.Pow(currentTarget.Y - this.y, 2)) <= movementVector.Length() * 1.5) //In range of target point
             {
                 this.x = currentTarget.X;
                 this.y = currentTarget.Y;
