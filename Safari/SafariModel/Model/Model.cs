@@ -241,14 +241,7 @@ namespace SafariModel.Model
             touristHandler = new TouristHandler(economyHandler);
             Jeep.RegisterTouristHandler(touristHandler);
 
-            //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
-            Hunter h = new Hunter(50, 50, null);
-            h.Multiplier = 1;
-            h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
-            h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
-            entityHandler.LoadEntity(h);
-
+            
             OnNewGameStarted();
         }
 
