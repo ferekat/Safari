@@ -1,4 +1,5 @@
-﻿using SafariModel.Model.InstanceEntity;
+﻿using SafariModel.Model.AbstractEntity;
+using SafariModel.Model.InstanceEntity;
 using SafariModel.Model.Tiles;
 using System;
 using System.Diagnostics;
@@ -12,11 +13,19 @@ using static System.Net.Mime.MediaTypeNames;
 namespace SafariModel.Model.Utils
 {
 
+    public enum Biome
+    {
+        MOUNTAIN,
+        PLAIN,
+        COAST
+    }
     public class WorldGenerationHandler
     {
         private Random random;
         private List<Tile> apexTiles = new();
         private List<Tile> riverSources = new();
+        private List<Tile> plantSources = new();
+
         private EntityHandler entityHandler;
 
         private static int MIN_TERRAIN_DIFF = 100;  //100
@@ -28,11 +37,10 @@ namespace SafariModel.Model.Utils
         private static int RIVER_SOURCE_GEN_CHANCE = 2500; //jól be van állítva
         private static int GATE_GEN_CHANCE = 2000; //legyen nagy
 
-        private TileMap tileMap;
-       public WorldGenerationHandler()
-        {
+        private static int PLANT_GEN_CHANCE = 350;
 
-        }
+        private TileMap tileMap;
+
         public WorldGenerationHandler(string seed, EntityHandler entityHandler)
         {
             this.entityHandler = entityHandler;
@@ -51,7 +59,7 @@ namespace SafariModel.Model.Utils
             }
             tileMap = new TileMap(map);
         }
-       
+
         private int ConvertSeed(string seed)
         {
             int ret = 0;
@@ -70,18 +78,103 @@ namespace SafariModel.Model.Utils
             GenerateRivers();
             SmoothRivers();
             GenerateBoundaries();
-            ConnectGates();
             StartingEntities();
             return tileMap;
         }
+
+
         private void StartingEntities()
         {
+            foreach (Tile[,] chunk in tileMap.Chunks)
+            {
+                int chunkChance = 0;
+                foreach (Tile tile in chunk)
+                {
+                    chunkChance += random.Next(CHANCE_INC_PER_ITER);
+                    if (chunkChance > PLANT_GEN_CHANCE && !tile.IsBound() && !tile.IsWater())
+                    {
+                        plantSources.Add(tile);
+                        chunkChance = 0;
+                    }
+                }
+            }
+            Debug.WriteLine(plantSources.Count + "ff");
+            int placedPlants = 0;
+            int placedHerbivores = 0;
+            foreach (Tile source in plantSources)
+            {
+                Plant plant;
+                int randPlant = random.Next(3);
+                int randXInTile = random.Next(-Tile.TILESIZE / 3, Tile.TILESIZE / 3);
+                int randYInTile = random.Next(-Tile.TILESIZE / 3, Tile.TILESIZE / 3);
+                if (randPlant == 0)
+                {
+                    plant = new PalmTree(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
+                }
+                else if (randPlant == 1)
+                {
+                    plant = new Greasewood(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
+                }
+                else
+                {
+                    plant = new Cactus(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
+                }
+                entityHandler.LoadEntity(plant);
+                placedPlants++;
+                if (placedPlants == 20)
+                {
+                    placedPlants = 0;
+                    Herbivore herbivore;
+                   
+                    if (TileMap.IsTileCoordInBounds(source.I, source.J))
+                    {
+                        Tile t = tileMap.Map[source.I, source.J];
+                        if (!t.IsWater() && !t.IsBound())
+                        {
+                            int randType = random.Next(2);
+                            if (randType == 0)
+                            {
+                                herbivore = new Gazelle(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
+                            }
+                            else
+                            {
+                                herbivore = new Giraffe(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
+                            }
+                            entityHandler.LoadEntity(herbivore);
+                            placedHerbivores++;
+                        }
+                    }
+                }
+                if (placedHerbivores == 10)
+                {
+                    placedHerbivores = 0;   
+                    Carnivore carnivore;
 
-        }
-        private void ConnectGates()
-        {
+                    if (TileMap.IsTileCoordInBounds(source.I, source.J));
+                    {
+                        Tile tt = tileMap.Map[source.I, source.J];
+                        if (!tt.IsWater() && !tt.IsBound())
+                        {
+                            int randType = random.Next(2);
+                            if (randType == 0)
+                            {
+                                carnivore = new Lion(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
 
+                            }
+                            else
+                            {
+                                carnivore = new Leopard(source.I * Tile.TILESIZE + randXInTile + Tile.TILESIZE / 2, source.J * Tile.TILESIZE + randYInTile + Tile.TILESIZE / 2);
+
+                            }
+                            entityHandler.LoadEntity(carnivore);
+
+                        }
+                    }
+                }
+            }
+            Debug.WriteLine($"{placedHerbivores},{placedPlants}");
         }
+
         private bool FreeForGate(Tile tile)
         {
             bool validGatePos = false;
@@ -96,7 +189,7 @@ namespace SafariModel.Model.Utils
             return validGatePos;
         }
 
-        private PathTile? GeneratedGateOnFence(List<Tile> fence,TileType gateType)
+        private PathTile? GeneratedGateOnFence(List<Tile> fence, TileType gateType)
         {
             int chance = 0;
             for (int attempts = 0; attempts < 10; attempts++)
@@ -149,35 +242,35 @@ namespace SafariModel.Model.Utils
             PathTile? entrance = null;
             PathTile? exit = null;
 
-            //TESZTELÉSRE:
-            entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
-            exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
-            exit.SetType(TileType.EXIT);
-            entrance.SetType(TileType.ENTRANCE);
-            /////////////
-            ///
+            ////TESZTELÉSRE:
+            //entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
+            //exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
+            //exit.SetType(TileType.EXIT);
+            //entrance.SetType(TileType.ENTRANCE);
+            ///////////////
+            /////
 
-            //while (entrance == null || exit == null)
-            //{
-            //    int isHorizontal = random.Next(2);
-            //    if (isHorizontal == 0)
-            //    {
-            //        entrance = GeneratedGateOnFence(leftFence, TileType.ENTRANCE);
-            //        exit = GeneratedGateOnFence(rightFence, TileType.EXIT);
-            //    }
-            //    else
-            //    {
-            //        entrance = GeneratedGateOnFence(topFence, TileType.ENTRANCE);
-            //        exit = GeneratedGateOnFence(bottomFence, TileType.EXIT);
-            //    }
-            //}
+            while (entrance == null || exit == null)
+            {
+                int isHorizontal = random.Next(2);
+                if (isHorizontal == 0)
+                {
+                    entrance = GeneratedGateOnFence(leftFence, TileType.ENTRANCE);
+                    exit = GeneratedGateOnFence(rightFence, TileType.EXIT);
+                }
+                else
+                {
+                    entrance = GeneratedGateOnFence(topFence, TileType.ENTRANCE);
+                    exit = GeneratedGateOnFence(bottomFence, TileType.EXIT);
+                }
+            }
 
 
-            tileMap.Entrance = entrance; 
+            tileMap.Entrance = entrance;
             tileMap.Exit = exit;
-          
+
         }
-       
+
         private void GenerateMountains()
         {
             foreach (Tile[,] chunk in tileMap.Chunks)
@@ -476,7 +569,6 @@ namespace SafariModel.Model.Utils
                 }
             }
         }
-
-
     }
+
 }

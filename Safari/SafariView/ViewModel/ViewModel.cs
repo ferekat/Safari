@@ -1024,7 +1024,14 @@ namespace SafariView.ViewModel
                     }
                     else
                     {
-                         RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                        if (e is Plant p)
+                        {
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - e.EntitySize, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                        }
+                        else
+                        {
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
+                        }
                     }
                 }
             }
