@@ -207,12 +207,7 @@ namespace SafariModel.Model
         public void NewGame(string parkName)
         {
 
-            ParkName = "";
-
-          
-
-
-
+            ParkName = parkName;
 
             tickCount = 0;
             tickPerGameSpeedCount = 0;
