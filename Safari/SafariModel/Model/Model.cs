@@ -46,6 +46,7 @@ namespace SafariModel.Model
         private int speedBoost;
         private GameDifficulty gameDifficulty;
         private int successfulMonthCount;
+        private string seedString;
 
         // entityk helyének térképen való eloszlására
         private Dictionary<(int, int), List<Entity>> spatialMap = new();
@@ -86,6 +87,7 @@ namespace SafariModel.Model
         public RoadNetworkHandler RoadNetworkHandler { get { return roadNetworkHandler; } }
 
         public TouristHandler TouristHandler {  get { return touristHandler; } }
+        public string SeedString { get { return seedString; } set { seedString = value; } }
         #endregion
 
         #region Events
@@ -221,7 +223,7 @@ namespace SafariModel.Model
             Entity.RegisterHandler(entityHandler);
 
 
-            worldGenerationHandler = new WorldGenerationHandler("testseed", entityHandler);
+            worldGenerationHandler = new WorldGenerationHandler(seedString, entityHandler);
             tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
             Entity.RegisterTileMap(tileMap.Map);
 
