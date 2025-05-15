@@ -28,7 +28,10 @@ namespace SafariModel.Model.Utils
         private static int GATE_GEN_CHANCE = 2000; //legyen nagy
 
         private TileMap tileMap;
-       
+       public WorldGenerationHandler()
+        {
+
+        }
         public WorldGenerationHandler(string seed, EntityHandler entityHandler)
         {
             this.entityHandler = entityHandler;
@@ -144,6 +147,8 @@ namespace SafariModel.Model.Utils
             //TESZTELÉSRE:
             entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
             exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
+            exit.SetType(TileType.EXIT);
+            entrance.SetType(TileType.ENTRANCE);
             /////////////
             ///
 

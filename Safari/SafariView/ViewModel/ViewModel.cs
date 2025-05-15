@@ -156,7 +156,7 @@ namespace SafariView.ViewModel
             { TileType.EXIT,new SolidColorBrush(Color.FromRgb(0, 255, 0))}
         };
         private static Dictionary<PathTileType, Brush> pathBrushes = new Dictionary<PathTileType, Brush>()
-        {
+        {{ PathTileType.N,new SolidColorBrush(Color.FromRgb(255,0,0))},
             {PathTileType.EMPTY,new SolidColorBrush(Color.FromRgb(0,0,0)) },
             {PathTileType.ROAD,new ImageBrush
                 {
@@ -189,8 +189,10 @@ namespace SafariView.ViewModel
         {
             {PathTileType.EMPTY,new byte[] {0,0,0} },
             {PathTileType.ROAD,new byte[] {235,125,52}},
-            {PathTileType.BRIDGE,new byte[] {125,37,37} }
-            
+            {PathTileType.BRIDGE,new byte[] {125,37,37} },
+
+
+            {PathTileType.N,new byte[] {235,125,52}},
         };
 
 
@@ -963,7 +965,9 @@ namespace SafariView.ViewModel
             foreach (Entity e in entities)
             {
                 int sizemodifier = 0;
+                int alignCenter = e.EntitySize / 2;
                 if (e is Animal a && (a.IsAdult || a.IsEldelry)) sizemodifier = 10;
+                if (e is Jeep) alignCenter = 0; 
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
                     if (e is Hunter h)
@@ -975,7 +979,7 @@ namespace SafariView.ViewModel
                     }
                     else
                     {
-                        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                         RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
                     }
                 }
             }

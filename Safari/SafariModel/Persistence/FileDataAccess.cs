@@ -19,6 +19,10 @@ namespace SafariModel.Persistence
 
         public async Task<GameData> LoadAsync(string filepath)
         {
+
+            PathIntersectionNode.allNodes.Clear();
+
+
             using (StreamReader reader = new StreamReader(filepath))
             {
                 GameData data = new GameData();
