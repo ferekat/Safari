@@ -12,7 +12,7 @@ namespace SafariModel.Model.InstanceEntity
         #region Constructor
         public PalmTree(int x, int y) : base(x, y, 40) 
         {
-            entitySize = 75;
+            entitySize = 100;
         }
         #endregion
     }
