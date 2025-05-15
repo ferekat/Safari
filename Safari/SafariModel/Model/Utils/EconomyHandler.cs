@@ -98,5 +98,14 @@ namespace SafariModel.Model.Utils
             int bounty = (int)Math.Floor(GetEnityCost(m.GetType())*0.7);
             money += bounty;
         }
+        public int CalculateWealth(List<Entity> entities)
+        {
+            int wealth = 0;
+            foreach (Entity entity in entities)
+            {
+                wealth += GetEnityCost(entity.GetType());
+            }
+            return wealth;
+        }
     }
 }

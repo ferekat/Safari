@@ -226,6 +226,10 @@ namespace SafariModel.Model.Utils
         {
             return herbivores.Count;
         }
+        public int GetAnimalCount()
+        {
+            return herbivores.Count + carnivores.Count;
+        }
         public List<Entity> GetEntities()
         {
             return entities;
