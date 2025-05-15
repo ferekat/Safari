@@ -102,44 +102,47 @@ namespace SafariModel.Model
         {
 
             this.dataAccess = dataAccess;
-
-
-
-            ParkName = "";
-
-            tickCount = 0;
-            tickPerGameSpeedCount = 0;
-            gameSpeed = GameSpeed.Slow;
-            speedBoost = 1;
-            successfulMonthCount = 0;
             data = new GameData();
+
 
             entityHandler = new EntityHandler();
             Entity.RegisterHandler(entityHandler);
 
 
-            worldGenerationHandler = new WorldGenerationHandler("testseed", entityHandler);
-            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
-            Entity.RegisterTileMap(tileMap.Map);
+            //ParkName = "";
 
-            TileCollision tc = new TileCollision(tileMap);
-            MovingEntity.RegisterTileCollision(tc);
+            //tickCount = 0;
+            //tickPerGameSpeedCount = 0;
+            //gameSpeed = GameSpeed.Slow;
+            //speedBoost = 1;
+            //successfulMonthCount = 0;
 
-            roadNetworkHandler = new RoadNetworkHandler(tileMap);
-            Jeep.RegisterNetworkHandler(roadNetworkHandler);
+            //entityHandler = new EntityHandler();
+            //Entity.RegisterHandler(entityHandler);
 
-            economyHandler = new EconomyHandler(99999);
-            touristHandler = new TouristHandler(economyHandler);
-            Jeep.RegisterTouristHandler(touristHandler);
+
+            ////worldGenerationHandler = new WorldGenerationHandler("testseed", entityHandler);
+            ////tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
+            ////Entity.RegisterTileMap(tileMap.Map);
+
+            //TileCollision tc = new TileCollision(tileMap);
+            //MovingEntity.RegisterTileCollision(tc);
+
+            //roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            //Jeep.RegisterNetworkHandler(roadNetworkHandler);
+
+            //economyHandler = new EconomyHandler(99999);
+            //touristHandler = new TouristHandler(economyHandler);
+            //Jeep.RegisterTouristHandler(touristHandler);
 
 
             //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
-            Hunter h = new Hunter(50, 50, null);
-            h.Multiplier = 1;
-            h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
-            h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
-            entityHandler.LoadEntity(h);
+            //entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
+            //Hunter h = new Hunter(50, 50, null);
+            //h.Multiplier = 1;
+            //h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+            //h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
+            //entityHandler.LoadEntity(h);
         }
 
         public Model() : this(null) { }
@@ -173,7 +176,7 @@ namespace SafariModel.Model
                 {
                     hunter.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
                     hunter.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
-                    if (secondCounterHunter == hunter.EnterField)
+                    if (secondCounterHunter == 200000)
                     {
                         hunter.HasEntered = true;
                         hunter.TookDamage += OnNewMessage;
@@ -422,11 +425,14 @@ namespace SafariModel.Model
                 }
                 return;
             }
+
             Entity? entity = EntityFactory.CreateEntity(itemName, x, y);
             Type? type = entity?.GetType();
+            if (!(entity is Jeep)){
 
-
-
+                bool canPlaceEntity = !clickedTile.IsWater() && !clickedTile.IsBound();
+                if (!canPlaceEntity) return; 
+            }
 
             if (entity == null) return;
            
@@ -533,6 +539,7 @@ namespace SafariModel.Model
             UpdateGameData();
 
             await dataAccess.SaveAsync(filePath, data);
+      
         }
 
         public async Task LoadGameAsync(string filePath)
@@ -541,14 +548,12 @@ namespace SafariModel.Model
             if (data == null) return;
 
             data = await dataAccess.LoadAsync(filePath);
-
-
            
-         
+
+
 
             ParkName = data.parkName;
 
-          
 
             //statok visszatöltése
             this.economyHandler = new EconomyHandler(data.money);

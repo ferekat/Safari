@@ -88,7 +88,7 @@ namespace SafariModel.Model.Utils
         {
             foreach (Entity entity in entities)
             {
-                if (x >= entity.X && x <= (entity.X + entity.EntitySize) && y >= entity.Y && y <= (entity.Y + entity.EntitySize)) return entity.ID;
+                if (x >= entity.X - entity.EntitySize/2 && x <= (entity.X + entity.EntitySize / 2) && y >= entity.Y  - entity.EntitySize / 2 && y <= (entity.Y +  entity.EntitySize / 2)) return entity.ID;
             }
             return -1;
         }

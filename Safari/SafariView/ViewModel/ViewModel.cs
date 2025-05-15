@@ -42,6 +42,7 @@ namespace SafariView.ViewModel
         private int cameraY;
         
         private int visitorsAtGate;
+        private int entryFee;
         private double avgRating;
 
         private Random random;
@@ -262,6 +263,8 @@ namespace SafariView.ViewModel
 
         #region Window bindings
 
+
+        public double AvgRating { get { return avgRating!; } private set { avgRating = value; OnPropertyChanged(); } }
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
@@ -282,6 +285,7 @@ namespace SafariView.ViewModel
 
         public int MINIMAPSIZE { get { return 300; } }
         public int MINIMAPBORDERTHICKNESS { get { return 20; } }
+        public int EntryFee { get { return entryFee; } private set { entryFee = value; OnPropertyChanged(); } }
         public double PlayerMarkerWidth { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * HorizontalTileCount); } }
         public double PlayerMarkerHeight { get { return (((MINIMAPSIZE - (2 * MINIMAPBORDERTHICKNESS)) / (double)Model.MAPSIZE) * VerticalTileCount); } }
         public Thickness MinimapPosition { get { return minimapPosition; } private set { minimapPosition.Left = value.Left; minimapPosition.Top = value.Top; OnPropertyChanged(); } }
@@ -392,6 +396,9 @@ namespace SafariView.ViewModel
         public DelegateCommand ChangedGameSpeed { get; private set; }
         public DelegateCommand BuyBridge { get; private set; }
         public DelegateCommand SetDifficultyCommand { get; private set; }
+        public DelegateCommand IncreaseEntryFeeCommand { get; private set; } 
+        public DelegateCommand DecreaseEntryFeeCommand { get; private set; }
+
         #endregion
 
         #region EventHandlers
@@ -435,6 +442,8 @@ namespace SafariView.ViewModel
             StartCommand = new DelegateCommand((param) => OnStartClicked(param));
             CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
             SetDifficultyCommand = new DelegateCommand((param) => OnDifficultyClicked(param));
+            IncreaseEntryFeeCommand = new DelegateCommand((param) => OnIncreaseFee());
+            DecreaseEntryFeeCommand = new DelegateCommand((param) => OnDecreaseFee());
 
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
@@ -495,7 +504,7 @@ namespace SafariView.ViewModel
                 try
                 {
                     await model.LoadGameAsync($"./{slot}.safarigame");
-
+                    Debug.WriteLine("LOAD");
                     IndexPage = "Visible";
                     NewGamePage = "Hidden";
                     CreditsPage = "Hidden";
@@ -530,6 +539,7 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
 
             await SaveGame();
+            Debug.WriteLine("SAVD");
 
             tickTimer.Stop();
             renderTimer.Stop();
@@ -706,6 +716,14 @@ namespace SafariView.ViewModel
 
             GetSaveDatas();
         }
+        private void OnIncreaseFee()
+        {
+            model.TouristHandler.EntryFee += 50;
+        }
+        private void OnDecreaseFee()
+        {
+            model.TouristHandler.EntryFee -= 50;    
+        }
         #endregion
 
         #region Model event handlers
@@ -760,6 +778,14 @@ namespace SafariView.ViewModel
             if (guardCount != data.guards)
             {
                 GuardCount = data.guards.ToString();
+            }
+            if (avgRating != data.avgRating)
+            {
+                AvgRating = data.avgRating;
+            }
+            if (entryFee != data.entryFee)
+            {
+                EntryFee = data.entryFee;
             }
         }
 

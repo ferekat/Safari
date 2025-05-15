@@ -61,7 +61,7 @@ namespace SafariModel.Model.Utils
             int reachableNeighPathsCount = 0;
             foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))
             {
-                if(neigh is PathTile path && tileMap.IsTraversablePath(neigh.I, neigh.J, tileToConnect.I, tileToConnect.J, true))
+                if((neigh is PathTile path && tileMap.IsTraversablePath(neigh.I, neigh.J, tileToConnect.I, tileToConnect.J, true) || (tileToConnect.IsWater() && neigh.IsWater())) )
                 {
                     traversableTiles.Add(neigh);
                     reachableNeighPathsCount++;

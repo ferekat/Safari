@@ -98,7 +98,10 @@ namespace SafariModel.Model.Tiles
         {
             return tileType == TileType.ENTRANCE || tileType == TileType.EXIT;
         }
-
+        public bool IsBound()
+        {
+            return IsGate() || tileType == TileType.FENCE;
+        }
         private bool IsBetween(int num, int min, in int max)
         {
             return num >= min && num < max;
