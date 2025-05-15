@@ -113,6 +113,7 @@ namespace SafariModel.Model
             speedBoost = 1;
             successfulMonthCount = 0;
             data = new GameData();
+            data.difficulty = gameDifficulty;
 
             entityHandler = new EntityHandler();
             Entity.RegisterHandler(entityHandler);
@@ -214,6 +215,7 @@ namespace SafariModel.Model
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
             data = new GameData();
+            data.difficulty = gameDifficulty;
 
             
 
