@@ -86,6 +86,9 @@ namespace SafariModel.Model.AbstractEntity
         public bool IsCaught { get { return isCaught; } set { isCaught = value; } }
         public Hunter? Abductor { get { return Abductor; } set { abductor = value; } }
 
+        public int ExploredFoodPlaceCount { get { return exploredFoodPlaces.Count; } }
+        public int ExploredWaterPlaceCount { get { return exploredWaterPlaces.Count; } }
+
         #endregion
 
         #region Event
@@ -349,7 +352,7 @@ namespace SafariModel.Model.AbstractEntity
             targetedFood = null;
         }
 
-        private void CheckArea()
+        public void CheckArea()
         {
             List<Tile> tilesInRange = GetTilesInRange();
             List<Entity> entitiesInRange = GetEntitiesInRange();

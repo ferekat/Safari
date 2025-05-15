@@ -19,7 +19,7 @@ namespace SafariModel.Model.AbstractEntity
         protected int entitySize;
         private int id;
 
-        private static readonly int CHUNK_SIZE = 200;
+        public static readonly int CHUNK_SIZE = 200;
 
         private static EntityHandler? entityHandler;
         protected static Tile[,]? tileMap;
