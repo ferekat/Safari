@@ -51,21 +51,21 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,3,0,3">
                         <TextBlock FontSize="8" Width="45" Foreground="White" FontWeight="Bold">Difficulty:</TextBlock>
-                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00">Easy
+                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Easy">Easy
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="2" />
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00">Medium
+                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Medium">Medium
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="2" />
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00">Hard
+                        <Button FontSize="6" Margin="0,0,7,0" BorderBrush="#FF13501B" Background="#FFC3DBAD" Foreground="#FF926F00" Command="{Binding SetDifficultyCommand}" CommandParameter="Hard">Hard
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="2" />

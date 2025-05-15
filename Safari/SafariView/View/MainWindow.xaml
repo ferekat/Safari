@@ -391,25 +391,25 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="Visitors" Grid.Row="0" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="0" Grid.Column="1"/>
+                            <TextBlock Text="{Binding VisitorCount}" Grid.Row="0" Grid.Column="1"/>
 
                             <TextBlock Text="Gazelle" Grid.Row="1" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="1" Grid.Column="1"/>
+                            <TextBlock Text="{Binding GazelleCount}" Grid.Row="1" Grid.Column="1"/>
 
                             <TextBlock Text="Giraffe" Grid.Row="2" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="2" Grid.Column="1"/>
+                            <TextBlock Text="{Binding GiraffeCount}" Grid.Row="2" Grid.Column="1"/>
 
                             <TextBlock Text="Lion" Grid.Row="3" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="3" Grid.Column="1"/>
+                            <TextBlock Text="{Binding LionCount}" Grid.Row="3" Grid.Column="1"/>
 
                             <TextBlock Text="Leopard" Grid.Row="4" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="4" Grid.Column="1"/>
+                            <TextBlock Text="{Binding LeopardCount}" Grid.Row="4" Grid.Column="1"/>
 
                             <TextBlock Text="Jeep" Grid.Row="5" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="5" Grid.Column="1"/>
+                            <TextBlock Text="{Binding JeepCount}" Grid.Row="5" Grid.Column="1"/>
 
                             <TextBlock Text="Guard" Grid.Row="6" Grid.Column="0"/>
-                            <TextBlock Text="0" Grid.Row="6" Grid.Column="1"/>
+                            <TextBlock Text="{Binding GuardCount}" Grid.Row="6" Grid.Column="1"/>
                         </Grid>
                     </Border>
                 </Grid>

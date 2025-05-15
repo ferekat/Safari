@@ -18,7 +18,8 @@ namespace SafariModel.Model.Utils
         private readonly static int MAX_ENTRY_FEE = 2000;
 
         private readonly static int MAX_GROUP_SIZE = Jeep.MAX_CAPACITY;
-        
+
+        private static int monthlyTouristCount;
         private int touristsAtGate;
         private int touristsVisited;
         private int entryFee; //[100;2000]
@@ -38,7 +39,8 @@ namespace SafariModel.Model.Utils
         public int EntryFee {  get { return entryFee; } }   
         public double AvgRating { get { return avgRating; } }
         public int CurrentGroupSize { get { return currentGroupSize; } }
-     
+        public int MonthlyTouristCount { get { return monthlyTouristCount; } set { monthlyTouristCount = value; } }
+
 
 
         public TouristHandler(int touristsAtGate, int touristsVisited, int entryFee, double avgRating, int currentGroupSize,EconomyHandler economyHandler)
@@ -51,6 +53,7 @@ namespace SafariModel.Model.Utils
             this.economyHandler = economyHandler;
             random = new Random();
             avgTouristSpawn = CalcSpawnChance();
+            monthlyTouristCount = 0;
         }
 
         public TouristHandler(EconomyHandler economyHandler)
@@ -102,7 +105,8 @@ namespace SafariModel.Model.Utils
                 touristsAtGate -= group;
                 TouristArrived?.Invoke(this, touristsAtGate);
                 currentGroupSize = random.Next(MAX_GROUP_SIZE)+1;
-                economyHandler.TicketSell(group*entryFee);    
+                economyHandler.TicketSell(group*entryFee);
+                monthlyTouristCount += group;
                 return group;
             }
             return 0;

@@ -30,6 +30,13 @@ namespace SafariModel.Persistence
         public int gameTime;
         public int winningMonths;
         public List<PathIntersectionNode> intersections;
+        public int tourists;
+        public int gazelles;
+        public int giraffes;
+        public int lions;
+        public int leopards;
+        public int jeeps;
+        public int guards;
 
         public GameData()
         {
@@ -39,6 +46,12 @@ namespace SafariModel.Persistence
             day = 1;
             week = 1;
             month = 0;
+            gazelles = 0;
+            lions = 0;
+            giraffes = 0;
+            leopards = 0;
+            jeeps = 0;
+            guards = 0;
         }
     }
 }
