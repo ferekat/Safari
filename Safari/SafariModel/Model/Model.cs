@@ -44,6 +44,9 @@ namespace SafariModel.Model
 
         private GameSpeed gameSpeed;
         private int speedBoost;
+        private GameDifficulty gameDifficulty;
+        private int successfulMonthCount;
+        private string seedString;
 
         // entityk helyének térképen való eloszlására
         private Dictionary<(int, int), List<Entity>> spatialMap = new();
@@ -76,6 +79,7 @@ namespace SafariModel.Model
                 secondCounterHunter = 0;
             }
         }
+        public GameDifficulty GameDifficulty { get { return gameDifficulty; } set { gameDifficulty = value; } }
         public TileMap TileMap { get { return tileMap; } }
 
         public EconomyHandler EconomyHandler { get { return economyHandler; } }
@@ -83,6 +87,7 @@ namespace SafariModel.Model
         public RoadNetworkHandler RoadNetworkHandler { get { return roadNetworkHandler; } }
 
         public TouristHandler TouristHandler {  get { return touristHandler; } }
+        public string SeedString { get { return seedString; } set { seedString = value; } }
         #endregion
 
         #region Events
@@ -106,7 +111,7 @@ namespace SafariModel.Model
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
-   
+            successfulMonthCount = 0;
             data = new GameData();
 
             entityHandler = new EntityHandler();
@@ -193,12 +198,7 @@ namespace SafariModel.Model
             }
             touristHandler.NewTouristAtGatePerTick();
 
-
-            foreach (PathTile p in roadNetworkHandler.RN)
-            {
-                p.PathType = PathTileType.EMPTY;
-            }
-
+            CheckGameOver();
 
             InvokeTickPassed();
         }
@@ -221,7 +221,7 @@ namespace SafariModel.Model
             data = new GameData();
 
 
-            worldGenerationHandler = new WorldGenerationHandler("testseed", entityHandler);
+            worldGenerationHandler = new WorldGenerationHandler(seedString, entityHandler);
             tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
             Entity.RegisterTileMap(tileMap.Map);
 
@@ -259,7 +259,7 @@ namespace SafariModel.Model
         private void InvokeTickPassed()
         {
             UpdateGameData();
-            TickPassed?.Invoke(this, data);
+            TickPassed?.Invoke(this, data!);
         }
 
         private void UpdateGameData()
@@ -277,11 +277,28 @@ namespace SafariModel.Model
             data.touristsVisited = touristHandler.TouristsVisited;
             data.entryFee = touristHandler.EntryFee;
             data.avgRating = touristHandler.AvgRating;
+            data.tourists = touristHandler.MonthlyTouristCount;
+            GetEntityTypeCount(ref data.gazelles, ref data.giraffes, ref data.lions, ref data.leopards, ref data.jeeps, ref data.guards);
             CountTimePassed(data);
+        }
+        private void GetEntityTypeCount(ref int gazelles, ref int giraffes, ref int lions, ref int leopards, ref int jeeps, ref int guards)
+        {
+            gazelles = giraffes = lions = leopards = jeeps = guards = 0;
+
+            foreach (Entity e in entityHandler.GetEntities())
+            {
+                if (e is Gazelle) gazelles++;
+                else if (e is Giraffe) giraffes++;
+                else if (e is Lion) lions++;
+                else if (e is Leopard) leopards++;
+                else if (e is Jeep) jeeps++;
+                else if (e is Guard) guards++;
+            }
         }
         private void CountTimePassed(GameData data)
         {
             int divider = 1;
+            int neededMonths = NeededMonths();
             switch (gameSpeed)
             {
                 case GameSpeed.Slow:
@@ -309,7 +326,6 @@ namespace SafariModel.Model
                         if (data.week > WEEKS_PER_MONTH)
                         {
                             data.week = 1;
-                            data.month++;
                             //guard salary
                             foreach(Guard g in entityHandler.GetGuards())
                             {
@@ -318,23 +334,59 @@ namespace SafariModel.Model
                                     g.LeavePark();
                                 }
                             }
-                            if (data.month >= 12)
+                            if (CheckThreshold())
                             {
-                                InvokeGameOver();
+                                successfulMonthCount++;
+                                data.month++;
+                            }
+                            else
+                            {
+                                data.month = 0;
+                            }
+                            if (data.month >= neededMonths)
+                            {
+                                InvokeGameOver(true);
                             }
                         }
                     }
                 }
             }
         }
-        private void InvokeGameOver()
+        private void InvokeGameOver(bool win)
         {
-            bool win = false;
             //Decide if the player won or not
             GameOver?.Invoke(this, win);
         }
+        private bool CheckThreshold()
+        {
+            int multiplier = 1;
+            switch (gameDifficulty)
+            {
+                case GameDifficulty.Medium: multiplier = 2; break;
+                case GameDifficulty.Hard: multiplier = 3; break;
+            }
 
+            if (touristHandler.MonthlyTouristCount < 20 * multiplier) return false;
+            if (entityHandler.GetHerbivoreCount() < 5 * multiplier) return false;
+            if (entityHandler.GetCarnivoreCount() < 5 * multiplier) return false;
+            if (economyHandler.Money < 2000 * multiplier) return false;
 
+            return true;
+        }
+        public int NeededMonths()
+        {
+            switch (gameDifficulty)
+            {
+                case GameDifficulty.Easy:
+                    return 3;
+                case GameDifficulty.Medium:
+                    return 6;
+                case GameDifficulty.Hard:
+                    return 12;
+                default:
+                    return 0;
+            }
+        }
 
         public void BuyItem(string itemName, int x, int y)
         {
@@ -429,6 +481,19 @@ namespace SafariModel.Model
                 }
             }
             return nearbyEntities;
+        }
+        private void CheckGameOver()
+        {
+            //ha nincs több állatunk és nem tudunk legalább 5-öt venni, akkor vége a játéknak
+            if (entityHandler.GetAnimalCount() == 0 && economyHandler.Money < 750)
+            {
+                InvokeGameOver(false);
+            }
+            //ha nincs több pénzünk, és nem tudunk legalább és az összes vagyonunk nem haladja meg az 1500-at, akkor vége a játéknak
+            if (economyHandler.Money == 0 && economyHandler.CalculateWealth(entityHandler.GetEntities()) < 1500)
+            {
+                InvokeGameOver(false);
+            }
         }
         private void HandleAnimalKill(object? sender, KillAnimalEventArgs e)
         {

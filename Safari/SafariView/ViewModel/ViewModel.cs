@@ -50,6 +50,13 @@ namespace SafariView.ViewModel
         private string? shop;
         private string selectedShopName;
         private GameData? cachedGameData;
+        private int visitorCount;
+        private int gazelleCount;
+        private int giraffeCount;
+        private int lionCount;
+        private int leopardCount;
+        private int jeepCount;
+        private int guardCount;
         //Mennyi tile lesz látható a képernyőn
         private int HorizontalTileCount;
         private int VerticalTileCount;
@@ -76,6 +83,7 @@ namespace SafariView.ViewModel
         private string? loadGamePage;
         private string? slotPickerPage;
         private string? optionName;
+        private string? seedString;
 
         private bool save1exists;
         private bool save2exists;
@@ -96,6 +104,7 @@ namespace SafariView.ViewModel
         private float topRowHeightRelative;
         private float bottomRowHeightRelative;
         private float mid;
+        private GameDifficulty selectedDifficulty;
 
         private Model model;
         #endregion
@@ -287,6 +296,14 @@ namespace SafariView.ViewModel
         public string SelectedShopName { get { return selectedShopName; } private set { selectedShopName = value; OnPropertyChanged(); } }
         public string? Bridges { get { return bridges; } private set { bridges = value; OnPropertyChanged(); } }
         public string? Shop { get { return shop; } private set { shop = value; OnPropertyChanged(); } }
+        public string? VisitorCount { get { return visitorCount.ToString(); } private set { visitorCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? GazelleCount { get { return gazelleCount.ToString(); } private set { gazelleCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? GiraffeCount { get { return giraffeCount.ToString(); } private set { giraffeCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? LionCount { get { return lionCount.ToString(); } private set { lionCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? LeopardCount { get { return leopardCount.ToString(); } private set { leopardCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? JeepCount { get { return jeepCount.ToString(); } private set { jeepCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? GuardCount { get { return guardCount.ToString(); } private set { guardCount = int.Parse(value!); OnPropertyChanged(); } }
+        public string? SeedString { get { return seedString; } set { seedString = value; OnPropertyChanged(); } }
         #endregion
 
         #region Properties
@@ -330,12 +347,24 @@ namespace SafariView.ViewModel
         }
         public string? Month
         {
-            get { return $"{month}/12"; }
+            get { return $"{month}/{model.NeededMonths()}"; }
             set
             {
                 if (int.TryParse(value!.Split('/')[0], out int parsedMonth))
                 {
                     month = parsedMonth;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public GameDifficulty SelectedDifficulty
+        {
+            get => selectedDifficulty;
+            set
+            {
+                if (selectedDifficulty != value)
+                {
+                    selectedDifficulty = value;
                     OnPropertyChanged();
                 }
             }
@@ -360,6 +389,7 @@ namespace SafariView.ViewModel
         public DelegateCommand ClickedShopIcon { get; private set; }
         public DelegateCommand ChangedGameSpeed { get; private set; }
         public DelegateCommand BuyBridge { get; private set; }
+        public DelegateCommand SetDifficultyCommand { get; private set; }
         #endregion
 
         #region EventHandlers
@@ -401,6 +431,7 @@ namespace SafariView.ViewModel
             BackCommand = new DelegateCommand((param) => OnBackClicked());
             StartCommand = new DelegateCommand((param) => OnStartClicked(param));
             CreditsCommand = new DelegateCommand((param) => OnCreditsClicked());
+            SetDifficultyCommand = new DelegateCommand((param) => OnDifficultyClicked(param));
 
             //Subscribe to model's events
             model.TickPassed += new EventHandler<GameData>(Model_TickPassed);
@@ -573,7 +604,28 @@ namespace SafariView.ViewModel
                 }
             }
         }
-
+        private void OnDifficultyClicked(object? diff)
+        {
+            if (diff is string d)
+            {
+                switch (d)
+                {
+                    case "Easy":
+                        model.GameDifficulty = GameDifficulty.Easy;
+                        SelectedDifficulty = GameDifficulty.Easy;
+                        break;
+                    case "Medium":
+                        model.GameDifficulty = GameDifficulty.Medium;
+                        SelectedDifficulty = GameDifficulty.Medium;
+                        break;
+                    case "Hard":
+                        model.GameDifficulty = GameDifficulty.Hard;
+                        SelectedDifficulty = GameDifficulty.Hard;
+                        break;
+                }
+                Month = $"0/{model.NeededMonths()}";
+            }
+        }
         private void OnGameExit()
         {
             ExitGame?.Invoke(this, EventArgs.Empty);
@@ -617,7 +669,8 @@ namespace SafariView.ViewModel
             SlotPickerPage = "Hidden";
             OptionName = "SAFARI";
 
-            model.NewGame(name);
+                model.SeedString = SeedString!;
+                model.NewGame(name);
 
                
 
@@ -671,15 +724,45 @@ namespace SafariView.ViewModel
             {
                 Week = data.week.ToString();
             }
-            if (Month != $"{data.month}/12")
+            if (Month != $"{data.month}/{model.NeededMonths()}")
             {
-                Month = $"{data.month}/12";
+                Month = $"{data.month}/{model.NeededMonths()}";
+            }
+            if (visitorCount != data.tourists)
+            {
+                VisitorCount = data.tourists.ToString();
+            }
+            if (gazelleCount != data.gazelles)
+            {
+                GazelleCount = data.gazelles.ToString();
+                Debug.WriteLine(GazelleCount);
+            }
+            if (giraffeCount != data.giraffes)
+            {
+                GiraffeCount = data.giraffes.ToString();
+            }
+            if (lionCount != data.lions)
+            {
+                LionCount = data.lions.ToString();
+            }
+            if (leopardCount != data.leopards)
+            {
+                LeopardCount = data.leopards.ToString();
+            }
+            if (jeepCount != data.jeeps)
+            {
+                JeepCount = data.jeeps.ToString();
+            }
+            if (guardCount != data.guards)
+            {
+                GuardCount = data.guards.ToString();
             }
         }
 
         private void Model_GameOver(object? sender, bool playerWin)
         {
-            throw new NotImplementedException();
+            if (playerWin) { MessageBox.Show("You won the game! Congrats.", "Game over!", MessageBoxButton.OK, MessageBoxImage.Asterisk); }
+            else { MessageBox.Show("You were fired! Start a new game!", "Game over!", MessageBoxButton.OK, MessageBoxImage.Asterisk); }
         }
 
         private void Model_TileMapUpdated(object? sender, (int, int) updatedTile)
@@ -694,6 +777,7 @@ namespace SafariView.ViewModel
             CreditsPage = "Hidden";
             LoadGamePage = "Hidden";
             OptionName = "SAFARI";
+            model.SeedString = SeedString!;
             StartGame?.Invoke(this, EventArgs.Empty);
 
             redrawMinimap = true;
