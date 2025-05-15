@@ -34,6 +34,7 @@ namespace SafariModel.Model.InstanceEntity
         public int Level { get { return level; } }
         public int TickBeforeFire { get { return tickBeforeFire; } set { tickBeforeFire = value; } }
         public Hunter? TargetHunter { get { return targetHunter; } set { targetHunter = value; } }
+        public int ShotWeight { get { return shotWeight; } set { shotWeight = value; } }
 
         public event EventHandler<MessageEventArgs>? LevelUp;
 
@@ -151,7 +152,7 @@ namespace SafariModel.Model.InstanceEntity
             {
                 shotWeight += 10;
             }
-            if (n == 2)
+            else if (n == 2)
             {
                 shotWeight += 20;
             }
