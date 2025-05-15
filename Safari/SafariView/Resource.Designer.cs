@@ -63,6 +63,16 @@ namespace SafariView {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bridge_0 {
+            get {
+                object obj = ResourceManager.GetObject("bridge_0", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] bridge_icon {
             get {
                 object obj = ResourceManager.GetObject("bridge_icon", resourceCulture);
