@@ -5,6 +5,7 @@ using SafariModel.Model.Utils;
 using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.InstanceEntity;
 using System.Diagnostics;
+using System.Drawing;
 
 
 namespace SafariTest
@@ -132,6 +133,15 @@ namespace SafariTest
             Assert.AreEqual(g1.Food, g2.Food);
             Assert.AreEqual(g1.Hunger, g2.Hunger);
             Assert.AreEqual(g1.Thirst, g2.Thirst);
+        }
+        [TestMethod]
+        public void TestMovementDirection()
+        {
+            Gazelle g = new Gazelle(100, 100);
+            g.SetTarget(new Point(200, 200));
+            g.EntityTick();
+            Assert.IsTrue(g.X > 100);
+            Assert.IsTrue(g.Y > 100);
         }
     }
 }
