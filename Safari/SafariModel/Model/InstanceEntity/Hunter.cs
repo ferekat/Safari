@@ -23,6 +23,7 @@ namespace SafariModel.Model.InstanceEntity
         private bool leavingMap;
         private int mapSizeConvert;
         private bool duel;
+        private bool isKilled;
 
         #region Loading helpers
         int? caughtAnimalID;
@@ -34,6 +35,7 @@ namespace SafariModel.Model.InstanceEntity
         public bool HasEntered { get { return hasEntered; } set { hasEntered = value; } }
         public int WaitingTime { get { return waitingTime / Multiplier; } set { waitingTime = value; } }
         public bool Duel { get { return duel; } set { duel = value; } }
+        public bool IsKilled { get { return isKilled; } set { isKilled = value; } }
 
         public event EventHandler<HunterTargetEventArgs>? HunterTarget;
         public Hunter(int x, int y, Animal? targetAnimal) : base(x, y, 100, 0, targetAnimal)
@@ -49,13 +51,15 @@ namespace SafariModel.Model.InstanceEntity
             //mapSizeConvert = (Model.MAPSIZE + 1) * 49 - 12;
             duel = false;
             isVisible = false;
+            isKilled = false;
         }
         private void TakeAnimal()
         {
-            //itt majd megy vele az állat is, ha az Animal-ben a leader logika megvalósul
             hasEntered = false;
 
             FindNearestExit();
+            TargetAnimal!.IsCaught = true;
+            TargetAnimal!.Abductor = this;
         }
         private void DecideTask()
         {
@@ -93,7 +97,7 @@ namespace SafariModel.Model.InstanceEntity
                         tickBeforeTarget++;
                         if (tickBeforeTarget == WaitingTime)
                         {
-                            HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
+                            SetTargetAnimal();
                             tickBeforeTarget = 0;
                             waitingTime = SetWaitingTime();
                         }
@@ -133,6 +137,10 @@ namespace SafariModel.Model.InstanceEntity
         {
             int x = random.Next(1200, 7200);
             return x;
+        }
+        private void SetTargetAnimal()
+        {
+            HunterTarget?.Invoke(this, new HunterTargetEventArgs(this));
         }
 
         public override void CopyData(EntityData dataholder)

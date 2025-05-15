@@ -63,6 +63,12 @@ namespace SafariModel.Model.AbstractEntity
                 }
                 else
                 {
+                    if (h.targetAnimal != null)
+                    {
+                        h.targetAnimal.IsCaught = false;
+                        h.targetAnimal.Abductor = null;
+                    }
+                    h.IsKilled = true;
                     RemoveGunman(h);
                     g.TargetHunter = null;
                     g.IncreaseLevel(2);

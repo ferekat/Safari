@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Diagnostics;
 using SafariModel.Model.EventArgsClasses;
 using System.Xml.XPath;
+using System.Diagnostics.Metrics;
 
 namespace SafariModel.Model
 {
@@ -43,6 +44,9 @@ namespace SafariModel.Model
 
         private GameSpeed gameSpeed;
         private int speedBoost;
+        private GameDifficulty gameDifficulty;
+        private int successfulMonthCount;
+        private string seedString;
 
         // entityk helyének térképen való eloszlására
         private Dictionary<(int, int), List<Entity>> spatialMap = new();
@@ -75,13 +79,15 @@ namespace SafariModel.Model
                 secondCounterHunter = 0;
             }
         }
+        public GameDifficulty GameDifficulty { get { return gameDifficulty; } set { gameDifficulty = value; } }
         public TileMap TileMap { get { return tileMap; } }
 
         public EconomyHandler EconomyHandler { get { return economyHandler; } }
         public EntityHandler EntityHandler { get { return entityHandler; } }  
         public RoadNetworkHandler RoadNetworkHandler { get { return roadNetworkHandler; } }
 
-
+        public TouristHandler TouristHandler {  get { return touristHandler; } }
+        public string SeedString { get { return seedString; } set { seedString = value; } }
         #endregion
 
         #region Events
@@ -94,42 +100,49 @@ namespace SafariModel.Model
 
         public Model(IDataAccess? dataAccess)
         {
-            ParkName = "";
 
             this.dataAccess = dataAccess;
 
-            entityHandler = new EntityHandler();
-            secondCounterHunter = 0;
-            worldGenerationHandler = new WorldGenerationHandler("zjcdmtheqgjcvjm",entityHandler);
 
-           
-            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
-            
 
-            TileCollision tc = new TileCollision(tileMap);
-            MovingEntity.RegisterTileCollision(tc);
-            Entity.RegisterHandler(entityHandler);
-            Entity.RegisterTileMap(tileMap.Map);
-
-            //Alap entityk hozzáadása
-            entityHandler.LoadEntity(new Gazelle(100, 200,18000,300,45,45,0,0, 5000));
-
-            Hunter h = new Hunter(50, 50, null);
-            h.Multiplier = 1;
-            entityHandler.LoadEntity(h);
-            roadNetworkHandler = new RoadNetworkHandler(tileMap);
-            touristHandler = new TouristHandler();
-
-            economyHandler = new EconomyHandler(99999);
+            ParkName = "";
 
             tickCount = 0;
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
-
-
+            successfulMonthCount = 0;
             data = new GameData();
+
+            entityHandler = new EntityHandler();
+            Entity.RegisterHandler(entityHandler);
+
+
+            worldGenerationHandler = new WorldGenerationHandler("testseed", entityHandler);
+            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
+            Entity.RegisterTileMap(tileMap.Map);
+
+            TileCollision tc = new TileCollision(tileMap);
+            MovingEntity.RegisterTileCollision(tc);
+
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            Jeep.RegisterNetworkHandler(roadNetworkHandler);
+
+            economyHandler = new EconomyHandler(99999);
+            touristHandler = new TouristHandler(economyHandler);
+            Jeep.RegisterTouristHandler(touristHandler);
+
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+            h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
+            entityHandler.LoadEntity(h);
         }
+
+        public Model() : this(null) { }
 
         #region Get tile and entity based on coordinates
         public (int, int) GetTileFromCoords(int x, int y)
@@ -183,9 +196,9 @@ namespace SafariModel.Model
                     }
                 }
             }
-            touristHandler.TouristUpdateTick();
+            touristHandler.NewTouristAtGatePerTick();
 
-
+            CheckGameOver();
 
             InvokeTickPassed();
         }
@@ -196,42 +209,34 @@ namespace SafariModel.Model
 
             ParkName = parkName;
 
-            //egyenlőre csak kimásolva a konstruktorból
-
-            entityHandler = new EntityHandler();
-            secondCounterHunter = 0;
-
-
-            //-------- !!IDEIGLENES!! térkép példányosítás
-
-            //tileMap = TileMap.CreateMapTmp();
-            //-------------
-
-            TileCollision tc = new TileCollision(tileMap);
-            MovingEntity.RegisterTileCollision(tc);
-            Entity.RegisterHandler(entityHandler);
-            Entity.RegisterTileMap(tileMap.Map);
-
-            //Alap entityk hozzáadása
-            //entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 80, 80, 0, 0, 5000));
-            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 41, 80, 0, 0, 5000));
-            //entityHandler.LoadEntity(new Lion(200, 200, 18000, 300, 45, 45, 0, 0, 5000));
-
-            Hunter h = new Hunter(50, 50, null);
-            h.Multiplier = 1;
-            entityHandler.LoadEntity(h);
-            roadNetworkHandler = new RoadNetworkHandler(tileMap);
-            touristHandler = new TouristHandler();
-
-            economyHandler = new EconomyHandler(9999);
-
             tickCount = 0;
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
-
-
             data = new GameData();
+
+
+            worldGenerationHandler = new WorldGenerationHandler(seedString, entityHandler);
+            tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
+            Entity.RegisterTileMap(tileMap.Map);
+
+            MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
+
+            roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            Jeep.RegisterNetworkHandler(roadNetworkHandler);
+            
+
+            economyHandler = new EconomyHandler(99999);
+            touristHandler = new TouristHandler(economyHandler);
+            Jeep.RegisterTouristHandler(touristHandler);
+
+            //Alap entityk hozzáadása
+            entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
+            Hunter h = new Hunter(50, 50, null);
+            h.Multiplier = 1;
+            h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
+            h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
+            entityHandler.LoadEntity(h);
 
             OnNewGameStarted();
         }
@@ -249,7 +254,7 @@ namespace SafariModel.Model
         private void InvokeTickPassed()
         {
             UpdateGameData();
-            TickPassed?.Invoke(this, data);
+            TickPassed?.Invoke(this, data!);
         }
 
         private void UpdateGameData()
@@ -263,11 +268,32 @@ namespace SafariModel.Model
             data.money = economyHandler.Money;
             data.gameTime = tickCount;
             data.intersections = PathIntersectionNode.allNodes;
+            data.touristAtGate = touristHandler.TouristsAtGate;
+            data.touristsVisited = touristHandler.TouristsVisited;
+            data.entryFee = touristHandler.EntryFee;
+            data.avgRating = touristHandler.AvgRating;
+            data.tourists = touristHandler.MonthlyTouristCount;
+            GetEntityTypeCount(ref data.gazelles, ref data.giraffes, ref data.lions, ref data.leopards, ref data.jeeps, ref data.guards);
             CountTimePassed(data);
+        }
+        private void GetEntityTypeCount(ref int gazelles, ref int giraffes, ref int lions, ref int leopards, ref int jeeps, ref int guards)
+        {
+            gazelles = giraffes = lions = leopards = jeeps = guards = 0;
+
+            foreach (Entity e in entityHandler.GetEntities())
+            {
+                if (e is Gazelle) gazelles++;
+                else if (e is Giraffe) giraffes++;
+                else if (e is Lion) lions++;
+                else if (e is Leopard) leopards++;
+                else if (e is Jeep) jeeps++;
+                else if (e is Guard) guards++;
+            }
         }
         private void CountTimePassed(GameData data)
         {
             int divider = 1;
+            int neededMonths = NeededMonths();
             switch (gameSpeed)
             {
                 case GameSpeed.Slow:
@@ -295,7 +321,6 @@ namespace SafariModel.Model
                         if (data.week > WEEKS_PER_MONTH)
                         {
                             data.week = 1;
-                            data.month++;
                             //guard salary
                             foreach(Guard g in entityHandler.GetGuards())
                             {
@@ -304,23 +329,59 @@ namespace SafariModel.Model
                                     g.LeavePark();
                                 }
                             }
-                            if (data.month >= 12)
+                            if (CheckThreshold())
                             {
-                                InvokeGameOver();
+                                successfulMonthCount++;
+                                data.month++;
+                            }
+                            else
+                            {
+                                data.month = 0;
+                            }
+                            if (data.month >= neededMonths)
+                            {
+                                InvokeGameOver(true);
                             }
                         }
                     }
                 }
             }
         }
-        private void InvokeGameOver()
+        private void InvokeGameOver(bool win)
         {
-            bool win = false;
             //Decide if the player won or not
             GameOver?.Invoke(this, win);
         }
+        private bool CheckThreshold()
+        {
+            int multiplier = 1;
+            switch (gameDifficulty)
+            {
+                case GameDifficulty.Medium: multiplier = 2; break;
+                case GameDifficulty.Hard: multiplier = 3; break;
+            }
 
+            if (touristHandler.MonthlyTouristCount < 20 * multiplier) return false;
+            if (entityHandler.GetHerbivoreCount() < 5 * multiplier) return false;
+            if (entityHandler.GetCarnivoreCount() < 5 * multiplier) return false;
+            if (economyHandler.Money < 2000 * multiplier) return false;
 
+            return true;
+        }
+        public int NeededMonths()
+        {
+            switch (gameDifficulty)
+            {
+                case GameDifficulty.Easy:
+                    return 3;
+                case GameDifficulty.Medium:
+                    return 6;
+                case GameDifficulty.Hard:
+                    return 12;
+                default:
+                    return 0;
+            }
+        }
 
         public void BuyItem(string itemName, int x, int y)
         {
@@ -332,7 +393,7 @@ namespace SafariModel.Model
             {
 
                 bool canPlace = (clickedTile.TileType == TileType.GROUND && tileToBuy == TileType.SHALLOW_WATER);
-                if (economyHandler.BuyTile(tileToBuy))
+                if (canPlace &&economyHandler.BuyTile(tileToBuy))
                 {
                     clickedTile.SetType(tileToBuy);
                     OnTileMapUpdated(tileX,tileY);
@@ -342,7 +403,8 @@ namespace SafariModel.Model
             if (PathTile.pathTileShopMap.ContainsKey(itemName) && PathTile.pathTileShopMap[itemName] is PathTileType pathToBuy)
             {
 
-                bool canPlace = ((clickedTile.IsWater() && pathToBuy == PathTileType.BRIDGE) || (!clickedTile.IsWater() && pathToBuy == PathTileType.ROAD));
+                bool canPlace = ((clickedTile.IsWater() && pathToBuy == PathTileType.BRIDGE) ||
+                   (!clickedTile.IsWater() && pathToBuy == PathTileType.ROAD)) ;
                 
                     //ha be lehet kötni a hálózatba és meg lehet venni
                 
@@ -359,7 +421,7 @@ namespace SafariModel.Model
 
 
             if (entity == null) return;
-
+           
             if(entity is MovingEntity me)
             {
                 me.UpdateSpeedMultiplier(speedBoost);
@@ -415,17 +477,37 @@ namespace SafariModel.Model
             }
             return nearbyEntities;
         }
+        private void CheckGameOver()
+        {
+            //ha nincs több állatunk és nem tudunk legalább 5-öt venni, akkor vége a játéknak
+            if (entityHandler.GetAnimalCount() == 0 && economyHandler.Money < 750)
+            {
+                InvokeGameOver(false);
+            }
+            //ha nincs több pénzünk, és nem tudunk legalább és az összes vagyonunk nem haladja meg az 1500-at, akkor vége a játéknak
+            if (economyHandler.Money == 0 && economyHandler.CalculateWealth(entityHandler.GetEntities()) < 1500)
+            {
+                InvokeGameOver(false);
+            }
+        }
         private void HandleAnimalKill(object? sender, KillAnimalEventArgs e)
         {
             if (e.Killer is Guard g)
             {
                 economyHandler.GetBounty(e.Animal);
             }
+            foreach(Hunter h in entityHandler.GetHunters())
+            {
+                if(h.TargetAnimal == e.Animal)
+                {
+                    h.TargetAnimal = null;
+                }
+            }
             entityHandler.RemoveEntity(e.Animal);
         }
         private void HandleGunmanRemoval(object? sender, GunmanRemoveEventArgs e)
         {
-            if (e.Gunman is Hunter h)
+            if (e.Gunman is Hunter h && h.IsKilled)
             {
                 economyHandler.GetBounty(e.Gunman);
             }
@@ -452,22 +534,29 @@ namespace SafariModel.Model
 
             data = await dataAccess.LoadAsync(filePath);
 
+
+           
+         
+
             ParkName = data.parkName;
+
+          
 
             //statok visszatöltése
             this.economyHandler = new EconomyHandler(data.money);
+            this.touristHandler = new TouristHandler(data.touristAtGate,data.touristsVisited,data.entryFee,data.avgRating,data.currentGroupSize,economyHandler);
+            Jeep.RegisterTouristHandler(touristHandler);
 
-
-            //Intersectionök visszatöltése
-            PathIntersectionNode.allNodes.Clear();
-            PathIntersectionNode.allNodes.AddRange(data.intersections);
 
             //tileok visszatöltése
             this.tileMap = new TileMap(data.tileMap);
             tileMap.Entrance = data.entrance;
             tileMap.Exit = data.exit;
             MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
-
+            Entity.RegisterTileMap(tileMap.Map);
+            //Intersectionök visszatöltése
+            PathIntersectionNode.allNodes.Clear();
+            PathIntersectionNode.allNodes.AddRange(data.intersections);
             //intersectionök tileokhoz kötése
             foreach(PathIntersectionNode node in PathIntersectionNode.allNodes)
             {
@@ -484,7 +573,7 @@ namespace SafariModel.Model
             }
 
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
-
+            Jeep.RegisterNetworkHandler(roadNetworkHandler);
             //entityk visszatöltése
 
             entityHandler.ClearAll();
@@ -492,6 +581,14 @@ namespace SafariModel.Model
             foreach (Entity e in data.entities)
             {
                 entityHandler.LoadEntity(e);
+            }
+            foreach(var v in PathIntersectionNode.allNodes)
+            {
+                foreach (var n in v.NextIntersections)
+                {
+                    Debug.WriteLine($"{v.ToString()} neighs: {v.NextIntersections.Count} which are: {n.ToString()}, sp: {v.ShortestPathId}");
+                }
+
             }
         }
     }

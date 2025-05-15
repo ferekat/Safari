@@ -150,7 +150,7 @@ namespace SafariModel.Persistence
                 {
                     neighbors.Append($"{neighbor.ID} ");
                 }
-                builder.Append($"{node.ID},{node.PathI},{node.PathJ},{node.Distance},{node.IsVisited},{neighbors.ToString()};");
+                builder.Append($"{node.ID},{node.PathI},{node.PathJ},{node.Distance},{node.IsVisitedByAStar.ToString()},{node.ShortestPathId},{neighbors.ToString()};");
             }
             return builder.ToString();
         }
@@ -171,8 +171,9 @@ namespace SafariModel.Persistence
                 int pathI = int.Parse(attributes[1]);
                 int pathJ = int.Parse(attributes[2]);
                 int distance = int.Parse(attributes[3]);
-                bool isVisited = Boolean.Parse(attributes[4]);
-                string[] neighborStrings = attributes[5].Split(' ');
+                bool isVisitedByAStar = Boolean.Parse(attributes[4]);
+                int shortestPathId = int.Parse(attributes[5]);
+                string[] neighborStrings = attributes[6].Split(' ');
                 List<int> neighborIDs = new List<int>();
                 foreach(string neighborString in neighborStrings)
                 {
@@ -180,7 +181,7 @@ namespace SafariModel.Persistence
                     neighborIDs.Add(int.Parse(neighborString));
                 }
 
-                PathIntersectionNode node = new PathIntersectionNode(id, pathI, pathJ, distance, isVisited);
+                PathIntersectionNode node = new PathIntersectionNode(id, pathI, pathJ, distance,shortestPathId,isVisitedByAStar);
                 nodes.Add(node);
                 nodesByID.Add(id, node);
                 nodeNeighborIDs.Add(node, neighborIDs);

@@ -73,6 +73,10 @@ namespace SafariModel.Model.Utils
         {
             money += entityCostTable[item];
         }
+        public void TicketSell(int cost)
+        {
+            money += cost;
+        }
         public bool BuyTile(TileType tileType)
         {
             
@@ -93,6 +97,15 @@ namespace SafariModel.Model.Utils
             //az entity eredeti árának 70%-át kapjuk fejpénznek
             int bounty = (int)Math.Floor(GetEnityCost(m.GetType())*0.7);
             money += bounty;
+        }
+        public int CalculateWealth(List<Entity> entities)
+        {
+            int wealth = 0;
+            foreach (Entity entity in entities)
+            {
+                wealth += GetEnityCost(entity.GetType());
+            }
+            return wealth;
         }
     }
 }

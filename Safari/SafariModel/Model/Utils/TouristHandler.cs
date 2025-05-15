@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SafariModel.Model.AbstractEntity;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,42 +10,141 @@ namespace SafariModel.Model.Utils
 {
     public class TouristHandler
     {
-        Random random = new Random();
+        private Random random;
         private readonly static int MAX_WAITING_TOURIST = 30;
-        private readonly static int MIN_ENTRY_FEE = 300;
-        private static int touristsAtEntrance;
-        private int entryFee;
-        private bool connectedGates;
-        private double popularity;
-        private static double avgHappiness;
-        public static int TouristsAtGate { get { return touristsAtEntrance; } }
-        public int EntryFee { get { return entryFee; } set { entryFee = value; } }
-        public bool ConnectedGates { get { return RoadNetworkHandler.FoundShortestPath; } }
-        public double Popularity { get { double ret = 1.0 / entryFee + avgHappiness; if (ret > 0.1) return 0.1;  else return ret; } }
+        private readonly static int RATING_TIERS = 5;
+        private readonly static int MAX_RATING = 100;
+        private readonly static int MIN_ENTRY_FEE = 100;
+        private readonly static int MAX_ENTRY_FEE = 2000;
+
+        private readonly static int MAX_GROUP_SIZE = Jeep.MAX_CAPACITY;
+
+        private static int monthlyTouristCount;
+        private int touristsAtGate;
+        private int touristsVisited;
+        private int entryFee; //[100;2000]
+        private double avgRating; //[-RATING_TIERS,RATING_TIERS]
+        private int currentGroupSize;
+       
+        private double avgTouristSpawn; //ennyi másodpercenként jön új turista
+        private int tick = 0;
+
+        private EconomyHandler economyHandler;
+
+        public event EventHandler<int> TouristArrived;
+        public event EventHandler<double> GroupLeft;
+
+        public int TouristsAtGate { get { return touristsAtGate; } }
+        public int TouristsVisited { get { return touristsVisited; } }
+        public int EntryFee {  get { return entryFee; } }   
+        public double AvgRating { get { return avgRating; } }
+        public int CurrentGroupSize { get { return currentGroupSize; } }
+        public int MonthlyTouristCount { get { return monthlyTouristCount; } set { monthlyTouristCount = value; } }
+
+
         public TouristHandler()
         {
-            popularity = 0.01;
-            entryFee = 300;
-            touristsAtEntrance = 0;
-            avgHappiness = 0;
+
+        }
+        public TouristHandler(int touristsAtGate, int touristsVisited, int entryFee, double avgRating, int currentGroupSize,EconomyHandler economyHandler)
+        {
+            this.touristsAtGate = touristsAtGate;
+            this.touristsVisited = touristsVisited;
+            this.entryFee = entryFee;
+            this.avgRating = avgRating;
+            this.currentGroupSize = currentGroupSize;
+            this.economyHandler = economyHandler;
+            random = new Random();
+            avgTouristSpawn = CalcSpawnChance();
+            monthlyTouristCount = 0;
         }
 
-        public void TouristUpdateTick()
+        public TouristHandler(EconomyHandler economyHandler)
         {
-            double spawn = random.NextDouble(); //0.000-0.9999
-            if (spawn < Popularity && touristsAtEntrance < MAX_WAITING_TOURIST)
+            random = new Random();
+            this.economyHandler = economyHandler;
+            touristsAtGate = 0;
+            entryFee = 1000;
+            avgRating = 0;
+            touristsVisited = 0;    
+            currentGroupSize = random.Next(MAX_GROUP_SIZE) + 1;
+            avgTouristSpawn = CalcSpawnChance();
+        }
+        private double CalcSpawnChance()
+        {
+            return 1;
+            return 50.0 - 6.0 * avgRating + entryFee / 100.0;
+        }
+        private double ChanceAtEverySec(double sec)
+        {
+    
+            return 1 / (sec * 120.0);
+        }
+       
+        public void NewTouristAtGatePerTick()
+        {
+
+          //  Debug.WriteLine($"try {touristsAtGate}");
+            double spawn = random.NextDouble();
+                if (tick % 120 == 0)
+                {
+                  //  Debug.WriteLine(tick/120);
+                }
+            if (spawn < ChanceAtEverySec(avgTouristSpawn) && touristsAtGate < MAX_WAITING_TOURIST)
             {
-                touristsAtEntrance++;
+                touristsAtGate+= 1;
+                TouristArrived?.Invoke(this, touristsAtGate);
+                
             }
-           // Debug.WriteLine(touristsAtEntrance + "T");
+            avgTouristSpawn = CalcSpawnChance();
+            tick++;
+            //Debug.WriteLine(touristsAtEntrance + " TOURIST | " + tick + " TICK | " + spawn + " SPAWN");
         }
-        public static void TouristsEnter(int touristNum)
+        public int TouristsEnterPark()
         {
-            touristsAtEntrance -= touristNum;
+            int group = currentGroupSize; 
+            if (touristsAtGate >= group)
+            {
+                touristsAtGate -= group;
+                TouristArrived?.Invoke(this, touristsAtGate);
+                currentGroupSize = random.Next(MAX_GROUP_SIZE)+1;
+                economyHandler.TicketSell(group*entryFee);
+                monthlyTouristCount += group;
+                return group;
+            }
+            return 0;
         }
-        public static void TouristLeave(double happiness)
+        public void TouristsLeavePark(HashSet<Animal> seenAnimals, int seenHunterCount, int touristCount)
         {
-            avgHappiness = happiness; 
+            List<double> ratings = CalcTourRatings(seenAnimals, seenHunterCount,touristCount);
+            double sum = ratings.Sum();
+            
+
+            avgRating = (avgRating * touristsVisited + sum) / (touristsVisited + touristCount);  //mozgóátlag
+            avgRating = Math.Round(avgRating,2);
+            touristsVisited += touristCount;
+            GroupLeft?.Invoke(this, avgRating);
+           
+        }
+        private List<double> CalcTourRatings(HashSet<Animal> seenAnimals, int seenHunterCount, int touristCount)
+        {
+            double rating;
+            double animalCount = seenAnimals.Count;
+            double uniqueTypesCount = seenAnimals
+            .Select(a => a.GetType())
+            .Distinct()
+            .Count();
+
+            rating = animalCount + uniqueTypesCount * 10 - entryFee / (animalCount * 2+1) - seenHunterCount * 50; //értékelés képlete 
+            rating = Math.Clamp(rating, -MAX_RATING, MAX_RATING);
+            rating = rating * RATING_TIERS / MAX_RATING; //normalizálás [-5,5] re
+            
+            List<double> result = new List<double>();
+            for (int i = 0; i < touristCount; i++)
+            {
+                result.Add(Math.Clamp(rating + (random.NextDouble() - 0.1),-RATING_TIERS,RATING_TIERS));  //random fluktuáció
+            }
+            return result;
         }
     }
 }
