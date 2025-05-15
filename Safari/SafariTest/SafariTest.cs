@@ -112,5 +112,26 @@ namespace SafariTest
 
             Assert.AreEqual(2, g1.GetEntitiesInRange().Count);
         }
+
+        [TestMethod]
+        public void TestEntitySavingAndLoading()
+        {
+            EntityData entityData = EntityData.GetInstance();
+
+            Gazelle g1 = new Gazelle(100, 200, 4000, 176, 46, 23, 12, 16, 673);
+            g1.CopyData(entityData);
+            Gazelle g2 = new Gazelle(0, 0);
+            g2.LoadData(entityData);
+
+            Assert.AreEqual(g1.X, g2.X);
+            Assert.AreEqual(g1.Y, g2.Y);
+            Assert.AreEqual(g1.ID, g2.ID);
+            Assert.AreEqual(g1.Age, g2.Age);
+            Assert.AreEqual(g1.Health, g2.Health);
+            Assert.AreEqual(g1.Water, g2.Water);
+            Assert.AreEqual(g1.Food, g2.Food);
+            Assert.AreEqual(g1.Hunger, g2.Hunger);
+            Assert.AreEqual(g1.Thirst, g2.Thirst);
+        }
     }
 }
