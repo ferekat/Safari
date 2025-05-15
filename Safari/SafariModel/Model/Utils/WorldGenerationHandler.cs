@@ -88,16 +88,21 @@ namespace SafariModel.Model.Utils
             return validGatePos;
         }
 
-        private PathTile? GeneratedGateOnFence(List<Tile> fence)
+        private PathTile? GeneratedGateOnFence(List<Tile> fence,TileType gateType)
         {
             int chance = 0;
             for (int attempts = 0; attempts < 10; attempts++)
             {
                 chance += random.Next(GATE_GEN_CHANCE);
-                int fenceIdx = (chance % TileMap.MAPSIZE - 1) + 1;
+                int fenceIdx = (chance % TileMap.MAPSIZE - 11);
+                if (fenceIdx < 10)
+                {
+                    fenceIdx += 10;
+                }
                 Tile fenceTile = fence[fenceIdx];
                 if (FreeForGate(fenceTile))
                 {
+                    fenceTile.SetType(gateType);
                     return new PathTile(fenceTile, PathTileType.ROAD);
                 }
             }
@@ -109,7 +114,7 @@ namespace SafariModel.Model.Utils
             List<Tile> leftFence = new List<Tile>();
             List<Tile> bottomFence = new List<Tile>();
             List<Tile> rightFence = new List<Tile>();
-            for (int i = 1; i < TileMap.MAPSIZE - 1; i++)
+            for (int i = 0; i < TileMap.MAPSIZE - 1; i++)
             {
                 Tile t1 = tileMap.Map[i, 0];
                 Tile t2 = tileMap.Map[i, TileMap.MAPSIZE - 1];
@@ -118,7 +123,7 @@ namespace SafariModel.Model.Utils
                 t1.SetType(TileType.FENCE);
                 t2.SetType(TileType.FENCE);
             }
-            for (int j = 1; j < TileMap.MAPSIZE - 1; j++)
+            for (int j = 0; j < TileMap.MAPSIZE - 1; j++)
             {
                 Tile t1 = tileMap.Map[0, j];
                 Tile t2 = tileMap.Map[TileMap.MAPSIZE - 1, j];
@@ -135,23 +140,32 @@ namespace SafariModel.Model.Utils
 
             PathTile? entrance = null;
             PathTile? exit = null;
-            while (entrance == null || exit == null)
-            {
-                int isHorizontal = random.Next(2);
-                if (isHorizontal == 0)
-                {
-                    entrance = GeneratedGateOnFence(leftFence);
-                    exit = GeneratedGateOnFence(rightFence);
-                }
-                else
-                {
-                    entrance = GeneratedGateOnFence(topFence);
-                    exit = GeneratedGateOnFence(bottomFence);
-                }
-            }
+
+            //TESZTELÉSRE:
+            entrance = new PathTile(tileMap.Map[0, 8], PathTileType.ROAD);
+            exit = new PathTile(tileMap.Map[10, 0], PathTileType.ROAD);
+            /////////////
+            ///
+
+            //while (entrance == null || exit == null)
+            //{
+            //    int isHorizontal = random.Next(2);
+            //    if (isHorizontal == 0)
+            //    {
+            //        entrance = GeneratedGateOnFence(leftFence, TileType.ENTRANCE);
+            //        exit = GeneratedGateOnFence(rightFence, TileType.EXIT);
+            //    }
+            //    else
+            //    {
+            //        entrance = GeneratedGateOnFence(topFence, TileType.ENTRANCE);
+            //        exit = GeneratedGateOnFence(bottomFence, TileType.EXIT);
+            //    }
+            //}
+
+
             tileMap.Entrance = entrance; 
             tileMap.Exit = exit;
-           
+          
         }
        
         private void GenerateMountains()

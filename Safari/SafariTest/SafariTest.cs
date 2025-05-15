@@ -20,39 +20,63 @@ namespace SafariTest
             //Todo mockkal helyettesíteni
             model = new Model(null);
         }
-        private void GoDown(Tile[,] map)
+        private Tile GoDown(Tile currentTile,RoadNetworkHandler roadNetworkHandler)
         {
-
+            Tile next = roadNetworkHandler.TileMap.Map[currentTile.I + 1, currentTile.J];
+            roadNetworkHandler.ConnectToNetwork(next, PathTileType.ROAD);
+            return next;
         }
-        private void GoLeft(Tile[,] map)
+        private Tile GoLeft(Tile currentTile,RoadNetworkHandler roadNetworkHandler)
         {
-
+            Tile next = roadNetworkHandler.TileMap.Map[currentTile.I, currentTile.J+1];
+            roadNetworkHandler.ConnectToNetwork(next, PathTileType.ROAD);
+            return next;
         }
-        
+    
+       
         [TestMethod]
        
         public void TestPathNodeCount()
         {
             Tile[,] map = model.TileMap.Map;
-            Tile entrance = model.TileMap.Entrance;
+            PathTile entrance = model.TileMap.Entrance;
+            PathTile exit = model.TileMap.Exit;
+            Tile currentTile = entrance;
+            RoadNetworkHandler roadNetworkHandler = model.RoadNetworkHandler;
+            
+            PathIntersectionNode.allNodes.Clear();
+            PathIntersectionNode.allNodes.Add(entrance.IntersectionNode!);
+            PathIntersectionNode.allNodes.Add(exit.IntersectionNode!);
+
             int ei = entrance.I;
             int ej = entrance.J;
-            Assert.AreEqual(2, PathIntersectionNode.allNodes.Count);
+
+
+            Assert.AreEqual(2,PathIntersectionNode.allNodes.Count);
             //első lépés
-            if (ei == 0)
-            {   
-                GoDown(map);
-            }
-            else if (ej == 0)
-            {
-                GoLeft(map);
-            }
+
+            currentTile = GoDown(currentTile, roadNetworkHandler);
+            Assert.AreEqual(3, PathIntersectionNode.allNodes.Count);
+
 
             //többi lépés
-            GoDown(map);
-            GoLeft(map);
-            GoLeft(map);
-            GoDown(map);
+
+            currentTile =  GoDown(currentTile,roadNetworkHandler);
+           ; 
+            Assert.AreEqual(3, PathIntersectionNode.allNodes.Count);
+
+            currentTile = GoLeft(currentTile, roadNetworkHandler);
+           
+            Assert.AreEqual(4, PathIntersectionNode.allNodes.Count);
+
+
+            currentTile = GoLeft(currentTile, roadNetworkHandler);
+            
+            Assert.AreEqual(4, PathIntersectionNode.allNodes.Count);
+
+            currentTile = GoDown(currentTile, roadNetworkHandler);
+            
+            Assert.AreEqual(5, PathIntersectionNode.allNodes.Count);
 
         }
 

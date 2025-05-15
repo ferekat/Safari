@@ -17,6 +17,7 @@ namespace SafariView
 
         #region Private fields
         private LobbyWindow? lobbyWindow;
+       
         private MainWindow? mainWindow;
         private ViewModel.ViewModel? viewModel;
         private Model? model;
@@ -42,7 +43,6 @@ namespace SafariView
             viewModel.EndGame += new EventHandler(ViewModel_GameEnd);
             viewModel.FinishedRenderingTileMap += new EventHandler(ViewModel_FinishedTileMapRendering);
             viewModel.FinishedRenderingEntities += new EventHandler(ViewModel_FinishedEntityRendering);
-
 
             lobbyWindow = new LobbyWindow();
             

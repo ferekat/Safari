@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 
 namespace SafariModel.Model.Utils
@@ -14,22 +15,25 @@ namespace SafariModel.Model.Utils
     public class RoadNetworkHandler
     {
 
-        private PathTile entrance;
-        private PathTile exit;
-        private static bool foundShortestPath;
+        private PathTile entrance = null!;
+        private PathTile exit = null!;
+        private bool foundShortestPath;
+        private int SPNodeCount = 0;
+        private List<PathTile> shortestPathExitToEntrance = new();
+        private List<PathTile> shortestPathEntranceToExit = new();
+      
 
 
-        private List<PathIntersectionNode> roadNetwork = new();
-        private static List<PathTile> shortestPathExitToEntrance = new();
-        private static List<PathTile> shortestPathEntranceToExit = new();
-        public static List<PathTile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } }
-        public static bool FoundShortestPath { get { return foundShortestPath; } }
-        public static List<PathTile> ShortestPathEntranceToExit { get { return shortestPathEntranceToExit; } }
-
+        public PathTile Entrance { get { return entrance; } }
+        public PathTile Exit { get { return exit; } }
+        public bool FoundShortestPath { get { return foundShortestPath; } }
+        public List<PathTile> ShortestPathExitToEntrance { get { return shortestPathExitToEntrance; } set { shortestPathExitToEntrance = value; } }
+        public List<PathTile> ShortestPathEntranceToExit { get { return shortestPathEntranceToExit; } set { shortestPathEntranceToExit = value; } }
+        public TileMap TileMap { get { return tileMap; } }  
         private TileMap tileMap;
         public RoadNetworkHandler(TileMap tileMap)
         {
-            
+
             this.tileMap = tileMap;
             entrance = tileMap.Entrance;
             exit = tileMap.Exit;
@@ -38,7 +42,7 @@ namespace SafariModel.Model.Utils
             //Visszatöltéshez kell
             ShortestPathAStar();
         }
-
+       
         public bool ConnectToNetwork(Tile tileToConnect, PathTileType pathToConnect)
         {
             if (tileToConnect is PathTile)
@@ -48,34 +52,32 @@ namespace SafariModel.Model.Utils
             int pathNeighbours = 0;
             List<PathIntersectionNode> neighNodes = new();
             PathTile connectedTile = new PathTile(tileToConnect, pathToConnect);
+           // AddToNetwork(connectedTile.IntersectionNode!);
+            
             PathIntersectionNode neighNode = null!;
             PathIntersectionNode connectedTileNode = connectedTile.IntersectionNode!;
             bool succ = false;
             foreach (Tile neigh in tileMap.GetNeighbourTiles(tileToConnect))  //HEGYEK HIDAK
             {
+           // Debug.WriteLine("exe");
                 if (neigh is PathTile neighPathTile)
                 {
-                    
-
                     succ = true;
-                   
-
-                   
-
-                   
 
                     if (neighPathTile.IntersectionNode == null)
                     {
-                      
+
                         neighPathTile.IntersectionNode = new PathIntersectionNode(neighPathTile.I, neighPathTile.J);
+                    //    roadNetwork.Add(neighPathTile.IntersectionNode);
+                        
                         int deltaI = Math.Abs(connectedTile.I - neighPathTile.I);
                         int deltaJ = Math.Abs(neighPathTile.J - neighPathTile.J);
 
                         PathIntersectionNode[] closestNodes = ClosestNodesOnAxis(neighPathTile, deltaI, deltaJ);
-                      
+
                         PathIntersectionNode.ConnectIntersections(neighPathTile.IntersectionNode, closestNodes[0]);
                         PathIntersectionNode.ConnectIntersections(neighPathTile.IntersectionNode, closestNodes[1]);
-                        PathIntersectionNode.DisconnectIntersections(closestNodes[0], closestNodes[1]);
+                        PathIntersectionNode.DisconnectIntersections(closestNodes[0],closestNodes[1]);
 
                     }
 
@@ -89,72 +91,29 @@ namespace SafariModel.Model.Utils
             if (succ)
             {
                 tileMap.Map[tileToConnect.I, tileToConnect.J] = connectedTile;
-                neighNodes.Add(connectedTileNode);
-               
-                foreach(PathIntersectionNode node in neighNodes)
+               neighNodes.Add(connectedTileNode);
+
+                foreach (PathIntersectionNode node in neighNodes)
                 {
-                    SimplifyStraightPath(node);
+                    SimplifyStraightPath( node);
                 }
+            
                 if (pathNeighbours >= 2)
                 {
-                    ShortestPathAStar();
-                }
-
-
-
-                
-                foreach (PathIntersectionNode node in PathIntersectionNode.allNodes)
-                {
-                    
-                    if (tileMap.Map[node.PathI, node.PathJ] is PathTile pt)
-                    {
-
-                  
-                    }
-                  
+                    ShortestPathEntranceToExit = ShortestPathAStar();
+                    ShortestPathExitToEntrance = shortestPathEntranceToExit.AsEnumerable().Reverse().ToList();
                 }
             }
-           
-           
-          
+
+
+            foreach (PathIntersectionNode n in PathIntersectionNode.allNodes)
+            {
+                Debug.WriteLine($"{n.PathI},{n.PathJ}");
+            }
+            Debug.WriteLine($"count: {PathIntersectionNode.allNodes.Count}");
             return pathNeighbours > 0;
         }
-        private int CalculateDistance(PathIntersectionNode node)
-        {
-            if (node.NextIntersections.Count == 0)
-            {
-                return TileMap.MAPSIZE; 
-            }
 
-           
-            int minDistance = node.NextIntersections[0].Distance;
-
-        
-            foreach (PathIntersectionNode neigh in node.NextIntersections)
-            {
-                int distance;
-            
-                if (neigh.PathI != node.PathI)
-                {
-                    distance = Math.Abs(neigh.PathJ - node.PathJ); 
-                }
-                else
-                {
-                    distance = Math.Abs(neigh.PathI - node.PathI); 
-                }
-
-               
-                if (distance + neigh.Distance < minDistance)
-                {
-                    minDistance = distance + neigh.Distance;
-                }
-            }
-
-           
-            node.Distance = minDistance;
-
-            return minDistance; 
-        }
 
         private PathIntersectionNode[] ClosestNodesOnAxis(PathTile neighPathTile, int axisI, int axisJ)
         {
@@ -200,7 +159,7 @@ namespace SafariModel.Model.Utils
 
             return ret;
         }
-        private void SimplifyStraightPath(PathIntersectionNode node) //node szomszédai egyenes utat alkotnak e 
+        private void SimplifyStraightPath( PathIntersectionNode node) //node szomszédai egyenes utat alkotnak e 
         {
 
 
@@ -208,6 +167,10 @@ namespace SafariModel.Model.Utils
 
             if (neighs.Count != 2)
             {
+                //foreach (PathIntersectionNode n in neighs)
+                //{
+                //    roadNetwork.Add(n);
+                //}
                 return;
             }
 
@@ -215,14 +178,16 @@ namespace SafariModel.Model.Utils
 
             if (neighs[0].PathI == neighs[1].PathI || neighs[0].PathJ == neighs[1].PathJ)
             {
-
+                
                 PathIntersectionNode neigh0 = neighs[0];
                 PathIntersectionNode neigh1 = neighs[1];
                 PathIntersectionNode.ConnectIntersections(neigh0, neigh1);
                 PathIntersectionNode.DisconnectIntersections(neigh0, node);
                 PathIntersectionNode.DisconnectIntersections(neigh1, node);
-                PathTile pt = (PathTile)tileMap.Map[node.PathI, node.PathJ];
-                pt.IntersectionNode = null;
+
+                PathTile straightTile = (PathTile)tileMap.Map[node.PathI, node.PathJ];
+                straightTile.IntersectionNode = null;
+                
                 SimplifyStraightPath(neigh1);
                 SimplifyStraightPath(neigh0);
 
@@ -233,100 +198,108 @@ namespace SafariModel.Model.Utils
 
 
         }
-      
 
 
 
-        private int TotalCost(Tile tile, int distance)
+
+        private int ManhattanDist(int i0, int j0, int i1, int j1,int distance)
         {
             //manhattan táv (h) + költség (g)       A*: f = h + g
-            return Math.Abs(tile.I - exit.I) + Math.Abs(tile.J - exit.J) + distance;
+            return Math.Abs(i0 - i1) + Math.Abs(j0 - j1) + distance;
         }
-
-        public void ShortestPathAStar()
+       
+        private List<PathTile> ShortestPathAStar()
         {
-          
-            shortestPathEntranceToExit.Clear();
-            shortestPathExitToEntrance.Clear();
 
+            
             // Reset distances and visited flags
-            foreach (var node in PathIntersectionNode.allNodes)
+           
+            foreach (PathIntersectionNode node in PathIntersectionNode.allNodes)
             {
-                node.Distance = int.MaxValue;
-                node.IsVisited = false;
+                node.Distance = int.MaxValue;               
+                node.IsVisitedByAStar = false;
+                node.ShortestPathId = 0;
             }
-
+            SPNodeCount = 0;
             entrance.IntersectionNode!.Distance = 0;
 
             var priorityQueue = new PriorityQueue<PathIntersectionNode, int>();
-            priorityQueue.Enqueue(entrance.IntersectionNode, TotalCost(entrance, 0));
-            
+            priorityQueue.Enqueue(entrance.IntersectionNode!, ManhattanDist(entrance.I,entrance.J,exit.I,exit.J, 0));
+
             Dictionary<PathIntersectionNode, PathIntersectionNode?> cameFrom = new();
             cameFrom[entrance.IntersectionNode] = null;
             while (priorityQueue.Count > 0)
             {
                 PathIntersectionNode current = priorityQueue.Dequeue();
 
-                if (current.IsVisited) continue;
-                current.IsVisited = true;
+                if (current.IsVisitedByAStar) continue;
+                current.IsVisitedByAStar = true;
+
 
                 if (current.PathI == exit.I && current.PathJ == exit.J)
                 {
-                    ReconstructPath(current, cameFrom);
-                    return;
+
+                    return ReconstructPath(current, cameFrom);
                 }
 
-                foreach (PathIntersectionNode neighbor in current.NextIntersections)
+                foreach (PathIntersectionNode neighbour in current.NextIntersections)
                 {
-                    if (neighbor.IsVisited) continue;
+                    if (neighbour.IsVisitedByAStar) continue;
 
-                    int moveCost = Math.Abs(neighbor.PathI - current.PathI) + Math.Abs(neighbor.PathJ - current.PathJ);
+                    int moveCost = Math.Abs(neighbour.PathI - current.PathI) + Math.Abs(neighbour.PathJ - current.PathJ);
                     int tentativeG = current.Distance + moveCost;
 
-                    if (tentativeG < neighbor.Distance)
+                    if (tentativeG < neighbour.Distance)
                     {
-                        neighbor.Distance = tentativeG;
-                        cameFrom[neighbor] = current;
+                        neighbour.Distance = tentativeG;
+                        cameFrom[neighbour] = current;
 
-                        int fCost = TotalCost(tileMap.Map[neighbor.PathI, neighbor.PathJ], neighbor.Distance);
-                        priorityQueue.Enqueue(neighbor, fCost);
+                        int fCost = ManhattanDist(entrance.I, entrance.J, exit.I, exit.J, neighbour.Distance);
+                        priorityQueue.Enqueue(neighbour, fCost);
                     }
                 }
             }
 
+
+
             // No path found
             Debug.WriteLine("No path found from entrance to exit.");
+            
+            return new List<PathTile>();
         }
 
-        private void ReconstructPath(PathIntersectionNode endNode, Dictionary<PathIntersectionNode, PathIntersectionNode?> cameFrom)
+        private List<PathTile> ReconstructPath(PathIntersectionNode endNode, Dictionary<PathIntersectionNode, PathIntersectionNode?> cameFrom)
         {
-            var current = endNode;
+            List<PathTile> path = new List<PathTile>();
+            PathIntersectionNode currentNode = endNode;
             foundShortestPath = true;
+           
             while (true)
             {
-                if (tileMap.Map[current.PathI, current.PathJ] is PathTile pt)
+  
+                currentNode.ShortestPathId = ++SPNodeCount;
+                
+
+
+                if (tileMap.Map[currentNode.PathI, currentNode.PathJ] is PathTile pt)
                 {
-                  
-                    shortestPathEntranceToExit.Add(pt);
-                    shortestPathExitToEntrance.Add(pt);
+                    path.Add(pt);
                 }
-                if (cameFrom[current] != null)
+                if (cameFrom[currentNode] != null)
                 {
-                    current = cameFrom[current];
+                    currentNode = cameFrom[currentNode]!;
                 }
                 else
                 {
-                    shortestPathEntranceToExit.Add(entrance);
-                    shortestPathExitToEntrance.Add(entrance);
                     break;
                 }
             }
-            
-           
-            shortestPathEntranceToExit.Reverse();
+            path.Reverse();
+            return path;
         }
+       
+        
 
-
-
-        }
+       
     }
+}

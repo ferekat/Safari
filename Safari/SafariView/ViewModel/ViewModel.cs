@@ -39,6 +39,9 @@ namespace SafariView.ViewModel
         private int cameraX;
         private int cameraY;
 
+        private int visitorsAtGate;
+        private double avgRating;
+
         private Guard? selectedGuard;
         private (int, int) selectedTile;
         private int selectedEntityID;
@@ -244,6 +247,8 @@ namespace SafariView.ViewModel
         #endregion
 
         #region Window bindings
+
+      
         public string IndexPage { get { return indexPage!; } private set { indexPage = value; OnPropertyChanged(); } }
         public string NewGamePage { get { return newGamePage!; } private set { newGamePage = value; OnPropertyChanged(); } }
         public string CreditsPage { get { return creditsPage!; } private set { creditsPage = value; OnPropertyChanged(); } }
@@ -401,7 +406,7 @@ namespace SafariView.ViewModel
             model.NewGameStarted += new EventHandler(Model_NewGameStarted);
             model.TileMapUpdated += new EventHandler<(int, int)>(Model_TileMapUpdated);
             model.NewMessage += OnMessage;
-
+           
             //Set window bindings
             IndexPage = "Visible";
             NewGamePage = "Hidden";
@@ -434,6 +439,8 @@ namespace SafariView.ViewModel
             force_render_next_frame = true;
             redrawMinimap = true;
         }
+
+      
         #endregion
 
         #region Command methods
@@ -609,7 +616,10 @@ namespace SafariView.ViewModel
             OptionName = "SAFARI";
 
             model.NewGame(name);
-            await SaveGame();
+
+               
+
+                await SaveGame();
 
             StartGame?.Invoke(this, EventArgs.Empty);
             tickTimer.Start();
@@ -620,6 +630,9 @@ namespace SafariView.ViewModel
             }
 
         }
+
+      
+
         private void OnCreditsClicked()
         {
             IndexPage = "Hidden";
