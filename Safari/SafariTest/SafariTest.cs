@@ -213,5 +213,48 @@ namespace SafariTest
                 }
             }
         }
+
+        [TestMethod]
+        public void TestAnimalFoodAndWaterSearch()
+        {
+
+            EntityHandler handler = new EntityHandler();
+
+            Tile[,] testMap = new Tile[Model.MAPSIZE,Model.MAPSIZE];
+            for(int i = 0; i < Model.MAPSIZE; i++)
+            {
+                for (int j = 0; j < Model.MAPSIZE; j++)
+                {
+                    Tile t = new Tile(i, j,0, TileType.SHALLOW_WATER);
+                    testMap[i, j] = t;
+                }
+            }
+
+            Entity.RegisterTileMap(testMap);
+            Entity.RegisterHandler(handler);
+
+            Gazelle g = new Gazelle(Entity.CHUNK_SIZE, Entity.CHUNK_SIZE);
+            Greasewood gr = new Greasewood(Entity.CHUNK_SIZE+1, Entity.CHUNK_SIZE+1);
+
+            handler.LoadEntity(g);
+            handler.LoadEntity(gr);
+            g.CheckArea();
+            Assert.AreEqual(1, g.ExploredFoodPlaceCount);
+            Assert.AreEqual(1, g.ExploredWaterPlaceCount);
+
+            //Ugyanabból a chunkból 2 pontot nem fog felvenni:
+            g.CheckArea();
+            Assert.AreEqual(1, g.ExploredFoodPlaceCount);
+            Assert.AreEqual(1, g.ExploredWaterPlaceCount);
+
+            MovingEntity.RegisterTileCollision(new TileCollision(new TileMap(testMap)));
+
+            //De másik chunkból már igen
+            g.SetTarget(new Point(0, 0));
+            g.EntityTick();
+            g.CheckArea();
+            Assert.AreEqual(2, g.ExploredFoodPlaceCount);
+            Assert.AreEqual(2, g.ExploredWaterPlaceCount);
+        }
     }
 }
