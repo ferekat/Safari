@@ -71,8 +71,8 @@ namespace SafariModel.Model.AbstractEntity
         public AnimalActions Action { get; protected set; }
         public bool IsLeader { get { return leader == null && members != null; } }
         public bool InGroup { get { return leader != null || members != null; } }
-        public bool IsAdult { get { return Age > 20000 && !IsEldelry; } }
-        public bool IsEldelry { get { return Age > 50000; } }
+        public bool IsAdult { get { return Age > 30000 && !IsEldelry; } }
+        public bool IsEldelry { get { return Age > 100000; } }
 
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
@@ -289,7 +289,7 @@ namespace SafariModel.Model.AbstractEntity
                 if (--Water < 0) --Health;
             }
             ++Age;
-            if (Age >= 60000) RemoveSelf();
+            if (Age >= 120000) RemoveSelf();
             if(IsAdult && breedCooldown > 0) breedCooldown--;
         }
 
