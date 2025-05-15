@@ -215,6 +215,7 @@ namespace SafariModel.Model
             speedBoost = 1;
             data = new GameData();
 
+            
 
             worldGenerationHandler = new WorldGenerationHandler(seedString, entityHandler);
             tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
@@ -229,6 +230,8 @@ namespace SafariModel.Model
             economyHandler = new EconomyHandler(99999);
             touristHandler = new TouristHandler(economyHandler);
             Jeep.RegisterTouristHandler(touristHandler);
+
+            entityHandler.ClearAll();
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
