@@ -157,5 +157,34 @@ namespace SafariTest
             CollectionAssert.Contains(spatialMap[(1, 0)], e2);
             CollectionAssert.Contains(spatialMap[(0, 2)], e3);
         }
+        [TestMethod]
+        public void TestGetNearbyEntities()
+        {
+            EntityHandler handler = new EntityHandler();
+            Entity.RegisterHandler(handler);
+            Dictionary<(int, int), List<Entity>> spatialMap = new();
+
+            Gazelle g = new Gazelle(50,50);
+
+            var nearby1 = new Lion(55, 52);
+            var nearby2 = new Lion(60, 45);
+            var far1 = new Giraffe(90, 90);
+            var exactRange = new Gazelle(60, 50);
+
+            var coordsG = (g.X / 50,  g.Y / 50);
+            spatialMap[coordsG] = new List<Entity> { g, nearby1, nearby2, exactRange };
+            spatialMap[(9,9)] = new List<Entity> {far1 };
+
+            int range = 10;
+
+            model.SpatialMap = spatialMap;
+            var result = model.GetNearbyEntities(g, range);
+            Assert.AreEqual(3, result.Count);
+            CollectionAssert.Contains(result, nearby1);
+            CollectionAssert.Contains(result, nearby2);
+            CollectionAssert.Contains(result, exactRange);
+            CollectionAssert.DoesNotContain(result, g);
+            CollectionAssert.DoesNotContain(result, far1);
+        }
     }
 }

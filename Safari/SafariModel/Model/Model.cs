@@ -88,6 +88,7 @@ namespace SafariModel.Model
 
         public TouristHandler TouristHandler {  get { return touristHandler; } }
         public string SeedString { get { return seedString; } set { seedString = value; } }
+        public Dictionary<(int, int), List<Entity>> SpatialMap { get { return spatialMap; } set { spatialMap = value; } }
         #endregion
 
         #region Events
