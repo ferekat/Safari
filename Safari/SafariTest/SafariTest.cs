@@ -6,6 +6,8 @@ using SafariModel.Model.AbstractEntity;
 using SafariModel.Model.InstanceEntity;
 using System.Diagnostics;
 using System.Drawing;
+using SafariModel.Persistence;
+using System.Xml.Linq;
 
 
 namespace SafariTest
@@ -142,6 +144,74 @@ namespace SafariTest
             g.EntityTick();
             Assert.IsTrue(g.X > 100);
             Assert.IsTrue(g.Y > 100);
+        }
+        [TestMethod]
+        public void TestDataSerializer()
+        {
+            //Tile serializálása
+            Tile t1 = new Tile(3, 4, 0, TileType.GROUND);
+            string t1ser = DataSerializer.SerializeTile(t1);
+            Tile t2 = DataSerializer.DeSerializeTile(t1ser);
+            Assert.IsFalse(t2 is PathTile);
+            Assert.AreEqual(t1.I, t2.I);
+            Assert.AreEqual(t1.J, t2.J);
+            Assert.AreEqual(t1.H, t2.H);
+            Assert.AreEqual(t1.TileType, t2.TileType);
+
+            //PathTile serializálása
+            PathTile pt1 = new PathTile(t1, PathTileType.BRIDGE);
+            string pt1ser = DataSerializer.SerializeTile(pt1);
+            Tile pt2 = DataSerializer.DeSerializeTile(pt1ser);
+            Assert.IsTrue(pt2 is PathTile);
+            if(pt2 is PathTile ptconv)
+                Assert.AreEqual(pt1.PathType, ptconv.PathType);
+
+            //Entityk serializálása
+            Gazelle g1 = new Gazelle(100, 200, 4000, 176, 46, 23, 12, 16, 673);
+            string g1ser = DataSerializer.SerializeEntity(g1);
+            Entity? e2 = DataSerializer.DeSerializeEntity(g1ser);
+            Assert.IsNotNull(e2);
+            Assert.IsTrue(e2 is Gazelle);
+            if(e2 is Gazelle g2)
+            {
+                Assert.AreEqual(g1.X, g2.X);
+                Assert.AreEqual(g1.Y, g2.Y);
+                Assert.AreEqual(g1.ID, g2.ID);
+                Assert.AreEqual(g1.Age, g2.Age);
+                Assert.AreEqual(g1.Health, g2.Health);
+                Assert.AreEqual(g1.Water, g2.Water);
+                Assert.AreEqual(g1.Food, g2.Food);
+                Assert.AreEqual(g1.Hunger, g2.Hunger);
+                Assert.AreEqual(g1.Thirst, g2.Thirst);
+            }
+
+            //IntersectionNode-ok serializálása
+            List<PathIntersectionNode> nodes1 = new List<PathIntersectionNode>();
+            PathIntersectionNode node1 = new PathIntersectionNode(2, 3);
+            PathIntersectionNode node2 = new PathIntersectionNode(6, 1);
+            PathIntersectionNode node3 = new PathIntersectionNode(8, 0);
+            node1.ConnectIntersection(node2);
+            node2.ConnectIntersection(node3);
+            nodes1.Add(node1);
+            nodes1.Add(node2);
+            nodes1.Add(node3);
+
+            string nodesser = DataSerializer.SerializePathIntersections(nodes1);
+            List<PathIntersectionNode> nodes2 = DataSerializer.DeSerializePathIntersections(nodesser);
+
+            Assert.AreEqual(nodes1.Count, nodes2.Count);
+
+            for(int i = 0; i < nodes1.Count; i++)
+            {
+                Assert.AreEqual(nodes1[i].ID, nodes2[i].ID);
+                Assert.AreEqual(nodes1[i].PathI, nodes2[i].PathI);
+                Assert.AreEqual(nodes1[i].PathJ, nodes2[i].PathJ);
+                Assert.AreEqual(nodes1[i].NextIntersections.Count, nodes2[i].NextIntersections.Count);
+                for(int j = 0; j < nodes1[i].NextIntersections.Count; j++)
+                {
+                    Assert.AreEqual(nodes1[i].NextIntersections[j].ID, nodes2[i].NextIntersections[j].ID);
+                }
+            }
         }
     }
 }
