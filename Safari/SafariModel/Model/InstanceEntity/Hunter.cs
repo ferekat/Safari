@@ -133,13 +133,13 @@ namespace SafariModel.Model.InstanceEntity
         }
         private int TimeNextHunter()
         {
-            int x = 3;// random.Next(30, 120);
+            int x = random.Next(15, 60);
             return x;
 
         }
         private int SetWaitingTime()
         {
-            int x = 3;// random.Next(1200, 7200);
+            int x = random.Next(600, 3600);
             return x;
         }
         private void SetTargetAnimal()
