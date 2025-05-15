@@ -127,5 +127,35 @@ namespace SafariTest
             Assert.IsTrue((x == 50 || y == 50) || (x == 4937 || y == 4937));
             Assert.IsTrue(50 <= x && x <= 4937 && 50 <= y && y <= 4937);
         }
+
+        [TestMethod]
+        public void TestUpdateSpatialMap()
+        {
+            EntityHandler handler = new EntityHandler();
+            Entity.RegisterHandler(handler);
+            var spatialMap = new Dictionary<(int,int), List< Entity >> ();
+            int tileSize = 10;
+            var e1 = new Gazelle(5, 5);
+            var e2 = new Gazelle(15, 5);
+            var e3 = new Gazelle(5, 25);
+            var e4 = new Gazelle(5, 5);
+
+            handler.Entities.AddRange(new[] { e1, e2, e3, e4 });
+            handler.UpdateSpatialMap(spatialMap, tileSize);
+
+            Assert.AreEqual(3, spatialMap.Count);
+            Assert.IsTrue(spatialMap.ContainsKey((0, 0)));
+            Assert.IsTrue(spatialMap.ContainsKey((1, 0)));
+            Assert.IsTrue(spatialMap.ContainsKey((0, 2)));
+
+            Assert.AreEqual(2, spatialMap[(0, 0)].Count);
+            Assert.AreEqual(1, spatialMap[(1, 0)].Count);
+            Assert.AreEqual(1, spatialMap[(0, 2)].Count);
+
+            CollectionAssert.Contains(spatialMap[(0, 0)], e1);
+            CollectionAssert.Contains(spatialMap[(0, 0)], e4);
+            CollectionAssert.Contains(spatialMap[(1, 0)], e2);
+            CollectionAssert.Contains(spatialMap[(0, 2)], e3);
+        }
     }
 }
