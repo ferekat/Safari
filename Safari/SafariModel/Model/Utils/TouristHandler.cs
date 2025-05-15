@@ -40,7 +40,10 @@ namespace SafariModel.Model.Utils
         public int CurrentGroupSize { get { return currentGroupSize; } }
      
 
+        public TouristHandler()
+        {
 
+        }
         public TouristHandler(int touristsAtGate, int touristsVisited, int entryFee, double avgRating, int currentGroupSize,EconomyHandler economyHandler)
         {
             this.touristsAtGate = touristsAtGate;

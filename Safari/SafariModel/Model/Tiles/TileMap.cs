@@ -22,7 +22,10 @@ namespace SafariModel.Model.Tiles
         public PathTile Entrance { get { return entrance; } set { entrance = value; map[entrance.I, entrance.J] = entrance; } }
         public PathTile Exit { get { return exit; } set { exit = value; map[exit.I, exit.J] = exit; } }
         public Tile[,][,] Chunks { get { return chunks; } }
+        public TileMap()
+        {
 
+        }
         public TileMap(Tile[,] map)
         {
             chunks = new Tile[MAPCHUNKSIZE,MAPCHUNKSIZE][,];

@@ -24,9 +24,9 @@ namespace SafariModel.Model.Utils
         private List<PathTile> shortestPathEntranceToExit = new();
 
 
-        private List<PathTile> rn = new();
+        private HashSet<PathTile> rn = new();
 
-        public List<PathTile> RN { get { return rn; } }  
+        public HashSet<PathTile> RN { get { return rn; } }  
         public PathTile Entrance { get { return entrance; } }
         public PathTile Exit { get { return exit; } }
         public bool FoundShortestPath { get { return foundShortestPath; } }
@@ -45,8 +45,10 @@ namespace SafariModel.Model.Utils
             rn.Add(entrance);
             rn.Add(exit);
             Debug.WriteLine("exec");
+            Debug.WriteLine($"{entrance.I},{entrance.J},{exit.I},{exit.J},{foundShortestPath},");
             //Visszatöltéshez kell
-            ShortestPathAStar();
+            ShortestPathEntranceToExit = ShortestPathAStar();
+            ShortestPathExitToEntrance = shortestPathEntranceToExit.AsEnumerable().Reverse().ToList();
         }
        
         public bool ConnectToNetwork(Tile tileToConnect, PathTileType pathToConnect)
@@ -114,7 +116,7 @@ namespace SafariModel.Model.Utils
             {
                 tileMap.Map[tileToConnect.I, tileToConnect.J] = connectedTile;
                neighNodes.Add(connectedTileNode);
-
+                rn.Add(connectedTile);
                 foreach (PathIntersectionNode node in neighNodes)
                 {
                     SimplifyStraightPath( node);
@@ -128,7 +130,7 @@ namespace SafariModel.Model.Utils
             }
 
            
-            Debug.WriteLine($"count: {PathIntersectionNode.allNodes.Count}");
+          //  Debug.WriteLine($"count: {PathIntersectionNode.allNodes.Count}, {rn.Count}");
             return pathNeighbours > 0;
         }
 
@@ -226,7 +228,7 @@ namespace SafariModel.Model.Utils
         private List<PathTile> ShortestPathAStar()
         {
 
-            
+
             // Reset distances and visited flags
            
             foreach (PathIntersectionNode node in PathIntersectionNode.allNodes)

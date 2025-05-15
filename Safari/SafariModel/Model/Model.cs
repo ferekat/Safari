@@ -106,6 +106,7 @@ namespace SafariModel.Model
             tickPerGameSpeedCount = 0;
             gameSpeed = GameSpeed.Slow;
             speedBoost = 1;
+   
             data = new GameData();
 
             entityHandler = new EntityHandler();
@@ -135,6 +136,7 @@ namespace SafariModel.Model
             h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
             entityHandler.LoadEntity(h);
         }
+
         public Model() : this(null) { }
 
         #region Get tile and entity based on coordinates
@@ -218,23 +220,20 @@ namespace SafariModel.Model
             speedBoost = 1;
             data = new GameData();
 
-            entityHandler = new EntityHandler();
-            Entity.RegisterHandler(entityHandler);
-
 
             worldGenerationHandler = new WorldGenerationHandler("testseed", entityHandler);
             tileMap = worldGenerationHandler.GenerateRandomMapFromSeed();
             Entity.RegisterTileMap(tileMap.Map);
 
-            TileCollision tc = new TileCollision(tileMap);
-            MovingEntity.RegisterTileCollision(tc);
+            MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
 
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
+            Jeep.RegisterNetworkHandler(roadNetworkHandler);
             
+
             economyHandler = new EconomyHandler(99999);
             touristHandler = new TouristHandler(economyHandler);
             Jeep.RegisterTouristHandler(touristHandler);
-
 
             //Alap entityk hozzáadása
             entityHandler.LoadEntity(new Gazelle(100, 200, 18000, 300, 45, 45, 0, 0, 5000));
@@ -243,6 +242,7 @@ namespace SafariModel.Model
             h.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
             h.GunmanRemove += new EventHandler<GunmanRemoveEventArgs>(HandleGunmanRemoval);
             entityHandler.LoadEntity(h);
+
             OnNewGameStarted();
         }
 
@@ -474,22 +474,29 @@ namespace SafariModel.Model
 
             data = await dataAccess.LoadAsync(filePath);
 
+
+           
+         
+
             ParkName = data.parkName;
+
+          
 
             //statok visszatöltése
             this.economyHandler = new EconomyHandler(data.money);
             this.touristHandler = new TouristHandler(data.touristAtGate,data.touristsVisited,data.entryFee,data.avgRating,data.currentGroupSize,economyHandler);
-         //   Jeep.RegisterTouristHandler(touristHandler);
-            //Intersectionök visszatöltése
-            PathIntersectionNode.allNodes.Clear();
-            PathIntersectionNode.allNodes.AddRange(data.intersections);
+            Jeep.RegisterTouristHandler(touristHandler);
+
 
             //tileok visszatöltése
             this.tileMap = new TileMap(data.tileMap);
             tileMap.Entrance = data.entrance;
             tileMap.Exit = data.exit;
             MovingEntity.RegisterTileCollision(new TileCollision(tileMap));
-
+            Entity.RegisterTileMap(tileMap.Map);
+            //Intersectionök visszatöltése
+            PathIntersectionNode.allNodes.Clear();
+            PathIntersectionNode.allNodes.AddRange(data.intersections);
             //intersectionök tileokhoz kötése
             foreach(PathIntersectionNode node in PathIntersectionNode.allNodes)
             {
@@ -506,7 +513,7 @@ namespace SafariModel.Model
             }
 
             roadNetworkHandler = new RoadNetworkHandler(tileMap);
-          
+            Jeep.RegisterNetworkHandler(roadNetworkHandler);
             //entityk visszatöltése
 
             entityHandler.ClearAll();
@@ -514,6 +521,14 @@ namespace SafariModel.Model
             foreach (Entity e in data.entities)
             {
                 entityHandler.LoadEntity(e);
+            }
+            foreach(var v in PathIntersectionNode.allNodes)
+            {
+                foreach (var n in v.NextIntersections)
+                {
+                    Debug.WriteLine($"{v.ToString()} neighs: {v.NextIntersections.Count} which are: {n.ToString()}, sp: {v.ShortestPathId}");
+                }
+
             }
         }
     }
