@@ -735,7 +735,6 @@ namespace SafariView.ViewModel
             if (gazelleCount != data.gazelles)
             {
                 GazelleCount = data.gazelles.ToString();
-                Debug.WriteLine(GazelleCount);
             }
             if (giraffeCount != data.giraffes)
             {
@@ -798,7 +797,6 @@ namespace SafariView.ViewModel
                 if (e is Guard g)
                 {
                     selectedGuard = g;
-                    Debug.WriteLine(selectedGuard is null);
                     CAction = ClickAction.TARGET;
                 }
             }
@@ -830,7 +828,6 @@ namespace SafariView.ViewModel
                     if (model.GetEntityByID(selectedEntityID) is Carnivore c)
                     {
                         selectedGuard!.TargetAnimal = c;
-                        Debug.WriteLine(selectedGuard.TargetAnimal is null);
                         CAction = ClickAction.NOTHING;
                         selectedGuard = null;
                     }
@@ -972,17 +969,17 @@ namespace SafariView.ViewModel
                 if (e is Jeep) alignCenter = 0; 
                 if (e.X >= cameraXLeft && e.X <= cameraXLeft + ((HorizontalTileCount + 1) * Tile.TILESIZE) && e.Y >= cameraYUp && e.Y <= cameraYUp + ((VerticalTileCount + 2) * Tile.TILESIZE))
                 {
-                    //if (e is Hunter h)
-                    //{
-                    //    if (h.IsVisible && h.HasEntered)
-                    //    {
-                    //        RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
-                    //    }
-                    //}
-                    //else
-                    //{
-                         RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
-                    //}
+                    if (e is Hunter h)
+                    {
+                        if (h.IsVisible && h.HasEntered)
+                        {
+                            RenderedEntities.Add(new RenderObject(e.X - cameraX, e.Y - cameraY, e.EntitySize + sizemodifier, entityBrushes[e.GetType()], 0));
+                        }
+                    }
+                    else
+                    {
+                        RenderedEntities.Add(new RenderObject(e.X - cameraX - alignCenter, e.Y - cameraY - alignCenter, e.EntitySize + sizemodifier, entityBrushes[e.GetType()],0));
+                    }
                 }
             }
 
