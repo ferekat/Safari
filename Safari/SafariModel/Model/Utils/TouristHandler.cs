@@ -36,7 +36,7 @@ namespace SafariModel.Model.Utils
 
         public int TouristsAtGate { get { return touristsAtGate; } }
         public int TouristsVisited { get { return touristsVisited; } }
-        public int EntryFee {  get { return entryFee; } }   
+        public int EntryFee {  get { return entryFee; } set { if (value <= MAX_ENTRY_FEE && value >= MIN_ENTRY_FEE) entryFee = value; } }   
         public double AvgRating { get { return avgRating; } }
         public int CurrentGroupSize { get { return currentGroupSize; } }
         public int MonthlyTouristCount { get { return monthlyTouristCount; } set { monthlyTouristCount = value; } }
@@ -70,6 +70,7 @@ namespace SafariModel.Model.Utils
             currentGroupSize = random.Next(MAX_GROUP_SIZE) + 1;
             avgTouristSpawn = CalcSpawnChance();
         }
+
         private double CalcSpawnChance()
         {
             return 1;

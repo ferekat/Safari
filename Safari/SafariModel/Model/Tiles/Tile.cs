@@ -63,7 +63,7 @@ namespace SafariModel.Model.Tiles
         public readonly static Dictionary<TileType, int> waterHeightMap = new()
         {
             {TileType.DEEP_WATER,int.MaxValue},
-            { TileType.SHALLOW_WATER,100},
+            { TileType.SHALLOW_WATER,1000},
         };
 
 
@@ -98,7 +98,10 @@ namespace SafariModel.Model.Tiles
         {
             return tileType == TileType.ENTRANCE || tileType == TileType.EXIT;
         }
-
+        public bool IsBound()
+        {
+            return IsGate() || tileType == TileType.FENCE;
+        }
         private bool IsBetween(int num, int min, in int max)
         {
             return num >= min && num < max;

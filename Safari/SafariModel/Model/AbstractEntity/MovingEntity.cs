@@ -21,6 +21,8 @@ namespace SafariModel.Model.AbstractEntity
         private double subX;
         private double subY;
 
+        private Tile standingOn;
+        private TileType standingOnType;
         private static TileCollision tileCollision;
        
         
@@ -165,6 +167,17 @@ namespace SafariModel.Model.AbstractEntity
         {
             //store previous chunk coordinate
             (int, int) prevChunkCoords = GetChunkCoordinates();
+
+            (int, int) onTile = GetTileCoords(x, y);
+            standingOn = tileMap![onTile.Item1,onTile.Item2];
+            if (standingOn.TileType != standingOnType)
+            {
+                Speed = tileCollision.GetTileSpeed(standingOn.I,standingOn.J);
+            }
+            standingOnType = standingOn.TileType;
+
+
+
 
             subX += movementVector.X;
             subY += movementVector.Y;
@@ -346,7 +359,11 @@ namespace SafariModel.Model.AbstractEntity
 
         public override void EntityTick()
         {
-            if (isMoving) MoveTowardsTarget();
+            if (isMoving)
+            {
+               
+                MoveTowardsTarget();
+            }
             EntityLogic();
         }
 

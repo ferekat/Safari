@@ -22,6 +22,7 @@ namespace SafariTest
         {
             //Todo mockkal helyettesíteni
             model = new Model(null);
+            model.NewGame("name");
         }
         private Tile GoDown(Tile currentTile, RoadNetworkHandler roadNetworkHandler)
         {
@@ -116,6 +117,22 @@ namespace SafariTest
             Assert.AreEqual(2, g1.GetEntitiesInRange().Count);
         }
 
+        [TestMethod]
+        public void TestWorldGen()
+        {
+
+            TileMap tileMap = model.TileMap;
+            PathTile entrance = tileMap.Entrance;
+            PathTile exit = tileMap.Exit;
+
+            List<Tile> entranceNeighs = tileMap.GetNeighbourTiles(entrance);
+            List<Tile> exitNeighs = tileMap.GetNeighbourTiles(exit);
+            Assert.IsTrue(exitNeighs.Count(n => n.TileType == TileType.FENCE) == 2);
+            Assert.IsTrue(entranceNeighs.Count(n => n.TileType == TileType.FENCE) == 2);
+            Assert.IsTrue(exitNeighs.Count(n => n.TileType == TileType.GROUND) == 1);
+            Assert.IsTrue(exitNeighs.Count(n => n.TileType == TileType.GROUND) == 1);
+
+        }
         [TestMethod]
         public void TestEntitySavingAndLoading()
         {
@@ -359,6 +376,8 @@ namespace SafariTest
             g = new Guard(100, 200, null);
             g.IncreaseLevel(3);
             Assert.AreEqual(3, g.ShotWeight);
+
+
         }
     }
 }
