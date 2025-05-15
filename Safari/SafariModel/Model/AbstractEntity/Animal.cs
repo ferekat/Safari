@@ -44,6 +44,7 @@ namespace SafariModel.Model.AbstractEntity
         private Point targetedWater;
 
         private static readonly int LEADER_FOLLOW_RANGE = Tile.TILESIZE * 15;
+        private static readonly int LEADER_APPROACH_RANGE = Tile.TILESIZE * 4;
         private static readonly int SEARCH_CYCLES = 120;
         private static int currentSearchCycle = 0;
         private static readonly int RANDOM_WANDER_TIME = 1200;
@@ -493,7 +494,7 @@ namespace SafariModel.Model.AbstractEntity
             if (leader == null) return;
             if(ReachedTarget && !IsMoving) SetTarget(new Point(leader.X, leader.Y));
             //Found leader
-            if (DistanceToEntity(leader) < Range)
+            if (DistanceToEntity(leader) < LEADER_APPROACH_RANGE)
             {
                 CancelMovement();
                 searchingForLeader = false;
