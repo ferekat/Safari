@@ -217,7 +217,10 @@ namespace SafariModel.Model.Utils
         }
 
 
+        private void ConnectGates()
+        {
 
+        }
 
         private int ManhattanDist(int i0, int j0, int i1, int j1,int distance)
         {

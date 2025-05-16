@@ -168,7 +168,7 @@ namespace SafariModel.Model.AbstractEntity
             multiplier = dataholder.ints.Dequeue() ?? multiplier;
         }
 
-        protected override void EntityLogic()
+        protected override void EntityLogic(int gameSpeedMultiplier)
         {
             #region Betöltés után idk kiértékelése
             if (targetID != null)

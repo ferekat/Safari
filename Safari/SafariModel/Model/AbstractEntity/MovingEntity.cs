@@ -30,8 +30,10 @@ namespace SafariModel.Model.AbstractEntity
 
         private float baseSpeed;
         private float speed;
+        protected int gameSpeedMultiplier;
         protected int range;
         protected bool isMoving;
+
 
         public float Speed { get { return speed; } protected set { speed = value; CalculateMovementVector(); } }
         public float BaseSpeed { get { return baseSpeed; } protected set { baseSpeed = value; speed = value; } }
@@ -52,6 +54,7 @@ namespace SafariModel.Model.AbstractEntity
             //speed = 5.5F;
             BaseSpeed = 5.5f;
             Speed = BaseSpeed;
+            gameSpeedMultiplier = 1;
         }
 
 
@@ -172,7 +175,7 @@ namespace SafariModel.Model.AbstractEntity
             standingOn = tileMap![onTile.Item1,onTile.Item2];
             if (standingOn.TileType != standingOnType)
             {
-                Speed = tileCollision.GetTileSpeed(standingOn.I,standingOn.J);
+                //Speed = tileCollision.GetTileSpeed(standingOn.I,standingOn.J);
             }
             standingOnType = standingOn.TileType;
 
@@ -357,14 +360,14 @@ namespace SafariModel.Model.AbstractEntity
             return Math.Abs(x0 - x1) + Math.Abs(y0 - y1);
         }
 
-        public override void EntityTick()
+        public override void EntityTick(int gameSpeedMultiplier)
         {
             if (isMoving)
             {
                
                 MoveTowardsTarget();
             }
-            EntityLogic();
+            EntityLogic(gameSpeedMultiplier);
         }
 
         public List<Entity> GetEntitiesInRange()
@@ -489,6 +492,6 @@ namespace SafariModel.Model.AbstractEntity
             SetPath(pointqueue);
         }
 
-        protected abstract void EntityLogic();
+        protected abstract void EntityLogic(int gameSpeedMuiltiplier);
     }
 }

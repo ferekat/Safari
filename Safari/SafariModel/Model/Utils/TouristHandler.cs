@@ -73,7 +73,7 @@ namespace SafariModel.Model.Utils
 
         private double CalcSpawnChance()
         {
-            return 1;
+           
             return 50.0 - 6.0 * avgRating + entryFee / 100.0;
         }
         private double ChanceAtEverySec(double sec)
@@ -82,24 +82,21 @@ namespace SafariModel.Model.Utils
             return 1 / (sec * 120.0);
         }
        
-        public void NewTouristAtGatePerTick()
+        public void NewTouristAtGatePerTick(int gameSpeedMultiplier)
         {
 
           //  Debug.WriteLine($"try {touristsAtGate}");
             double spawn = random.NextDouble();
-                if (tick % 120 == 0)
-                {
-                  //  Debug.WriteLine(tick/120);
-                }
-            if (spawn < ChanceAtEverySec(avgTouristSpawn) && touristsAtGate < MAX_WAITING_TOURIST)
+               
+            if (spawn < ChanceAtEverySec(avgTouristSpawn)*Math.Pow(gameSpeedMultiplier,3) && touristsAtGate < MAX_WAITING_TOURIST)
             {
+            Debug.WriteLine(touristsAtGate + " TOURIST | " + tick + " TICK | " + spawn + " SPAWN");
                 touristsAtGate+= 1;
                 TouristArrived?.Invoke(this, touristsAtGate);
                 
             }
             avgTouristSpawn = CalcSpawnChance();
-            tick++;
-            //Debug.WriteLine(touristsAtEntrance + " TOURIST | " + tick + " TICK | " + spawn + " SPAWN");
+            
         }
         public int TouristsEnterPark()
         {

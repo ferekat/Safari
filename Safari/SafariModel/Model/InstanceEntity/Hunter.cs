@@ -75,7 +75,7 @@ namespace SafariModel.Model.InstanceEntity
                 leavingMap = true;
             }
         }
-        protected override void EntityLogic()
+        protected override void EntityLogic(int gameSpeedMultiplier)
         {
 
             #region Betöltés után idk kiértékelése

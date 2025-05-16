@@ -195,11 +195,9 @@ namespace SafariModel.Model.Utils
             for (int attempts = 0; attempts < 10; attempts++)
             {
                 chance += random.Next(GATE_GEN_CHANCE);
-                int fenceIdx = (chance % TileMap.MAPSIZE - 11);
-                if (fenceIdx < 10)
-                {
-                    fenceIdx += 10;
-                }
+                int fenceIdx = 10 + (chance % 81);
+               
+                Debug.WriteLine(fenceIdx + "fenc");
                 Tile fenceTile = fence[fenceIdx];
                 if (FreeForGate(fenceTile))
                 {

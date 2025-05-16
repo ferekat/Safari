@@ -156,19 +156,19 @@ namespace SafariModel.Model.Utils
             }
         }
 
-        public void TickEntities()
+        public void TickEntities(int gameSpeedMuiltiplier)
         {
             foreach (Entity entity in entities.ToList())
             {
-                entity.EntityTick();
+                entity.EntityTick(gameSpeedMuiltiplier);
             }
         }
-        public Hunter? GetNextHunter(int speed)
+        public Hunter? GetNextHunter()
         {
-            if (hunters.Count == 0) SpawnHunter(speed);
+            if (hunters.Count == 0) SpawnHunter();
             return hunters.Last();
         }
-        public void SpawnHunter(int speed)
+        public void SpawnHunter()
         {
             if (hunters.Count < 10)
             {
