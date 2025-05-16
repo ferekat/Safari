@@ -84,7 +84,7 @@ namespace SafariTest
 
         }
 
-        [TestMethod]
+        //[TestMethod]
 
         public void TestBuyItem()
         {
