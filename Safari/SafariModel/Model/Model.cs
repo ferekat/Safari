@@ -104,7 +104,7 @@ namespace SafariModel.Model
             //tickCount = 0;
             //tickPerGameSpeedCount = 0;
             //gameSpeed = GameSpeed.Slow;
-            //speedBoost = 1;
+            speedBoost = 1;
             //successfulMonthCount = 0;
 
             //entityHandler = new EntityHandler();

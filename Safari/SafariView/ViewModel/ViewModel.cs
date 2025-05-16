@@ -1125,7 +1125,6 @@ namespace SafariView.ViewModel
                 Food: {a.Food}
                 Water: {a.Water}
                 Action: {a.Action}
-                Is moving: {a.IsMoving}
                 """;
             }
             else
