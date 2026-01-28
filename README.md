@@ -1,93 +1,166 @@
-# Lorem Ipsum
+# 🦁 Safari Tycoon – Szafari Park Szimulátor
 
+A **Safari Tycoon** egy egyjátékos, tycoon jellegű, valós idejű park szimulációs játék, ahol a játékos egy afrikai szafari park igazgatójaként irányítja a terület működését, gazdaságát és élővilágát.
 
+A cél egy stabilan működő, nyereséges és ökológiailag fenntartható szafari park fenntartása.
 
-## Getting started
+---
+https://github.com/user-attachments/assets/9c6bfcc6-8968-4c19-8fce-0938a420157b
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 🎮 Játékmenet alapjai
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- 2D, **felülnézetes pálya**
+- Valós idejű szimuláció
+- Az idő gyorsítható:
+  - ⏱️ Óra
+  - 📅 Nap
+  - 🗓️ Hét
+- Legalább **3 nehézségi szint**
 
-## Add your files
+A pálya rácsalapú logikára épül (objektumok rácspontokra helyezhetők), de az állatok és járművek mozgása vizuálisan folyamatos.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+---
 
-```
-cd existing_repo
-git remote add origin https://szofttech.inf.elte.hu/szofttech-ab-2025/group-08/lorem-ipsum.git
-git branch -M master
-git push -uf origin master
-```
+## 🌿 Környezet és terep
 
-## Integrate with your tools
+A pályán természetes módon és a játékos által is elhelyezhetők:
 
-- [ ] [Set up project integrations](https://szofttech.inf.elte.hu/szofttech-ab-2025/group-08/lorem-ipsum/-/settings/integrations)
+### Növényzet
+- Bokrok  
+- Fák  
+- Füves területek  
+- Legalább **3 telepíthető növénytípus**
 
-## Collaborate with your team
+### Víz
+- Kezdeti vízlelőhelyek  
+- Építhető tavak  
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+A növények és vízforrások kulcsfontosságúak az állatok túléléséhez.
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
+## 🐘 Állatok
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+A szafariban **szabadon élő állatpopulációk** találhatók.
 
-***
+### Típusok
+- 🐾 Növényevők (legalább 2 faj)
+- 🦁 Ragadozók (legalább 2 faj)
 
-# Editing this README
+### Viselkedés
+- A növényevők növényeket fogyasztanak  
+- A ragadozók növényevőkre vadásznak  
+- Minden állatnak szüksége van vízre  
+- Az állatok:
+  - Öregszenek  
+  - Egyre többet esznek  
+  - Korlátozott ideig élnek  
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Csoportos viselkedés
+- Saját fajuk csoportjában élnek és vándorolnak  
+- Felnőtt egyedeket tartalmazó csoportok szaporodhatnak  
 
-## Suggestions for a good README
+### Mozgás és döntéshozatal
+- Jóllakott állatok pihennek  
+- Ezután heurisztika (részben véletlenszerű) alapján új célpontot választanak  
+- Éhes/szomjas állatok a már ismert táplálék- vagy vízforrásokhoz mennek  
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+---
 
-## Name
-Choose a self-explaining name for your project.
+## 🚙 Turisták és dzsipek
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- A turisták dzsippet bérelnek a park bejárásához  
+- Egy dzsipp **max. 4 utast** szállít  
+- A dzsippeket a játékos vásárolja  
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Útvonalak
+- Van egy **bejárat** és egy **kijárat**
+- A játékosnak utakat kell építenie
+- A dzsipek:
+  - Véletlenszerű útvonalon viszik a turistákat bejárattól kijáratig  
+  - Visszafelé utasok nélkül térnek vissza  
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+---
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## 💰 Gazdaság
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+A játékos kezdőtőkével indul.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Kiadások
+- Növények
+- Állatok
+- Dzsipek
+- Utak
+- Egyéb eszközök
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Bevételek
+- Állatok eladása  
+- Turisták (dzsipp bérlés)
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+A turisták száma függ:
+- A belépődíjtól  
+- A látott állatok számától és változatosságától  
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+---
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## 🏁 Játék vége
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Győzelem
+A játékos nyer, ha a nehézségtől függően **3 / 6 / 12 egymást követő hónapban**:
 
-## License
-For open source projects, say how it is licensed.
+- A látogatók száma egy küszöb felett marad  
+- A növényevő állatok száma küszöb felett marad  
+- A ragadozók száma küszöb felett marad  
+- A tőke egy küszöb felett marad  
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### Vereség
+Azonnali vereség, ha:
+- A park csődbe megy  
+- Kipusztul az összes állat  
+
+---
+
+## 🧩 Választható részfeladatok
+
+A projekt bővíthető az alábbi funkciókkal:
+
+### 🗺️ Minimap
+- Nagyobb pálya a látható területnél  
+- Görgethető nézet  
+- Navigálható minimap  
+
+### 🔫 Orvvadászok
+- Állatokat ölnek vagy elrabolnak  
+- Csak turisták vagy vadőrök közelében látszanak  
+
+### 🛡️ Vadőrök
+- Kijelölhető célpont ragadozók ellen  
+- Fizetést igényelnek  
+- Védenek az orvvadászok ellen  
+
+### 🎯 Irányítható vadőrök
+- Konkrét orvvadászokra küldhetők  
+- Fejpénz jár az elfogásukért  
+- Az orvvadászok visszatámadhatnak  
+
+### ⛰️ Terepi akadályok
+- Dombok és folyók  
+- Lassítják a mozgást  
+- A dombokról messzebbre látnak az állatok  
+- A folyók ivóvízforrások is  
+
+### 💾 Perzisztencia
+- Játékállapot mentése és betöltése  
+- A mozgásban lévő élőlények onnan folytatják, ahol a mentés történt  
+
+---
+
+## 🎯 A projekt célja
+
+Egy komplex, dinamikus ökoszisztémát és gazdasági rendszert szimuláló játék létrehozása, ahol a játékos döntései közvetlen hatással vannak:
+
+- Az állatpopulációkra  
+- A turisták elégedettségére  
+- A park pénzügyi stabilitására  
+
+**Safari Tycoon – Menedzseld a vadont. 🌍**
