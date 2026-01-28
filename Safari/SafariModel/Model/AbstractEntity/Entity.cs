@@ -120,6 +120,6 @@ namespace SafariModel.Model.AbstractEntity
             }
         }
 
-        public abstract void EntityTick();
+        public abstract void EntityTick(int gameSpeedMuiltiplier);
     }
 }

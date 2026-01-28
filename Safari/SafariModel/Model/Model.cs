@@ -57,16 +57,11 @@ namespace SafariModel.Model
             set
             {
                 gameSpeed = value;
-                speedBoost = gameSpeed switch
-                {
-                    GameSpeed.Slow => 1,
-                    GameSpeed.Medium => 3,
-                    GameSpeed.Fast => 9,
-                    _ => 1
-                };
+             
                 secondCounterHunter = 0;
             }
         }
+        public int GameSpeedMultiplier { get { return (int)GameSpeed; } }
         public GameDifficulty GameDifficulty { get { return gameDifficulty; } set { gameDifficulty = value; } }
         public TileMap TileMap { get { return tileMap; } }
 
@@ -156,12 +151,12 @@ namespace SafariModel.Model
         public void UpdatePerTick()
         {
             //Ide jön gamelogic
-            tickCount++;
-            tickPerGameSpeedCount++;
+            tickCount+=GameSpeedMultiplier;
+            tickPerGameSpeedCount+= GameSpeedMultiplier;
             if (tickCount % 120 == 0)
             {
-                secondCounterHunter++;
-                Hunter? hunter = entityHandler.GetNextHunter(speedBoost);
+                secondCounterHunter += GameSpeedMultiplier;
+                Hunter? hunter = entityHandler.GetNextHunter();
                 if (hunter != null)
                 {
                     hunter.KilledAnimal += new EventHandler<KillAnimalEventArgs>(HandleAnimalKill);
@@ -170,12 +165,12 @@ namespace SafariModel.Model
                     {
                         hunter.HasEntered = true;
                         hunter.TookDamage += OnNewMessage;
-                        entityHandler.SpawnHunter(speedBoost);
+                        entityHandler.SpawnHunter();
                         secondCounterHunter = 0;
                     }
                 }
             }
-            entityHandler.TickEntities();
+            entityHandler.TickEntities(GameSpeedMultiplier);
             entityHandler.UpdateSpatialMap(spatialMap, Tile.TILESIZE);
             foreach (Guard g in entityHandler.GetGuards())
             {
@@ -189,7 +184,7 @@ namespace SafariModel.Model
                     }
                 }
             }
-            touristHandler.NewTouristAtGatePerTick();
+            touristHandler.NewTouristAtGatePerTick(GameSpeedMultiplier);
 
             CheckGameOver();
 
@@ -284,7 +279,7 @@ namespace SafariModel.Model
         private void CountTimePassed(GameData data)
         {
             int neededMonths = NeededMonths();
-            int effectiveTickPerTimeUnit = TICK_PER_TIME_UNIT / speedBoost;
+            int effectiveTickPerTimeUnit = TICK_PER_TIME_UNIT / GameSpeedMultiplier;
 
             if (tickPerGameSpeedCount >= effectiveTickPerTimeUnit)
             {
@@ -517,7 +512,7 @@ namespace SafariModel.Model
 
 
             ParkName = data.parkName;
-
+            GameSpeed = GameSpeed.Slow;
 
             //statok visszatöltése
             this.economyHandler = new EconomyHandler(data.money);

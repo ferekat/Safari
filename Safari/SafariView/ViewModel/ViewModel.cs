@@ -1148,10 +1148,9 @@ namespace SafariView.ViewModel
 
         private void OnGameTimerTick(object? sender, EventArgs e)
         {
-            for(int i = 0; i < (int)gameSpeed; i++)
-            {
+            
                 model.UpdatePerTick();
-            }
+            
         }
 
         private void FinishedEntityRender()

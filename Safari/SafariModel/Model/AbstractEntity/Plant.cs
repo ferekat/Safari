@@ -24,7 +24,7 @@ namespace SafariModel.Model.AbstractEntity
         }
         #endregion
         #region Methods
-        public override void EntityTick()
+        public override void EntityTick(int gameSpeedMultiplier)
         {
             
         }

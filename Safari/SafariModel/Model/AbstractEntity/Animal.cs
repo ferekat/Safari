@@ -32,8 +32,6 @@ namespace SafariModel.Model.AbstractEntity
         private HashSet<(int, int)> exploredWaterChunks;
         private List<Animal>? members;
         private Animal? leader;
-        private int wanderTimer;
-        private int searchTimer;
         private Random random;
         private int interactionRange;
         private bool searchingForLeader;
@@ -52,8 +50,12 @@ namespace SafariModel.Model.AbstractEntity
         private static readonly int THRISTLIMIT = 600;
         private static readonly int HEALLIMIT = 1200;
 
+        private int wanderTimer;
+        private int searchTimer;
         private int healTimer;
         private int breedCooldown;
+        private int speedMultiplier;
+
         private int targetX;
         private int targetY;
         private bool isAlive;
@@ -80,10 +82,11 @@ namespace SafariModel.Model.AbstractEntity
         public bool InGroup { get { return leader != null || members != null; } }
         public bool IsAdult { get { return Age > 30000 && !IsEldelry; } }
         public bool IsEldelry { get { return Age > 100000; } }
-
         public bool CanBreed { get { return IsAdult && breedCooldown == 0; } }
 
-        public int SearchTimer { get { return searchTimer; } }
+        public int SearchTimer { get { return searchTimer; }  set { searchTimer = value; } }
+        
+        //
         public bool IsCaught { get { return isCaught; } set { isCaught = value; } }
         public Hunter? Abductor { get { return Abductor; } set { abductor = value; } }
         public bool IsAlive { get { return isAlive; } set { isAlive = value; } }
@@ -108,6 +111,8 @@ namespace SafariModel.Model.AbstractEntity
             MaxHealth = maxHealth;
             Health = maxHealth;
             Action = AnimalActions.Resting;
+
+            speedMultiplier = 1;
 
             searchTimer = currentSearchCycle++;
             if (currentSearchCycle >= SEARCH_CYCLES)
@@ -254,7 +259,7 @@ namespace SafariModel.Model.AbstractEntity
             this.SetTarget(new Point(this.x + newX, this.y + newY));
         }
 
-        protected override void EntityLogic()
+        protected override void EntityLogic(int gameSpeedMuiltiplier)
         {
 
             #region Betöltés után idk kiértékelése
@@ -282,6 +287,13 @@ namespace SafariModel.Model.AbstractEntity
                 targetEntityID = null;
             }
             #endregion
+
+
+            if (gameSpeedMuiltiplier != speedMultiplier)
+            {
+                speedMultiplier = gameSpeedMuiltiplier;
+                Speed = BaseSpeed*gameSpeedMuiltiplier; 
+            }
 
             PassTick();
 
@@ -320,7 +332,7 @@ namespace SafariModel.Model.AbstractEntity
             }
             ++Age;
             if (Age >= 120000) { RemoveSelf(); isAlive = false; } 
-            if(IsAdult && breedCooldown > 0) breedCooldown--;
+            if(IsAdult && breedCooldown > 0) breedCooldown -= speedMultiplier;
         }
 
         private AnimalActions SelectAction()
@@ -336,9 +348,10 @@ namespace SafariModel.Model.AbstractEntity
 
         private void Search()
         {
-            if (++searchTimer >= SEARCH_CYCLES)
+            int boostedTimer = SearchTimer += gameSpeedMultiplier;
+            if (boostedTimer >= SEARCH_CYCLES)
             {
-                searchTimer = 0;
+                SearchTimer = 0;
                 CheckArea();
             }
         }
@@ -481,13 +494,14 @@ namespace SafariModel.Model.AbstractEntity
 
         private void Wander()
         {
-            wanderTimer--;
+            wanderTimer -= speedMultiplier;
             if (wanderTimer <= 0) RandomWander();
             Search();
         }
         private void Rest()
         {
-            if(++healTimer >= HEALLIMIT)
+            int boostedTimer = healTimer += speedMultiplier;
+            if(boostedTimer >= HEALLIMIT)
             {
                 ++Health;
                 if(Health > MaxHealth)

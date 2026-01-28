@@ -138,7 +138,7 @@ namespace SafariModel.Model
         {
             touristHandler = th;
         }
-        protected override void EntityLogic()
+        protected override void EntityLogic(int gameSpeedMultiplier)
         {
           
             if (seenAnimalIDs != null)
